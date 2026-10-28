@@ -1,0 +1,7 @@
+{
+  "name": "glitchflow",
+  "private": true,
+  "devDependencies": {
+    "@fission-ai/openspec": "^1.15.0"
+  }
+}
