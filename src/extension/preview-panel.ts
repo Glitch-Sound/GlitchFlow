@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import * as vscode from "vscode";
+import { isGlfFileName, parseGlf } from "../core";
 
 type ViteManifest = Record<string, { file: string; css?: string[] }>;
 
@@ -7,6 +8,17 @@ type ViteManifest = Record<string, { file: string; css?: string[] }>;
 export async function openPreview(
   context: vscode.ExtensionContext,
 ): Promise<void> {
+  const activeDocument = vscode.window.activeTextEditor?.document;
+  const previewData =
+    activeDocument && isGlfFileName(activeDocument.fileName)
+      ? {
+          type: "glitchflow.document",
+          document: parseGlf(activeDocument.getText()),
+          fileName:
+            vscode.Uri.file(activeDocument.fileName).path.split("/").at(-1) ??
+            activeDocument.fileName,
+        }
+      : undefined;
   const assetsRoot = vscode.Uri.joinPath(
     context.extensionUri,
     "dist",
@@ -19,6 +31,19 @@ export async function openPreview(
     { enableScripts: true, localResourceRoots: [assetsRoot] },
   );
   context.subscriptions.push(panel);
+  if (previewData) {
+    const listener = panel.webview.onDidReceiveMessage((message: unknown) => {
+      if (
+        typeof message === "object" &&
+        message !== null &&
+        "type" in message &&
+        message.type === "glitchflow.ready"
+      ) {
+        void panel.webview.postMessage(previewData);
+      }
+    });
+    panel.onDidDispose(() => listener.dispose());
+  }
 
   const manifestPath = vscode.Uri.joinPath(
     assetsRoot,

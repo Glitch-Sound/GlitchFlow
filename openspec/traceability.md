@@ -19,6 +19,9 @@
 | REQ-003 | DB参照と表示用状態 | 実装済み | [State](product.md#対象機能) | [変更仕様](specs/glf-parsing/spec.md) |
 | REQ-004 | FILE状態とSQL | 実装済み | [State](product.md#対象機能) | [変更仕様](specs/glf-parsing/spec.md) |
 | REQ-005 | 分岐構造と解析診断 | 実装済み | [DSL](product.md#dslと編集) | [変更仕様](specs/glf-parsing/spec.md) |
+| REQ-006 | 基本シーケンス配置 | 実装済み | [レイアウト](tech.md#レイアウトと描画) | [正式仕様](specs/sequence-rendering/spec.md#requirement-req-006---基本シーケンス配置) |
+| REQ-007 | メッセージの表現 | 実装済み | [対象機能](product.md#対象機能) | [正式仕様](specs/sequence-rendering/spec.md#requirement-req-007---メッセージの表現) |
+| REQ-008 | 活性と処理の表現 | 実装済み | [設計上の優先事項](product.md#設計上の優先事項) | [正式仕様](specs/sequence-rendering/spec.md#requirement-req-008---活性と処理の表現) |
 
 ## 要件ごとの変更履歴
 
@@ -35,6 +38,10 @@
 | parse-glf-basics | REQ-003 | 追加 | アーカイブ済み | [変更仕様](specs/glf-parsing/spec.md#requirement-req-003---db参照と表示用状態) | [提案](changes/archive/2026-10-29-parse-glf-basics/proposal.md)、[設計](changes/archive/2026-10-29-parse-glf-basics/design.md)、[タスク](changes/archive/2026-10-29-parse-glf-basics/tasks.md) |
 | parse-glf-basics | REQ-004 | 追加 | アーカイブ済み | [変更仕様](specs/glf-parsing/spec.md#requirement-req-004---file状態とsql) | [提案](changes/archive/2026-10-29-parse-glf-basics/proposal.md)、[設計](changes/archive/2026-10-29-parse-glf-basics/design.md)、[タスク](changes/archive/2026-10-29-parse-glf-basics/tasks.md) |
 | parse-glf-basics | REQ-005 | 追加 | アーカイブ済み | [変更仕様](specs/glf-parsing/spec.md#requirement-req-005---分岐構造と解析診断) | [提案](changes/archive/2026-10-29-parse-glf-basics/proposal.md)、[設計](changes/archive/2026-10-29-parse-glf-basics/design.md)、[タスク](changes/archive/2026-10-29-parse-glf-basics/tasks.md) |
+| render-sequence | REQ-001 | 変更 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-sequence/specs/preview/spec.md#requirement-req-001---プレビューの起動) | [提案](changes/archive/2026-10-29-render-sequence/proposal.md)、[設計](changes/archive/2026-10-29-render-sequence/design.md)、[タスク](changes/archive/2026-10-29-render-sequence/tasks.md) |
+| render-sequence | REQ-006 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#requirement-req-006---基本シーケンス配置) | [提案](changes/archive/2026-10-29-render-sequence/proposal.md)、[設計](changes/archive/2026-10-29-render-sequence/design.md)、[タスク](changes/archive/2026-10-29-render-sequence/tasks.md) |
+| render-sequence | REQ-007 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#requirement-req-007---メッセージの表現) | [提案](changes/archive/2026-10-29-render-sequence/proposal.md)、[設計](changes/archive/2026-10-29-render-sequence/design.md)、[タスク](changes/archive/2026-10-29-render-sequence/tasks.md) |
+| render-sequence | REQ-008 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#requirement-req-008---活性と処理の表現) | [提案](changes/archive/2026-10-29-render-sequence/proposal.md)、[設計](changes/archive/2026-10-29-render-sequence/design.md)、[タスク](changes/archive/2026-10-29-render-sequence/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -53,8 +60,39 @@
 | parse-glf-basics | REQ-005 / REQ-005-S01 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-005-s01---分岐内イベントを保持する) | [Parser](../src/core/parser/parse-glf.ts) `parseGlf` | [Coreテスト](../tests/core/parse-glf.test.ts) `REQ-005 / REQ-005-S01` | [Core解析](#parse-glf-basics---2026-10-29-core解析) |
 | parse-glf-basics | REQ-005 / REQ-005-S02 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-005-s02---誤った構文と参照を診断する) | [Validator](../src/core/validator/validate-glf.ts) `validateGlf` | [Coreテスト](../tests/core/parse-glf.test.ts) `REQ-005 / REQ-005-S02` | [Core解析](#parse-glf-basics---2026-10-29-core解析) |
 | parse-glf-basics | REQ-005 / REQ-005-S03 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-005-s03---入れ子分岐を保持する) | [Parser](../src/core/parser/parse-glf.ts) `parseGlf` | [Coreテスト](../tests/core/parse-glf.test.ts) `REQ-005 / REQ-005-S03` | [Core解析](#parse-glf-basics---2026-10-29-core解析) |
+| render-sequence | REQ-001 / REQ-001-S01 | [シナリオ](changes/archive/2026-10-29-render-sequence/specs/preview/spec.md#scenario-req-001-s01---glfファイルを開いてプレビューを起動する) | [起動通信](../src/extension/preview-panel.ts) `openPreview`、[画面](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Extension](../tests/extension/preview.test.ts)、[Chromium](../tests/visual/preview.spec.ts) | [描画検証](#render-sequence---2026-10-29-描画検証) |
+| render-sequence | REQ-006 / REQ-006-S01 | [シナリオ](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#scenario-req-006-s01---宣言順と時間順に配置する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/sequence-layout.test.ts) `REQ-006 / REQ-006-S01` | [描画検証](#render-sequence---2026-10-29-描画検証) |
+| render-sequence | REQ-007 / REQ-007-S01 | [シナリオ](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#scenario-req-007-s01---矢印種別とglobal起点を表示する) | [画面](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Chromium](../tests/visual/sequence.spec.ts) `REQ-007 / REQ-007-S01` | [描画検証](#render-sequence---2026-10-29-描画検証) |
+| render-sequence | REQ-007 / REQ-007-S02 | [シナリオ](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#scenario-req-007-s02---応答なしの同期要求を表示する) | [レイアウト](../src/core/layout/sequence-layout.ts)、[画面](../src/webview/pages/preview/ui/render-preview.ts) | [Core](../tests/core/sequence-layout.test.ts)、[Chromium](../tests/visual/sequence.spec.ts) `REQ-007 / REQ-007-S02` | [描画検証](#render-sequence---2026-10-29-描画検証) |
+| render-sequence | REQ-008 / REQ-008-S01 | [シナリオ](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#scenario-req-008-s01---活性と処理を表示する) | [レイアウト](../src/core/layout/sequence-layout.ts)、[画面](../src/webview/pages/preview/ui/render-preview.ts) | [Core](../tests/core/sequence-layout.test.ts)、[Chromium](../tests/visual/sequence.spec.ts) `REQ-008 / REQ-008-S01` | [描画検証](#render-sequence---2026-10-29-描画検証) |
+| render-sequence | REQ-008 / REQ-008-S02 | [シナリオ](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#scenario-req-008-s02---構文エラーを含む文書の描画) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/sequence-layout.test.ts) `REQ-008 / REQ-008-S02` | [描画検証](#render-sequence---2026-10-29-描画検証) |
 
 ## 検証記録
+
+### render-sequence - 2026-10-29 描画検証
+
+- 対象: REQ-001-S01、REQ-006-S01、REQ-007-S01、REQ-007-S02、REQ-008-S01、REQ-008-S02。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `npm run check`、`npm run test:visual`、`npm run test:extension`、`npx --no-install openspec validate render-sequence --strict`、`git diff --check`を実行した。
+  CLIに`verify`コマンドがないため、`openspec-verify-change`の3観点で手動照合した。
+- 結果: Coreの14件、Chromiumの3件、Extensionの1件が成功した。
+  Chromiumのスクリーンショットを目視し、文字の切れ、矢印と活性バーの接続、活性終了位置を確認した。
+- 証跡: [Coreテスト](../tests/core/sequence-layout.test.ts)、[描画テスト](../tests/visual/sequence.spec.ts)、[プレビューテスト](../tests/visual/preview.spec.ts)、[Verify報告](changes/archive/2026-10-29-render-sequence/verification.md)、`test-results/render-sequence.png`。
+- 未検証事項: State、SQL、altの描画は後続変更の範囲である。
+
+### render-sequence - 2026-10-29 アーカイブ
+
+- 対象: REQ-001、REQ-006、REQ-007、REQ-008。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `preview`のREQ-001を変更し、`sequence-rendering`のREQ-006からREQ-008を正式仕様へ同期した。
+  `npx --no-install openspec validate --specs`で3件の正式仕様を検証し、差分仕様と同期後の要件本文を照合した。
+- 結果: 3件の正式仕様が成功し、差分の適用漏れはない。
+  `preview`のPurposeは旧初期段階の「図面を描画しない」という記述が現行要件と矛盾するため、正式仕様上で直接更新した。
+  [変更成果物](changes/archive/2026-10-29-render-sequence/proposal.md)をアーカイブへ移し、台帳の仕様と成果物への参照を更新した。
+- 証跡: [preview正式仕様](specs/preview/spec.md)、[sequence-rendering正式仕様](specs/sequence-rendering/spec.md)、[Verify報告](changes/archive/2026-10-29-render-sequence/verification.md)。
+- 未検証事項: なし。
 
 ### parse-glf-basics - 2026-10-29 Core解析
 

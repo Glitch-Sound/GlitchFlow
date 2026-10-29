@@ -3,6 +3,8 @@ export function isGlfFileName(fileName: string): boolean {
   return fileName.endsWith(".glf");
 }
 
+export type { SequenceLayout } from "./layout/sequence-layout";
+export { layoutSequence } from "./layout/sequence-layout";
 export type {
   Change,
   DbCell,

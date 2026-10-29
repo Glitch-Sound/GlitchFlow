@@ -23,3 +23,48 @@ body {
   font-size: 14px;
   font-weight: 700;
 }
+
+.preview__scroller {
+  overflow: auto;
+  max-width: 100vw;
+  height: calc(100vh - 48px);
+}
+.sequence-diagram {
+  display: block;
+  font: 14px sans-serif;
+  color: #e7edf6;
+}
+.sequence-object {
+  fill: #263443;
+  stroke: #dce7f3;
+  stroke-width: 1.5;
+}
+.sequence-object-label,
+.sequence-message-label,
+.sequence-process {
+  fill: #e7edf6;
+}
+.sequence-lifeline-line {
+  stroke: #8c9cac;
+  stroke-width: 1.3;
+  stroke-dasharray: 5 5;
+}
+.sequence-activation {
+  fill: #526477;
+  stroke: #e7edf6;
+  stroke-width: 1;
+}
+.sequence-arrow-line {
+  stroke: #e7edf6;
+  stroke-width: 1.5;
+}
+.sequence-arrow--response .sequence-arrow-line {
+  stroke-dasharray: 6 5;
+}
+.sequence-global-origin {
+  fill: #f5f7fa;
+  stroke: #e7edf6;
+}
+.sequence-process--emphasis {
+  font-weight: 700;
+}
