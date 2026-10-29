@@ -5,7 +5,7 @@ GlitchFlowは、処理の流れ(Flow)とデータの状態(State)を同じ時間
 
 ![ログイン処理の流れと、DBやファイルの期待状態を並べた表示イメージ](docs/images/glitchflow.png)
 
-## 主な機能(開発予定)
+## 主な機能
 
 - `.glf` ファイルに処理やメッセージ、条件分岐を記述し、編集内容を図に反映する。
 - 処理の途中にDBレコード、ファイルツリー、SQLを並べ、各時点の期待状態を確認する。
@@ -17,9 +17,14 @@ SQLや業務ファイルを実際に操作する機能は持たず、設計上�
 
 ## 現在使える機能
 
-`.glf` ファイルを開き、コマンドパレットから `GlitchFlow: プレビューを開く` を実行すると、`GlitchFlow Preview` という見出しの初期画面を表示する。上の画像は完成時の参考図であり、現在のプレビューには図面を表示しない。
+`.glf` ファイルを開き、コマンドパレットから `GlitchFlow: プレビューを開く` を実行すると、現在の文書をシーケンス図として表示する。
+編集するとプレビューが更新され、構文や参照の誤りはProblemsに表示される。
+解析に誤りがある間は最後の正常な図を保持する。
 
-DSL の解析、図面描画、編集に合わせた更新、構文ハイライト、診断、ズームは今後の変更で実装する。基準入力は [examples/login.glf](examples/login.glf) に置いてある。
+`.glf`の構文配色は標準でVS Codeのテーマに従う。
+設定`glitchflow.syntaxHighlighting`を`glitchflow`にすると`.glf`だけに専用配色を適用し、`theme`で標準に戻る。
+プレビューの縮小、等倍、拡大ボタンと縦横スクロールで図全体を確認できる。
+基準入力は [examples/login.glf](examples/login.glf) に置いてある。
 
 ## 開発環境
 
@@ -42,4 +47,6 @@ npm run test:visual
 npm run test:extension
 ```
 
-`npm run check` は Biome、Webview の FSD 規則、型検査、Core 単体テストを実行する。`test:visual` は Chromium で初期画面を確認し、`test:extension` は VS Code の Extension Test API でコマンドとパネルの生成を確認する。コミット前は Lefthook がステージ済みファイルの Biome、Webview 全体の Steiger、型検査を実行する。
+`npm run check` は Biome、Webview の FSD 規則、型検査、Core 単体テストを実行する。
+`test:visual` は Chromium で図面と表示操作を確認し、`test:extension` は VS Code の Extension Test API で編集連動、Problems、言語設定を確認する。
+コミット前は Lefthook がステージ済みファイルの Biome、Webview 全体の Steiger、型検査を実行する。

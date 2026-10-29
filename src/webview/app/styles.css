@@ -27,7 +27,24 @@ body {
 .preview__scroller {
   overflow: auto;
   max-width: 100vw;
-  height: calc(100vh - 48px);
+  height: calc(100vh - 90px);
+}
+.preview__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--vscode-panel-border, #415063);
+}
+.preview__toolbar button {
+  color: var(--vscode-button-foreground, #fff);
+  background: var(--vscode-button-background, #375d85);
+  border: 0;
+  border-radius: 3px;
+  padding: 4px 9px;
+  cursor: pointer;
 }
 .sequence-diagram {
   display: block;

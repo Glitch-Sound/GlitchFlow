@@ -1,8 +1,39 @@
 import { readFile } from "node:fs/promises";
 import * as vscode from "vscode";
-import { isGlfFileName, parseGlf } from "../core";
+import { type GlfDocument, isGlfFileName, parseGlf } from "../core";
 
 type ViteManifest = Record<string, { file: string; css?: string[] }>;
+
+const previews = new Map<string, Set<vscode.WebviewPanel>>();
+const ready = new WeakSet<vscode.WebviewPanel>();
+const rendered = new vscode.EventEmitter<{ uri: string; title: string }>();
+export const onDidRenderPreview = rendered.event;
+const latest = new Map<
+  string,
+  { type: string; document: GlfDocument; fileName: string }
+>();
+
+/** REQ-014: 開いている文書の正常な解析結果だけを対象パネルへ送る。 */
+export function updatePreview(
+  document: vscode.TextDocument,
+  parsed: GlfDocument,
+): void {
+  if (parsed.diagnostics.length > 0) return;
+  const key = document.uri.toString();
+  const data = {
+    type: "glitchflow.document",
+    document: parsed,
+    fileName:
+      vscode.Uri.file(document.fileName).path.split("/").at(-1) ??
+      document.fileName,
+  };
+  latest.set(key, data);
+  const panels = previews.get(key);
+  if (!panels) return;
+  for (const panel of panels) {
+    if (ready.has(panel)) void panel.webview.postMessage(data);
+  }
+}
 
 /** REQ-001: open the compiled preview with local-only assets and a restrictive CSP. */
 export async function openPreview(
@@ -31,18 +62,43 @@ export async function openPreview(
     { enableScripts: true, localResourceRoots: [assetsRoot] },
   );
   context.subscriptions.push(panel);
-  if (previewData) {
+  if (previewData && activeDocument) {
+    const key = activeDocument.uri.toString();
+    const group = previews.get(key) ?? new Set<vscode.WebviewPanel>();
+    group.add(panel);
+    previews.set(key, group);
     const listener = panel.webview.onDidReceiveMessage((message: unknown) => {
+      if (
+        typeof message === "object" &&
+        message !== null &&
+        "type" in message &&
+        message.type === "glitchflow.rendered" &&
+        "title" in message &&
+        typeof message.title === "string"
+      ) {
+        rendered.fire({ uri: key, title: message.title });
+        return;
+      }
       if (
         typeof message === "object" &&
         message !== null &&
         "type" in message &&
         message.type === "glitchflow.ready"
       ) {
-        void panel.webview.postMessage(previewData);
+        ready.add(panel);
+        const current = latest.get(key) ?? previewData;
+        if (current.document.diagnostics.length === 0)
+          void panel.webview.postMessage(current);
       }
     });
-    panel.onDidDispose(() => listener.dispose());
+    panel.onDidDispose(() => {
+      listener.dispose();
+      group.delete(panel);
+      if (group.size === 0) {
+        previews.delete(key);
+        latest.delete(key);
+      }
+    });
   }
 
   const manifestPath = vscode.Uri.joinPath(

@@ -7,6 +7,12 @@ function run() {
     mocha.addFile(
       resolve(__dirname, "../dist/extension-tests/preview.test.js"),
     );
+    mocha.addFile(
+      resolve(__dirname, "../dist/extension-tests/diagnostics.test.js"),
+    );
+    mocha.addFile(
+      resolve(__dirname, "../dist/extension-tests/syntax-colors.test.js"),
+    );
     mocha.run((failures) => {
       if (failures === 0) resolveRun();
       else rejectRun(new Error(`${failures} extension test(s) failed`));

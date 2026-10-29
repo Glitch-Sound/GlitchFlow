@@ -1,0 +1,15 @@
+{
+  "name": "GlitchFlow",
+  "scopeName": "source.glf",
+  "patterns": [
+    { "name": "string.quoted.double.glf", "match": "\"(?:\\\\.|[^\"\\\\])*\"" },
+    { "name": "keyword.control.glf", "match": "\\b(?:alt|case|else|opt|loop|par|break)\\b(?=\\s|:)" },
+    { "name": "keyword.declaration.glf", "match": "\\b(?:title|Object|schema|state|sql|type|as)\\b(?=\\s|:)" },
+    { "name": "storage.type.glf", "match": "\\b(?:APP|API|DB|FILE|FEATURE|MODULE)\\b" },
+    { "name": "keyword.operator.message.glf", "match": "->>|-->|->|<--|<<-|<-" },
+    { "match": "\\b[A-Za-z_][A-Za-z0-9_]*([+-])\\s*$", "captures": { "1": { "name": "keyword.operator.activation.glf" } } },
+    { "match": "^\\s*([+-])\\s+(?=\\[|\\S)", "captures": { "1": { "name": "keyword.operator.change.glf" } } },
+    { "name": "keyword.operator.change.glf", "match": "!(?=\\S)" },
+    { "name": "constant.numeric.glf", "match": "\\b\\d+(?:\\.\\d+)?\\b" }
+  ]
+}

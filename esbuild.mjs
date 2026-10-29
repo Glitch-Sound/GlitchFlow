@@ -12,12 +12,16 @@ await build({
 });
 
 await build({
-  entryPoints: ["tests/extension/preview.test.ts"],
+  entryPoints: [
+    "tests/extension/preview.test.ts",
+    "tests/extension/diagnostics.test.ts",
+    "tests/extension/syntax-colors.test.ts",
+  ],
   bundle: true,
   platform: "node",
   format: "cjs",
   target: "node20",
   external: ["vscode"],
-  outfile: "dist/extension-tests/preview.test.js",
+  outdir: "dist/extension-tests",
   sourcemap: true,
 });

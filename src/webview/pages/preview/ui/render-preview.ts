@@ -1,5 +1,6 @@
 import { type GlfDocument, layoutSequence } from "../../../../core";
 import type { SequenceLayout } from "../../../../core/layout/sequence-layout";
+import { changeZoom, getZoom, resetZoom } from "../model/zoom";
 
 const NS = "http://www.w3.org/2000/svg";
 
@@ -173,6 +174,12 @@ export function renderPreview(
   documentData?: GlfDocument,
   fileName = "GlitchFlow Preview",
 ): void {
+  const previousScroller =
+    container.querySelector<HTMLElement>(".preview__scroller");
+  const previousScroll = {
+    left: previousScroller?.scrollLeft ?? 0,
+    top: previousScroller?.scrollTop ?? 0,
+  };
   const main = document.createElement("main");
   main.className = "preview";
   const heading = document.createElement("h1");
@@ -189,14 +196,36 @@ export function renderPreview(
     );
     const scroller = document.createElement("div");
     scroller.className = "preview__scroller";
+    const toolbar = document.createElement("div");
+    toolbar.className = "preview__toolbar";
     const svg = svgElement("svg", {
       class: "sequence-diagram",
-      width: String(layout.width),
-      height: String(layout.height),
+      width: String(layout.width * getZoom()),
+      height: String(layout.height * getZoom()),
       viewBox: `0 0 ${layout.width} ${layout.height}`,
       role: "img",
       "aria-label": "シーケンス図",
     });
+    const level = document.createElement("span");
+    level.className = "preview__zoom-level";
+    const applyZoom = (value: number) => {
+      svg.setAttribute("width", String(layout.width * value));
+      svg.setAttribute("height", String(layout.height * value));
+      level.textContent = `${Math.round(value * 100)}%`;
+    };
+    const button = (label: string, action: () => number) => {
+      const element = document.createElement("button");
+      element.type = "button";
+      element.textContent = label;
+      element.addEventListener("click", () => applyZoom(action()));
+      toolbar.append(element);
+    };
+    button("縮小", () => changeZoom(-0.1));
+    button("等倍", resetZoom);
+    button("拡大", () => changeZoom(0.1));
+    toolbar.append(level);
+    applyZoom(getZoom());
+    main.append(toolbar);
     const defs = svgElement("defs");
     defs.append(
       marker("sequence-arrow-filled", true),
@@ -340,4 +369,10 @@ export function renderPreview(
     main.append(scroller);
   }
   container.replaceChildren(main);
+  const nextScroller =
+    container.querySelector<HTMLElement>(".preview__scroller");
+  if (nextScroller) {
+    nextScroller.scrollLeft = previousScroll.left;
+    nextScroller.scrollTop = previousScroll.top;
+  }
 }

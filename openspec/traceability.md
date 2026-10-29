@@ -27,6 +27,11 @@
 | REQ-011 | SQLの描画と状態配置 | 実装済み | [レイアウト](tech.md#レイアウトと描画) | [正式仕様](specs/state-rendering/spec.md#requirement-req-011---sqlの描画と状態配置) |
 | REQ-012 | alt分岐の描画 | 実装済み | [シーケンス図](product.md#シーケンス図) | [正式仕様](specs/alt-fragment/spec.md#requirement-req-012---alt分岐の描画) |
 | REQ-013 | 分岐の活性整合性 | 実装済み | [設計上の優先事項](product.md#設計上の優先事項) | [正式仕様](specs/alt-fragment/spec.md#requirement-req-013---分岐の活性整合性) |
+| REQ-014 | 編集連動プレビュー | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/editor-integration/spec.md#requirement-req-014---編集連動プレビュー) |
+| REQ-015 | Problems診断 | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/editor-integration/spec.md#requirement-req-015---problems診断) |
+| REQ-016 | DSL構文配色 | 実装済み | [DSLエディタの配色](product.md#dslエディタの配色) | [正式仕様](specs/editor-integration/spec.md#requirement-req-016---dsl構文配色) |
+| REQ-017 | プレビュー操作 | 実装済み | [設計上の優先事項](product.md#設計上の優先事項) | [正式仕様](specs/editor-integration/spec.md#requirement-req-017---プレビュー操作) |
+| NREQ-001 | 編集応答時間 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/editor-integration/spec.md#requirement-nreq-001---編集応答時間) |
 
 ## 要件ごとの変更履歴
 
@@ -52,6 +57,11 @@
 | render-state-and-sql | REQ-011 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#requirement-req-011---sqlの描画と状態配置) | [提案](changes/archive/2026-10-29-render-state-and-sql/proposal.md)、[設計](changes/archive/2026-10-29-render-state-and-sql/design.md)、[タスク](changes/archive/2026-10-29-render-state-and-sql/tasks.md) |
 | support-alt-fragment | REQ-012 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#requirement-req-012---alt分岐の描画) | [提案](changes/archive/2026-10-29-support-alt-fragment/proposal.md)、[設計](changes/archive/2026-10-29-support-alt-fragment/design.md)、[タスク](changes/archive/2026-10-29-support-alt-fragment/tasks.md) |
 | support-alt-fragment | REQ-013 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#requirement-req-013---分岐の活性整合性) | [提案](changes/archive/2026-10-29-support-alt-fragment/proposal.md)、[設計](changes/archive/2026-10-29-support-alt-fragment/design.md)、[タスク](changes/archive/2026-10-29-support-alt-fragment/tasks.md) |
+| integrate-glf-editor | REQ-014 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-integrate-glf-editor/specs/editor-integration/spec.md#requirement-req-014---編集連動プレビュー) | [提案](changes/archive/2026-10-29-integrate-glf-editor/proposal.md)、[設計](changes/archive/2026-10-29-integrate-glf-editor/design.md)、[タスク](changes/archive/2026-10-29-integrate-glf-editor/tasks.md) |
+| integrate-glf-editor | REQ-015 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-integrate-glf-editor/specs/editor-integration/spec.md#requirement-req-015---problems診断) | [提案](changes/archive/2026-10-29-integrate-glf-editor/proposal.md)、[設計](changes/archive/2026-10-29-integrate-glf-editor/design.md)、[タスク](changes/archive/2026-10-29-integrate-glf-editor/tasks.md) |
+| integrate-glf-editor | REQ-016 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-integrate-glf-editor/specs/editor-integration/spec.md#requirement-req-016---dsl構文配色) | [提案](changes/archive/2026-10-29-integrate-glf-editor/proposal.md)、[設計](changes/archive/2026-10-29-integrate-glf-editor/design.md)、[タスク](changes/archive/2026-10-29-integrate-glf-editor/tasks.md) |
+| integrate-glf-editor | REQ-017 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-integrate-glf-editor/specs/editor-integration/spec.md#requirement-req-017---プレビュー操作) | [提案](changes/archive/2026-10-29-integrate-glf-editor/proposal.md)、[設計](changes/archive/2026-10-29-integrate-glf-editor/design.md)、[タスク](changes/archive/2026-10-29-integrate-glf-editor/tasks.md) |
+| integrate-glf-editor | NREQ-001 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-integrate-glf-editor/specs/editor-integration/spec.md#requirement-nreq-001---編集応答時間) | [提案](changes/archive/2026-10-29-integrate-glf-editor/proposal.md)、[設計](changes/archive/2026-10-29-integrate-glf-editor/design.md)、[タスク](changes/archive/2026-10-29-integrate-glf-editor/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -85,8 +95,28 @@
 | support-alt-fragment | REQ-012 / REQ-012-S02 | [シナリオ](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#scenario-req-012-s02---入れ子の分岐を描画する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/alt-layout.test.ts) | [検証記録](#support-alt-fragment---2026-10-29-描画検証) |
 | support-alt-fragment | REQ-013 / REQ-013-S01 | [シナリオ](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#scenario-req-013-s01---分岐ごとに活性を終了する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/alt-layout.test.ts)、[Chromium](../tests/visual/alt.spec.ts) | [検証記録](#support-alt-fragment---2026-10-29-描画検証) |
 | support-alt-fragment | REQ-013 / REQ-013-S02 | [シナリオ](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#scenario-req-013-s02---活性状態の不一致を診断する) | [Validator](../src/core/validator/validate-glf.ts) `validateGlf` | [Core](../tests/core/alt-layout.test.ts) | [検証記録](#support-alt-fragment---2026-10-29-描画検証) |
+| integrate-glf-editor | REQ-014 / REQ-014-S01 | [シナリオ](specs/editor-integration/spec.md#scenario-req-014-s01---編集結果を表示する) | [購読](../src/extension/extension.ts) `activate`、[通信](../src/extension/preview-panel.ts) `updatePreview` | [Extension](../tests/extension/preview.test.ts)、[Chromium](../tests/visual/editor.spec.ts) | [検証記録](#integrate-glf-editor---2026-10-29-編集連携) |
+| integrate-glf-editor | REQ-014 / REQ-014-S02 | [シナリオ](specs/editor-integration/spec.md#scenario-req-014-s02---編集中の図を保持する) | [通信](../src/extension/preview-panel.ts) `updatePreview` | [Extension](../tests/extension/preview.test.ts) | [検証記録](#integrate-glf-editor---2026-10-29-編集連携) |
+| integrate-glf-editor | REQ-015 / REQ-015-S01 | [シナリオ](specs/editor-integration/spec.md#scenario-req-015-s01---診断を表示して解消する) | [診断](../src/extension/diagnostics.ts) `diagnoseDocument` | [Extension](../tests/extension/diagnostics.test.ts) | [検証記録](#integrate-glf-editor---2026-10-29-編集連携) |
+| integrate-glf-editor | REQ-016 / REQ-016-S01 | [シナリオ](specs/editor-integration/spec.md#scenario-req-016-s01---配色を切り替える) | [Grammar](../syntaxes/glf.tmLanguage.json)、[装飾](../src/extension/syntax-colors.ts) `registerSyntaxColors` | [Extension](../tests/extension/syntax-colors.test.ts)、Development Host手動確認 | [検証記録](#integrate-glf-editor---2026-10-29-編集連携) |
+| integrate-glf-editor | REQ-016 / REQ-016-S02 | [シナリオ](specs/editor-integration/spec.md#scenario-req-016-s02---ライトテーマで読める) | [装飾](../src/extension/syntax-colors.ts) `registerSyntaxColors` | Development Hostでライト・ダーク両テーマを目視確認 | [検証記録](#integrate-glf-editor---2026-10-29-編集連携) |
+| integrate-glf-editor | REQ-017 / REQ-017-S01 | [シナリオ](specs/editor-integration/spec.md#scenario-req-017-s01---図の全体を確認する) | [倍率](../src/webview/pages/preview/model/zoom.ts)、[画面](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Chromium](../tests/visual/editor.spec.ts) | [検証記録](#integrate-glf-editor---2026-10-29-編集連携) |
+| integrate-glf-editor | NREQ-001 / NREQ-001-S01 | [シナリオ](specs/editor-integration/spec.md#scenario-nreq-001-s01---編集応答時間を測る) | [更新](../src/extension/extension.ts) `activate`、[描画通知](../src/webview/app/main.ts) | [Extension](../tests/extension/preview.test.ts) | [検証記録](#integrate-glf-editor---2026-10-29-編集連携) |
 
 ## 検証記録
+
+### integrate-glf-editor - 2026-10-29 編集連携
+
+- 対象: REQ-014からREQ-017、NREQ-001、全7シナリオ。
+- 実行日: 2026-10-29 (Asia/Tokyo)。
+- 対象の版: `integrate-glf-editor`の作業差分。
+- 方法: `npm run check`、`npm run test:visual`、`npm run test:extension`、Development Hostの配色切替。
+- 結果: Core 21件、Chromium 9件、Extension 4件が成功した。
+  `examples/login.glf`のタイトル1文字編集からWebview描画通知までは157 msであった。
+  ダークとライト両テーマで専用配色の文字列、キーワード、記号を目視でき、設定を`theme`へ戻した。
+  拡大後の右下端スクロールをChromiumで確認した。
+- 証跡: [Extensionテスト](../tests/extension/preview.test.ts)、[Chromiumテスト](../tests/visual/editor.spec.ts)、[描画画像](../docs/images/integrate-glf-editor.png)、[Verify報告](changes/archive/2026-10-29-integrate-glf-editor/verification.md)。
+- 未検証事項: なし。
 
 ### support-alt-fragment - 2026-10-29 アーカイブ
 

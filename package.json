@@ -13,9 +13,43 @@
   ],
   "main": "./dist/extension/extension.js",
   "activationEvents": [
-    "onCommand:glitchflow.openPreview"
+    "onCommand:glitchflow.openPreview",
+    "onLanguage:glitchflow"
   ],
   "contributes": {
+    "languages": [
+      {
+        "id": "glitchflow",
+        "aliases": [
+          "GlitchFlow",
+          "glf"
+        ],
+        "extensions": [
+          ".glf"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "glitchflow",
+        "scopeName": "source.glf",
+        "path": "./syntaxes/glf.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "GlitchFlow",
+      "properties": {
+        "glitchflow.syntaxHighlighting": {
+          "type": "string",
+          "enum": [
+            "theme",
+            "glitchflow"
+          ],
+          "default": "theme",
+          "description": "`.glf`のエディタ構文配色"
+        }
+      }
+    },
     "commands": [
       {
         "command": "glitchflow.openPreview",
