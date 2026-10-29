@@ -118,7 +118,7 @@ Gitフックの管理にはLefthookを利用する。
 
 Lefthookは `npm install` 後に `lefthook install` を実行して有効化する。
 開発環境の導入手順でもGitフックを必ず有効化する。
-`pre-commit` はローカルの実行環境に依存し、`--no-verify` などで回避できるため、CIでも同じ検査を再実行する。
+`pre-commit` はローカルの実行環境に依存し、`--no-verify` などで回避できる。CIを導入する場合は同じ検査を再実行する。
 
 推奨するnpmスクリプト名を次のように統一する。
 
@@ -131,8 +131,8 @@ Lefthookは `npm install` 後に `lefthook install` を実行して有効化す�
 | `test:visual` | PlaywrightでChromium描画を確認する |
 | `check` | Biome、Steiger、型検査、単体テストを実行する |
 
-CIでは `check` と `test:visual` を実行する。
-コミット前は応答速度を優先し、Playwrightによる全画面の描画テストはCIまたは実装完了時に行う。
+CIを導入する場合は、サービスに依存しない `check` と `test:visual` を実行する。特定のCIサービスは技術方針として固定しない。
+コミット前は応答速度を優先し、Playwrightによる全画面の描画テストは実装完了時と、CIを導入した場合はCIでも行う。
 
 ## 設計時の重要事項
 

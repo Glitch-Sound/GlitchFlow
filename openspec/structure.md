@@ -58,9 +58,6 @@ glitchflow/
 │   ├── core/
 │   ├── visual/
 │   └── extension/
-├── .github/
-│   └── workflows/
-│       └── ci.yml
 ├── package.json
 ├── package-lock.json
 ├── tsconfig.json
@@ -127,7 +124,7 @@ OpenSpecによる変更仕様は `openspec/changes/<change-name>/specs/<capabili
 - `steiger.config.ts` でFSD v2.1向けの推奨ルールを設定する。
 - `lefthook.yml` でGitの `pre-commit` フックを管理する。
 - `package.json` にBiome、Steiger、型検査、テストのnpmスクリプトを定義する。
-- `.github/workflows/ci.yml` で同じ検査と描画テストを実行する。
+- CIを導入する場合は、`package.json`の検査と描画テストのスクリプトを選んだサービスから実行する。CIサービスの設定ファイルは共通の推奨構成に含めない。
 - `syntaxes` には `.glf` のTextMateシンタックスハイライト定義を置く。
 - タイトルを表示するためのファイル名取得はExtension側で行い、CoreからVSCode APIを参照しない。
 - `examples` には手動確認と回帰テストで使うDSLを置く。

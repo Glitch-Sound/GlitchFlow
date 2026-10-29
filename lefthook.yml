@@ -1,0 +1,15 @@
+pre-commit:
+  jobs:
+    - name: biome
+      glob: "*.{js,jsx,ts,tsx,mjs,cjs,json,jsonc,css,html}"
+      exclude:
+        - ".agents/**"
+        - ".vscode/**"
+        - "docs/**"
+        - "openspec/**"
+        - "package-lock.json"
+      run: npx --no-install biome check {staged_files}
+    - name: fsd
+      run: npm run check:fsd
+    - name: typecheck
+      run: npm run typecheck

@@ -14,6 +14,7 @@
 
 | 要件ID | 要件名 | 状態 | 根拠となる文書の節 | 現在の仕様 |
 | --- | --- | --- | --- | --- |
+| REQ-001 | プレビューの起動 | 実装済み | [対象機能](product.md#対象機能) | [正式仕様](specs/preview/spec.md#requirement-req-001---プレビューの起動) |
 
 ## 要件ごとの変更履歴
 
@@ -25,6 +26,7 @@
 
 | 変更名 | 要件ID | 操作 | 変更の状態 | 対象仕様 | 提案、設計、タスク |
 | --- | --- | --- | --- | --- | --- |
+| glitchflow-spec | REQ-001 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-glitchflow-spec/specs/preview/spec.md#requirement-req-001---プレビューの起動) | [提案](changes/archive/2026-10-29-glitchflow-spec/proposal.md)、[設計](changes/archive/2026-10-29-glitchflow-spec/design.md)、[タスク](changes/archive/2026-10-29-glitchflow-spec/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -35,11 +37,91 @@
 
 | 変更名 | 要件IDとシナリオID | 受け入れ条件 | 実装箇所 | テストまたは手動確認 | 検証記録 |
 | --- | --- | --- | --- | --- | --- |
+| glitchflow-spec | REQ-001 / REQ-001-S01 | [シナリオ](changes/archive/2026-10-29-glitchflow-spec/specs/preview/spec.md#scenario-req-001-s01---glfファイルを開いてプレビューを起動する) | [コマンド登録](../src/extension/extension.ts) `activate`、[パネルとCSP](../src/extension/preview-panel.ts) `openPreview`、[初期画面](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Extension統合テスト](../tests/extension/preview.test.ts) `REQ-001 / REQ-001-S01`、[Chromium描画テスト](../tests/visual/preview.spec.ts) `REQ-001 / REQ-001-S01`、Development Host手動確認 | [プレビュー確認](#glitchflow-spec---2026-10-29-プレビュー確認) |
 
 ## 検証記録
 
 変更ごと、実行ごとに見出しを作り、以下を記録する。
 同じ実行結果を複数のシナリオから参照できる。
+
+### glitchflow-spec - 2026-10-29 Core基盤
+
+- 対象: [D-01](changes/archive/2026-10-29-glitchflow-spec/design.md#d-01---実行環境を分けた最小ビルド)。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: Node.js v24.18.0、npm 11.16.0で`npm install`、`npm run build`、`npm run typecheck`、`npm run test`を実行した。
+- 結果: 依存関係の導入、ExtensionとWebviewのビルド、型検査、Coreの1テストが成功した。
+- 証跡: [Coreテスト](../tests/core/file-name.test.ts)、[ビルド設定](../vite.config.ts)、[Extensionビルド設定](../esbuild.mjs)。
+- 未検証事項: VSCode上のコマンドとWebview表示は後続タスクで検証する。
+
+### glitchflow-spec - 2026-10-29 プレビュー確認
+
+- 対象: REQ-001 / REQ-001-S01。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `npm run test:extension`で`.glf`を開いたコマンド実行とWebviewタブ生成、`npm run test:visual`でChromiumの初期画面を検査した。VS Codeで `.vscode/launch.json` の構成からF5を実行し、Extension Development Hostで`examples/login.glf`を開いた。コマンドパレットから`GlitchFlow: プレビューを開く`を実行し、Webview Developer ToolsのConsoleで`Content Security Policy`を検索した。
+- 結果: 統合テスト1件と描画テスト1件が成功。開発ホスト内のWebviewに`GlitchFlow Preview`のh1が表示され、図面は表示されなかった。CSP違反メッセージは検索結果0件。開発ホスト全体のConsoleにはほかの拡張機能やVS Code由来の警告・エラーがあり、コンソール全体が無エラーという意味ではない。
+- 証跡: [統合テスト](../tests/extension/preview.test.ts)、[描画テスト](../tests/visual/preview.spec.ts)、[開発ホスト設定](../.vscode/launch.json)。
+- 未検証事項: 当時はGitHub Actions上でのExtension統合テストが未実施。後の撤去判断により、この変更の検証対象から外した。
+
+### glitchflow-spec - 2026-10-29 CI相当の検査
+
+- 対象: [D-03](changes/archive/2026-10-29-glitchflow-spec/design.md#d-03---開発時とciの同一検査)。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 当初は`.github/workflows/ci.yml`にNode.js 24、`npm ci`、Chromium導入、`npm run check`、`npm run test:visual`を設定した。同じ2つの検査コマンドをローカルのmacOSで実行した。Extension統合テストは別途ローカルで実行した。このワークフローは後述の判断で撤去した。
+- 結果: `npm run check`はBiome、Steiger、型検査、Core単体テストの全てが成功。`npm run test:visual`はChromiumで1件成功。`npm run test:extension`はローカルで1件成功。GitHub Actionsの実行結果は未実施のため不明であり、Linux CIでExtension統合テストが実行できるかも未検証。当初のCIにはExtension統合テストを含めていなかった。
+- 証跡: [Coreテスト](../tests/core/file-name.test.ts)、[描画テスト](../tests/visual/preview.spec.ts)、[統合テスト](../tests/extension/preview.test.ts)。
+- 未検証事項: 当時はpushまたはPR後にGitHub Actionsを実行する予定だった。後の撤去判断により、この予定は取り消した。Extension統合テストのCI実行可否は、CIサービスの導入時に確認する。
+
+### glitchflow-spec - 2026-10-29 開発手順と基準入力
+
+- 対象: [D-03](changes/archive/2026-10-29-glitchflow-spec/design.md#d-03---開発時とciの同一検査)、[D-04](changes/archive/2026-10-29-glitchflow-spec/design.md#d-04---初期画面と基準dslの検証)。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: [README](../README.md)の`npm install`、`npx --no-install lefthook install`、`npm run build`、F5でのExtension Development Host起動、`npm run check`、`npx --no-install playwright install chromium`、`npm run test:visual`、`npm run test:extension`を実行した。[入力資料](changes/archive/2026-10-29-glitchflow-spec/input.md#基準dsl)の最初のDSLコードブロックと[examples/login.glf](../examples/login.glf)をUTF-8で読み、バイト相当の文字列一致を確認した。
+- 結果: 依存導入、Gitフック設置、両ビルド、開発ホスト起動、各検査とテストが成功。基準DSLは59行で原文と一致した。Lefthookは一時的な構文エラーで終了コード1、正常ファイルで終了コード0となり、コミット中断を確認した。
+- 証跡: [README](../README.md)、[基準DSL](../examples/login.glf)、[フック設定](../lefthook.yml)、[開発ホスト設定](../.vscode/launch.json)。
+- 未検証事項: 当時はGitHub Actions上での実行結果が未確認。後の撤去判断により、この変更の検証対象から外した。
+
+### glitchflow-spec - 2026-10-29 差分レビュー
+
+- 対象: [D-01](changes/archive/2026-10-29-glitchflow-spec/design.md#d-01---実行環境を分けた最小ビルド)、[D-03](changes/archive/2026-10-29-glitchflow-spec/design.md#d-03---開発時とciの同一検査)、[D-04](changes/archive/2026-10-29-glitchflow-spec/design.md#d-04---初期画面と基準dslの検証)。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `git diff --check`、ビルド設定とimportの読み合わせ、Lefthookの正常・異常入力、CIコマンドのローカル実行、基準DSLとREADMEの照合を行った。
+- 成功: `npm run build`でExtensionのCommonJSとWebviewの静的資産が別々に生成される。Coreの公開APIはVS Code、DOM、Viteを参照しない。LefthookはBiomeをステージ済み対象ファイルに適用し、Steigerと型検査を全体に実行する。構文エラーでは終了コード1、正常入力では0となった。`npm run check`と`npm run test:visual`はローカルで成功した。基準DSLとREADMEの手順は実行結果と一致し、`git diff --check`も成功した。
+- 未実施: GitHub Actions自体の実行と、Linux CIでのExtension統合テストは未実施。CIの本番結果や統合テストの実行可否を成功扱いしない。
+- 失敗・リスク: 最終のビルド・検査・テストに未解決の失敗はない。サンドボックス内のSteiger実行ではファイル監視の`EMFILE`が発生したが、通常環境で同じ検査が成功した。`npm audit --json`はhighを3件報告した。いずれも開発依存のSteigerが使用するZod 3系に由来し、Steigerの修正版は監査結果で提示されていない。製品の実行時依存とは区別して追跡する。
+- 証跡: [Core](../src/core/index.ts)、[Extensionビルド](../esbuild.mjs)、[Webviewビルド](../vite.config.ts)、[フック](../lefthook.yml)、[README](../README.md)、[基準DSL](../examples/login.glf)。
+
+### glitchflow-spec - 2026-10-29 OpenSpec照合
+
+- 対象: REQ-001 / REQ-001-S01、D-01からD-04、タスク全15件。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `npx --no-install openspec validate glitchflow-spec --strict`を実行した。CLIに`verify`コマンドがないため、`openspec-verify-change`のCompleteness、Correctness、Coherenceの手順で提案、仕様、設計、タスク、実装、テスト、台帳を照合した。
+- 結果: strict検証は成功。REQ-001の実装箇所、REQ-001-S01のExtension統合テスト、Chromium描画テスト、開発ホストでの手動確認を確認した。D-01からD-04の設計方針とコード配置に矛盾は見つからなかった。タスクはこの照合を完了として15/15件になる。仕様と実装の照合に未解決の重大・警告事項はない。依存関係の監査警告は[差分レビュー](#glitchflow-spec---2026-10-29-差分レビュー)に記録した。
+- 未検証事項: 当時はGitHub Actionsの実行結果とLinux CIでのExtension統合テストが未確認。後の撤去判断によりCI実行はこの変更の対象外とした。これはREQ-001-S01のローカル・手動の受け入れ確認とは区別する。
+
+### glitchflow-spec - 2026-10-29 GitHub Actions撤去
+
+- 対象: [D-03](changes/archive/2026-10-29-glitchflow-spec/design.md#d-03---開発時とciの同一検査)、[タスク3.3](changes/archive/2026-10-29-glitchflow-spec/tasks.md#3-開発時の検査とciへの移植性)。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 判断: ユーザーのGitHub依存を抑える指示に従い、CIサービスの設定を第1段階から除外した。`.github/workflows/ci.yml`を撤去し、検査入口をnpmスクリプトに保った。CIを導入する際に実行先を選ぶ。
+- 方法: `npm run check`と`npm run test:visual`をローカルで実行し、GitHub Actionsなしで検査できることを確認した。提案、設計、タスク、技術・構造方針の参照を更新した。
+- 結果: 両コマンドは成功済み。製品のREQ-001-S01とローカルの検証方法に変更はない。GitHub Actionsの実行はこの変更の完了条件から外した。
+- 未検証事項: CIサービスを選んだ後の実行結果と、その環境でのExtension統合テストの実行可否。
+
+### glitchflow-spec - 2026-10-29 Lefthook対象調整
+
+- 対象: [D-03](changes/archive/2026-10-29-glitchflow-spec/design.md#d-03---開発時とciの同一検査)、[タスク3.2](changes/archive/2026-10-29-glitchflow-spec/tasks.md#3-開発時の検査とciへの移植性)。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: [Lefthook設定](../lefthook.yml)のBiomeジョブから、[Biome設定](../biome.json)で対象外の`package-lock.json`を除外した。`npx --no-install lefthook validate`、`npx --no-install lefthook run pre-commit --file package-lock.json --no-auto-install`、`npx --no-install lefthook run pre-commit --job biome --file package.json --no-auto-install`を実行した。
+- 結果: 設定検証は成功。ロックファイルだけの場合はBiomeがスキップされ、Steigerと型検査を含むpre-commit全体が終了コード0で通過した。`package.json`にはBiomeが実行され、終了コード0で通過した。前回のOpenSpec verifyで指摘された不要なコミット中断は解消した。
+- 未検証事項: なし。
 
 - 対象: 変更名、要件ID、シナリオID、または支援作業の設計節
 - 実行日: 日付と、時間に意味がある場合はタイムゾーン
@@ -63,3 +145,4 @@ skip_specsの理由、設計節、タスク、検証記録へリンクし、要�
 
 | 変更名 | 目的 | 提案 | 設計 | タスク | 検証記録 |
 | --- | --- | --- | --- | --- | --- |
+| glitchflow-spec | Core、ビルド、検査、将来のCI移植性、基準DSLの基盤 | [提案](changes/archive/2026-10-29-glitchflow-spec/proposal.md) | [D-01](changes/archive/2026-10-29-glitchflow-spec/design.md#d-01---実行環境を分けた最小ビルド)、[D-03](changes/archive/2026-10-29-glitchflow-spec/design.md#d-03---開発時とciの同一検査)、[D-04](changes/archive/2026-10-29-glitchflow-spec/design.md#d-04---初期画面と基準dslの検証) | [タスク](changes/archive/2026-10-29-glitchflow-spec/tasks.md) | [Core基盤](#glitchflow-spec---2026-10-29-core基盤)、[CI相当の検査](#glitchflow-spec---2026-10-29-ci相当の検査)、[開発手順と基準入力](#glitchflow-spec---2026-10-29-開発手順と基準入力)、[GitHub Actions撤去](#glitchflow-spec---2026-10-29-github-actions撤去)、[Lefthook対象調整](#glitchflow-spec---2026-10-29-lefthook対象調整) |

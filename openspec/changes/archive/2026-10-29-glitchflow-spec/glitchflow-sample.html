@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GlitchFlow — サンプル v13</title>
+<style>
+:root{
+  --bg:#121821;--bg2:#161e28;--panel:#1b2430;--line:#415063;--text:#dce7f3;--muted:#90a1b4;
+  --fe:#74c9f8;--be:#b287ff;--db:#47d78b;--file:#eda357;--resp:#e5ebf1;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;color:var(--text);
+}
+*{box-sizing:border-box} body{margin:0;background:var(--bg)}
+header{height:52px;background:#18202a;border-bottom:1px solid #2d3948;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+.brand{font-weight:800;font-size:18px}.brand small{font-size:12px;color:var(--muted);font-weight:500}.pill{background:#223244;color:#8fd7ff;padding:6px 10px;border-radius:6px;font-size:12px}
+.work{display:grid;grid-template-columns:minmax(320px,34%) 1fr;height:calc(100vh - 52px);min-height:760px}
+.pane{min-width:0;overflow:auto}.source{background:#131922;border-right:1px solid #2d3948}.preview{background:#121922}
+.panehead{height:42px;position:sticky;top:0;z-index:20;background:#1c2430;border-bottom:1px solid #313f50;display:flex;align-items:center;justify-content:space-between;padding:0 14px;color:#c4d1de;font-size:12px}
+.muted{color:var(--muted)}
+.source pre{margin:0;padding:18px 18px 28px;font:12px/1.9 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre;tab-size:4;color:#c9d8e7}
+/* Standalone prototype: the theme colors below simulate a dark VSCode theme.
+   The real extension delegates theme mode to VSCode TextMate scopes. */
+.source{--t-keyword:#c7a8ff;--t-fragment:#c7a8ff;--t-string:#e4bc89;--t-object:#a7d7ff;--t-operator:#d8e2ed;--t-type:#83cfc0;--t-mutation:#f0b18b;--t-sql:#b9b1ef;--t-emphasis:#d9eafa}
+.source[data-highlight-mode="glitchflow"]{--t-keyword:#bb9cff;--t-fragment:#ff9aa3;--t-string:#f0c187;--t-object:#83d5fb;--t-operator:#f4f6f9;--t-type:#79e0c7;--t-mutation:#ff7777;--t-sql:#b9a8ff;--t-emphasis:#ffffff}
+.tok-keyword{color:var(--t-keyword)}.tok-fragment{color:var(--t-fragment)}.tok-string{color:var(--t-string)}.tok-object{color:var(--t-object)}.tok-operator{color:var(--t-operator)}.tok-type{color:var(--t-type)}.tok-mutation{color:var(--t-mutation)}.tok-sql{color:var(--t-sql)}.tok-emphasis{color:var(--t-emphasis);font-weight:800}
+.controls select{border:1px solid #485668;background:#283441;color:#dce7f3;border-radius:5px;padding:3px 6px;font:11px inherit;max-width:160px}
+.kw{color:#c3a4ff}.arr{color:#e5ebf1}.id{color:#7ecdf0}.str{color:#e7bb83}
+.canvas-wrap{padding:24px 28px 48px;overflow:auto;height:calc(100% - 42px)}
+.diagram{position:relative;width:1450px;height:1350px;transform-origin:top left;background:repeating-linear-gradient(0deg,transparent 0 39px,rgba(255,255,255,.015) 39px 40px)}
+.object{position:absolute;top:0;transform:translateX(-50%);min-width:140px;text-align:center;padding:12px 12px;border-radius:8px;border:1px solid #57718a;background:#243240;font-weight:700;z-index:8;box-shadow:0 4px 14px rgba(0,0,0,.22)}
+.object small{display:block;color:var(--muted);font-size:11px;font-weight:600;margin-top:2px}
+.object.fe{border-color:#68b8e3}.object.be{border-color:#9a7ade;background:#2d2742}.object.db{border-color:#4abd8c;background:#1f3a34}.object.file{border-color:#c98b46;background:#3a2b1d}
+.lifeline{position:absolute;top:50px;height:1140px;border-left:1px dashed #5d7185;z-index:1;opacity:.82}
+.activation{position:absolute;transform:translateX(-50%);width:14px;border-radius:4px;z-index:4}
+.activation.fe{background:#5baad5;border:1px solid #8ad8ff}.activation.be{background:#8f67e8;border:1px solid #c4a7ff}.activation.db{background:#319767;border:1px solid #6eeab0}.activation.file{background:#b67639;border:1px solid #efb87f}
+.process{position:absolute;left:auto;padding:5px 10px;border-left:3px solid #69b7e2;background:#24303c;border-radius:2px;white-space:nowrap;z-index:7;font-size:12px}
+.process.title{border-color:#69b7e2;color:#dcf2ff;font-weight:850;font-size:14px;letter-spacing:.02em;background:#263c50;box-shadow:0 0 0 1px rgba(105,183,226,.24)}.process.title.be{border-color:#c39ef9;color:#ecdeff;background:#352b49;box-shadow:0 0 0 1px rgba(195,158,249,.25)}
+.message{position:absolute;height:0;border-top:2px solid #e5ebf1;z-index:6}
+.message.sync{border-top-color:#e5ebf1}.message.async{border-top-color:#e5ebf1}.message.response{border-top-style:dashed;border-top-color:#e5ebf1}
+.message .tag{position:absolute;left:50%;transform:translate(-50%,-110%);top:-7px;background:var(--bg);padding:2px 8px;border-radius:4px;white-space:nowrap;font-size:12px;color:#f2f5f8}
+/* Solid, filled triangle for synchronous messages; open V for asynchronous and response. */
+.message .arrow{position:absolute;display:block;top:-7px;width:0;height:0;color:#e5ebf1}
+.message.sync .arrow.right{right:-1px;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:13px solid #e5ebf1}
+.message.sync .arrow.left{left:-1px;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:13px solid #e5ebf1}
+.message.async .arrow,.message.response .arrow{width:10px;height:10px;top:-6px;border-top:2px solid #e5ebf1;border-right:2px solid #e5ebf1}
+.message.async .arrow.right,.message.response .arrow.right{right:1px;transform:rotate(45deg)}
+.message.async .arrow.left,.message.response .arrow.left{left:1px;transform:rotate(225deg)}
+.found{position:absolute;width:18px;height:18px;border-radius:50%;background:#e5ebf1;border:1px solid #e5ebf1;z-index:7;transform:translate(-50%,-50%)}
+.state-link{position:absolute;height:0;border-top:1px dashed #6bc49d;z-index:2}.state-link.file{border-top-color:#e0a765}
+.state{position:absolute;width:660px;border-radius:8px;overflow:hidden;box-shadow:0 10px 26px rgba(0,0,0,.28);z-index:9}
+.state.db{background:#1f2d2b;border:1px solid #48906f}.state.file{background:#302519;border:1px solid #ba864d;width:310px}
+.state-title{padding:8px 10px;font-weight:800;font-size:12px;border-bottom:1px solid rgba(255,255,255,.12)}
+.state.db .state-title{background:#234339;color:#c6f3de}.state.file .state-title{background:#473420;color:#f2d09f}
+.state table{border-collapse:collapse;width:100%;font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+.state th,.state td{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.08);white-space:nowrap;text-align:left}
+.state th{color:#a8c3b7;background:#213532}.state td{color:#dcffe9;background:#28483d}
+.state .sql-block{border-top:1px solid #566170;background:#252d37;padding:9px 12px 11px;color:#cdd6e0}.state .sql-title{color:#aeb9c8;font-size:10px;font-weight:750;letter-spacing:.7px;margin-bottom:6px}.state .sql-code{margin:0;font:11px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre;color:#f0f1f3}.state.file .tree{padding:10px 12px 14px;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;color:#ecd1ab;white-space:pre}
+.added{color:#ff7777;font-weight:700}.removed{color:#ffacac;font-weight:700}
+.fragment{position:absolute;left:24px;width:1390px;border:1px solid #DD6872;border-radius:4px;background:transparent;z-index:15;pointer-events:none}
+.fragment-title,.frag-label{position:absolute;background:#452831;color:#FFB6BC;border:1px solid #DD6872;padding:4px 9px;border-radius:4px;font-size:11px;font-weight:700}
+.fragment-title{left:8px;top:-12px}.frag-label.case{left:12px;top:34px}.frag-divider{position:absolute;left:0;right:0;border-top:1px dashed #DD6872}.frag-label.else{left:12px}
+.legend{position:absolute;top:1270px;left:12px;font-size:11px;color:#8da0b3;display:flex;gap:18px;flex-wrap:wrap}
+.legend b{color:#d8e5f0}
+.controls{display:flex;align-items:center;gap:10px}.controls button{border:1px solid #485668;background:#293341;color:#dbe6ef;border-radius:5px;padding:4px 9px;cursor:pointer}.controls button:hover{background:#344658}
+@media (max-width:900px){.work{grid-template-columns:1fr;height:auto}.source{height:340px;border-right:none;border-bottom:1px solid #2d3948}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">GlitchFlow <small>/ HTML & CSS prototype v13</small></div>
+  <div class="pill">DSL + Flow + State</div>
+</header>
+<div class="work">
+  <section class="pane source">
+    <div class="panehead"><span>login.glf <span class="muted">● DSL</span></span>
+      <div class="controls"><span class="muted">配色（デモ）</span><select id="highlight-mode" aria-label="DSLの配色モード"><option value="theme">VSCodeテーマ相当</option><option value="glitchflow">GlitchFlow専用</option></select></div></div>
+    <pre id="dsl"></pre>
+  </section>
+  <section class="pane preview">
+    <div class="panehead">
+      <span>◉ GlitchFlow Preview <span class="muted">/ <span id="preview-title"></span></span></span>
+      <div class="controls"><span id="zoomlabel" class="muted">100%</span><button id="out">－</button><button id="reset">Reset</button><button id="in">＋</button></div>
+    </div>
+    <div class="canvas-wrap" id="wrap">
+      <div class="diagram" id="diagram">
+        <div class="object fe" style="left:220px">フロントエンド<small>FE · APP</small></div>
+        <div class="object be" style="left:430px">バックエンド<small>BE · API</small></div>
+        <div class="object db" style="left:665px">PostgreSQL<small>DB</small></div>
+        <div class="object file" style="left:915px">Storage<small>FILE</small></div>
+
+        <div class="lifeline" style="left:220px"></div>
+        <div class="lifeline" style="left:430px"></div>
+        <div class="lifeline" style="left:665px"></div>
+        <div class="lifeline" style="left:915px"></div>
+
+        <!-- found/global message sources -->
+        <div class="found" style="left:52px;top:110px"></div>
+        <div class="found" style="left:52px;top:270px"></div>
+
+        <!-- activations -->
+        <!-- Success FE- occurs after ホーム画面表示. Else is a separate exclusive path. -->
+        <div class="activation fe" data-path="success" style="left:220px;top:104px;height:892px"></div>
+        <div class="activation fe" data-path="else" style="left:220px;top:1020px;height:126px"></div>
+
+        <!-- BE- in each exclusive route. -->
+        <div class="activation be" data-path="success" style="left:430px;top:310px;height:617px"></div>
+        <div class="activation be" data-path="else" style="left:430px;top:1020px;height:66px"></div>
+
+        <div class="activation db" style="left:665px;top:430px;height:228px"></div>
+        <div class="activation file" style="left:915px;top:768px;height:78px"></div>
+
+        <!-- messages and process lines -->
+        <div class="message sync" style="left:52px;top:110px;width:159px"><span class="tag">アプリ起動</span><i class="arrow right"></i></div>
+        <div class="process title" style="left:240px;top:140px">起動処理</div>
+        <div class="process" style="left:240px;top:178px">設定読み込み</div>
+        <div class="process" style="left:240px;top:214px">ログイン画面表示</div>
+
+        <div class="message sync" style="left:52px;top:270px;width:159px"><span class="tag">ログイン情報入力</span><i class="arrow right"></i></div>
+
+        <div class="message sync" style="left:229px;top:310px;width:192px"><span class="tag">login(name, password)</span><i class="arrow right"></i></div>
+        <div class="process title be" style="left:450px;top:346px">ログイン処理</div>
+
+        <div class="message sync" style="left:439px;top:430px;width:217px"><span class="tag">ユーザ検索(name, password)</span><i class="arrow right"></i></div>
+
+        <div class="state-link" style="left:673px;top:475px;width:27px"></div>
+        <div class="state db" style="left:700px;top:443px">
+          <div class="state-title">DB.users</div>
+          <table>
+            <thead><tr><th>uid</th><th>name</th><th>password_hash</th><th>created_at</th><th>deleted_at</th></tr></thead>
+            <tbody><tr><td>1</td><td>taro</td><td>hashed-xxx</td><td>2026-10-27 22:00:00</td><td>null</td></tr></tbody>
+          </table>
+          <div class="sql-block">
+            <div class="sql-title">SQL</div>
+            <pre class="sql-code">SELECT COUNT(uid)
+FROM users
+WHERE
+name = :name
+AND
+password_hash = :password_hash;</pre>
+          </div>
+        </div>
+
+        <div class="message response" style="left:439px;top:658px;width:217px"><span class="tag">検索結果</span><i class="arrow left"></i></div>
+
+        <div class="fragment" style="top:704px;height:507px">
+          <span class="fragment-title">alt</span>
+          <span class="frag-label case">[ユーザヒット]</span>
+          <div class="frag-divider" style="top:316px"></div>
+          <span class="frag-label else" style="top:326px">[else]</span>
+        </div>
+
+        <div class="message sync" style="left:439px;top:768px;width:467px"><span class="tag">user.info を保存</span><i class="arrow right"></i></div>
+
+        <div class="state-link file" style="left:923px;top:821px;width:29px"></div>
+        <div class="state file" style="left:952px;top:782px">
+          <div class="state-title">FILE</div>
+          <div class="tree">users/
+  1/
+    <span class="added">user.info</span></div>
+        </div>
+
+        <div class="message response" style="left:229px;top:925px;width:192px"><span class="tag">200 OK</span><i class="arrow left"></i></div>
+        <div class="process" style="left:240px;top:962px">ホーム画面表示</div>
+
+        <div class="message response" style="left:229px;top:1084px;width:192px"><span class="tag">401 Unauthorized</span><i class="arrow left"></i></div>
+        <div class="process" style="left:240px;top:1121px">エラーメッセージ表示</div>
+</div>
+    </div>
+  </section>
+</div>
+<script>
+const src = `title: "ログインフロー"
+
+Object FE   as "フロントエンド" type APP
+Object BE   as "バックエンド"   type API
+Object DB   as "PostgreSQL"     type DB
+Object FILE as "Storage"        type FILE
+
+schema DB.users:
+    uid: int
+    name: text
+    password_hash: text
+    created_at: datetime
+    deleted_at: datetime
+
+Global ->> FE: アプリ起動
+FE+
+FE: *起動処理*
+FE: 設定読み込み
+FE: ログイン画面表示
+
+Global ->> FE: ログイン情報入力
+
+FE ->> BE: login(name, password)
+BE+
+BE: *ログイン処理*
+
+BE ->> DB: ユーザ検索(name, password)
+DB+
+state DB.users:
+    [1, "taro", "hashed-xxx", "2026-10-27 22:00:00", null]
+sql DB:
+    SELECT COUNT(uid)
+    FROM users
+    WHERE
+    name = :name
+    AND
+    password_hash = :password_hash;
+BE <-- DB: 検索結果
+DB-
+
+alt:
+    case ユーザヒット:
+        BE ->> FILE: user.info を保存
+        FILE+
+        state FILE:
+            users/
+                1/
+                    + user.info
+        FILE-
+
+        FE <-- BE: 200 OK
+        BE-
+        FE: ホーム画面表示
+        FE-
+    else:
+        FE <-- BE: 401 Unauthorized
+        BE-
+        FE: エラーメッセージ表示
+        FE-`;
+const esc = (s) => s.replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Minimal syntax coloring for this static HTML demonstration only.
+// The VSCode extension will use a TextMate grammar and optional editor decorations.
+const syntaxTokens = /"(?:\\.|[^"\\])*"|\*[^*\n]+\*|(?:<--|<<-|->>|-->|->|<-)|\b[A-Za-z_][\w.]*[+-](?=\s|$)|\b[A-Za-z_][\w.]*\b|[+!\-](?=\s|["\d])/g;
+const keywords = new Set(['title','Object','as','type','schema','state','sql']);
+const fragments = new Set(['alt','case','else','opt','loop','par','break','branch']);
+const types = new Set(['APP','API','DB','FILE','FEATURE','MODULE','int','text','datetime']);
+const objects = new Set(['FE','BE','Global']);
+const sqlWords = new Set(['SELECT','FROM','WHERE','AND','OR','COUNT','INSERT','UPDATE','DELETE','INTO','VALUES','SET']);
+function renderSyntaxLine(line) {
+  let out = '', last = 0, match;
+  syntaxTokens.lastIndex = 0;
+  while ((match = syntaxTokens.exec(line)) !== null) {
+    const word = match[0];
+    out += esc(line.slice(last, match.index));
+    let cls = '';
+    if (word.startsWith('"')) cls = 'tok-string';
+    else if (word.startsWith('*') && word.endsWith('*')) cls = 'tok-emphasis';
+    else if (['->>','->','-->','<--','<-','<<-'].includes(word)) cls = 'tok-operator';
+    else if (keywords.has(word)) cls = 'tok-keyword';
+    else if (fragments.has(word)) cls = 'tok-fragment';
+    else if (types.has(word)) cls = 'tok-type';
+    else if (objects.has(word) || /^(FE|BE|DB|FILE)[+-]$/.test(word)) cls = 'tok-object';
+    else if (sqlWords.has(word)) cls = 'tok-sql';
+    else if (['+','-','!'].includes(word)) cls = 'tok-mutation';
+    out += cls ? `<span class="${cls}">${esc(word)}</span>` : esc(word);
+    last = syntaxTokens.lastIndex;
+  }
+  return out + esc(line.slice(last));
+}
+function renderSource() {
+  document.getElementById('dsl').innerHTML = src.split('\n').map(renderSyntaxLine).join('\n');
+}
+renderSource();
+const titleMatch = src.match(/^title:\s*"([^"\n]+)"(?:\r?\n|$)/);
+const title = titleMatch ? titleMatch[1] : 'login.glf';
+document.getElementById('preview-title').textContent = title;
+document.querySelector('.source').dataset.highlightMode = 'theme';
+document.getElementById('highlight-mode').addEventListener('change', (event) => {
+  document.querySelector('.source').dataset.highlightMode = event.target.value;
+});
+let zoom = 1;
+const diagram = document.getElementById('diagram');
+const wrap = document.getElementById('wrap');
+function setZoom(v){ zoom=Math.min(1.5,Math.max(.6,v)); diagram.style.transform=`scale(${zoom})`; document.getElementById('zoomlabel').textContent=`${Math.round(zoom*100)}%`; diagram.style.marginBottom=(1350*(zoom-1))+'px'; }
+document.getElementById('out').onclick=()=>setZoom(zoom-.1);
+document.getElementById('in').onclick=()=>setZoom(zoom+.1);
+document.getElementById('reset').onclick=()=>setZoom(1);
+</script>
+</body>
+</html>
