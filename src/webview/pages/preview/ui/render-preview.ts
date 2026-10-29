@@ -52,13 +52,26 @@ function svgText(
   return element;
 }
 
-/** REQ-009..REQ-011: 表示用状態をIRの明示属性だけで安全なSVGノードへ変換する。 */
+/** REQ-009..REQ-011、REQ-024: 表示用状態をIRの明示属性だけで安全なSVGノードへ変換する。 */
 function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
   for (const state of layout.dbStates) {
     const group = svgElement("g", {
       class: "state-db",
       "data-reference": state.reference,
     });
+    const laneX = layout.lifelines.find(
+      (lane) => lane.id === state.objectId,
+    )?.x;
+    if (laneX !== undefined)
+      group.append(
+        svgElement("line", {
+          x1: String(laneX + 8),
+          x2: String(state.x),
+          y1: String(state.y + 24),
+          y2: String(state.y + 24),
+          class: "state-db-link",
+        }),
+      );
     group.append(
       svgElement("rect", {
         x: String(state.x),
@@ -67,6 +80,14 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
         height: String(state.height),
         class: "state-db-background",
       }),
+      svgElement("rect", {
+        x: String(state.x),
+        y: String(state.y),
+        width: String(state.width),
+        height: "30",
+        class: "state-db-title-band",
+      }),
+      svgText(state.x + 10, state.y + 20, state.title, "state-db-title"),
     );
     let offset = 0;
     for (let index = 0; index < state.columns.length; index++) {
@@ -75,7 +96,7 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
       group.append(
         svgElement("rect", {
           x: String(cellX),
-          y: String(state.y),
+          y: String(state.y + 30),
           width: String(width),
           height: "30",
           class: "state-db-header-cell",
@@ -84,7 +105,7 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
       group.append(
         svgText(
           cellX + 10,
-          state.y + 20,
+          state.y + 50,
           state.columns[index],
           "state-db-heading",
         ),
@@ -92,7 +113,7 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
       for (let rowIndex = 0; rowIndex < state.rows.length; rowIndex++) {
         const row = state.rows[rowIndex];
         const cell = row.cells[index];
-        const cellY = state.y + 30 + rowIndex * 28;
+        const cellY = state.y + 60 + rowIndex * 28;
         group.append(
           svgElement("rect", {
             x: String(cellX),
@@ -106,14 +127,15 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
           row.change === "unchanged"
             ? (cell?.change ?? "unchanged")
             : row.change;
-        group.append(
-          svgText(
-            cellX + 10,
-            cellY + 19,
-            cell?.value ?? "",
-            `state-db-cell state-db-cell--${change}`,
-          ),
+        const value = svgText(
+          state.numericColumns[index] ? cellX + width - 10 : cellX + 10,
+          cellY + 19,
+          cell?.value ?? "",
+          `state-db-cell state-db-cell--${change}`,
         );
+        if (state.numericColumns[index])
+          value.setAttribute("text-anchor", "end");
+        group.append(value);
       }
       offset += width;
     }
@@ -124,6 +146,19 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
       class: "state-file",
       "data-object-id": state.objectId,
     });
+    const laneX = layout.lifelines.find(
+      (lane) => lane.id === state.objectId,
+    )?.x;
+    if (laneX !== undefined)
+      group.append(
+        svgElement("line", {
+          x1: String(laneX + 8),
+          x2: String(state.x),
+          y1: String(state.y + 24),
+          y2: String(state.y + 24),
+          class: "state-file-link",
+        }),
+      );
     group.append(
       svgElement("rect", {
         x: String(state.x),
@@ -132,12 +167,20 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
         height: String(state.height),
         class: "state-file-background",
       }),
+      svgElement("rect", {
+        x: String(state.x),
+        y: String(state.y),
+        width: String(state.width),
+        height: "30",
+        class: "state-file-title-band",
+      }),
+      svgText(state.x + 10, state.y + 20, state.title, "state-file-title"),
     );
     state.nodes.forEach((node, index) => {
       group.append(
         svgText(
           state.x + 12 + node.depth * 20,
-          state.y + 27 + index * 24,
+          state.y + 58 + index * 24,
           node.name,
           `state-file-node state-file-node--${node.change}`,
         ),
@@ -158,17 +201,18 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
         height: String(sql.height),
         class: "state-sql-background",
       }),
+      svgText(sql.x + 12, sql.y + 18, "SQL", "state-sql-title"),
     );
     sql.lines.forEach((line, index) => {
       group.append(
-        svgText(sql.x + 12, sql.y + 23 + index * 22, line, "state-sql-line"),
+        svgText(sql.x + 12, sql.y + 44 + index * 20, line, "state-sql-line"),
       );
     });
     svg.append(group);
   }
 }
 
-/** REQ-001、REQ-006..REQ-008、REQ-012、REQ-018..REQ-020: 複合フラグメントを含むシーケンスを安全なSVGノードで描画する。 */
+/** REQ-001、REQ-006..REQ-008、REQ-012、REQ-018..REQ-025: 複合フラグメントを含むシーケンスを安全なSVGノードで描画する。 */
 export function renderPreview(
   container: HTMLElement,
   documentData?: GlfDocument,
@@ -190,9 +234,14 @@ export function renderPreview(
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     if (context) context.font = "14px sans-serif";
+    const dbCanvas = document.createElement("canvas");
+    const dbContext = dbCanvas.getContext("2d");
+    if (dbContext)
+      dbContext.font = "12px ui-monospace, SFMono-Regular, Menlo, monospace";
     const layout = layoutSequence(
       documentData,
       (text) => context?.measureText(text).width ?? text.length * 9,
+      (text) => dbContext?.measureText(text).width ?? text.length * 8,
     );
     const scroller = document.createElement("div");
     scroller.className = "preview__scroller";
@@ -213,16 +262,21 @@ export function renderPreview(
       svg.setAttribute("height", String(layout.height * value));
       level.textContent = `${Math.round(value * 100)}%`;
     };
-    const button = (label: string, action: () => number) => {
+    const button = (
+      label: string,
+      accessibleName: string,
+      action: () => number,
+    ) => {
       const element = document.createElement("button");
       element.type = "button";
       element.textContent = label;
+      element.setAttribute("aria-label", accessibleName);
       element.addEventListener("click", () => applyZoom(action()));
       toolbar.append(element);
     };
-    button("縮小", () => changeZoom(-0.1));
-    button("等倍", resetZoom);
-    button("拡大", () => changeZoom(0.1));
+    button("-", "縮小", () => changeZoom(-0.1));
+    button("Reset", "等倍", resetZoom);
+    button("+", "拡大", () => changeZoom(0.1));
     toolbar.append(level);
     applyZoom(getZoom());
     main.append(toolbar);
@@ -237,33 +291,36 @@ export function renderPreview(
         class: "sequence-lifeline",
         "data-object-id": lane.id,
       });
+      const subtitle = lane.type;
       const labelWidth = Math.max(
-        100,
+        140,
         (context?.measureText(lane.label).width ?? lane.label.length * 9) + 32,
+        (context?.measureText(subtitle).width ?? subtitle.length * 9) + 32,
       );
       group.append(
         svgElement("rect", {
           x: String(lane.x - labelWidth / 2),
-          y: "26",
+          y: "18",
           width: String(labelWidth),
-          height: "42",
-          rx: "5",
-          class: "sequence-object",
+          height: "60",
+          rx: "8",
+          class: `sequence-object sequence-object--${lane.type.toLowerCase()}`,
         }),
       );
       const label = svgElement("text", {
         x: String(lane.x),
-        y: "52",
+        y: "45",
         "text-anchor": "middle",
         class: "sequence-object-label",
       });
       label.textContent = lane.label;
       group.append(
         label,
+        svgText(lane.x, 64, subtitle, "sequence-object-subtitle"),
         svgElement("line", {
           x1: String(lane.x),
           x2: String(lane.x),
-          y1: "68",
+          y1: "78",
           y2: String(layout.height - 24),
           class: "sequence-lifeline-line",
         }),
@@ -277,7 +334,8 @@ export function renderPreview(
           y: String(activation.startY),
           width: "16",
           height: String(Math.max(2, activation.endY - activation.startY)),
-          class: "sequence-activation",
+          class: `sequence-activation sequence-activation--${layout.lifelines.find((lane) => lane.id === activation.objectId)?.type.toLowerCase() ?? "module"}`,
+          "data-object-id": activation.objectId,
         }),
       );
     }
@@ -312,10 +370,49 @@ export function renderPreview(
         class: "sequence-message-label",
       });
       label.textContent = message.label;
-      group.append(label);
+      const labelWidth =
+        (context?.measureText(message.label).width ??
+          message.label.length * 9) + 16;
+      group.append(
+        svgElement("rect", {
+          x: String((message.x1 + message.x2 - labelWidth) / 2),
+          y: String(message.y - 29),
+          width: String(labelWidth),
+          height: "23",
+          rx: "4",
+          class: "sequence-message-tag",
+        }),
+        label,
+      );
       svg.append(group);
     }
     for (const process of layout.processes) {
+      const kind =
+        layout.lifelines
+          .find((lane) => lane.id === process.objectId)
+          ?.type.toLowerCase() ?? "module";
+      const cardHeight = process.emphasis ? 34 : 26;
+      const cardTop = process.y - (process.emphasis ? 18 : 14);
+      const cardWidth =
+        (context?.measureText(process.text).width ?? process.text.length * 9) +
+        20;
+      svg.append(
+        svgElement("rect", {
+          x: String(process.x - 8),
+          y: String(cardTop),
+          width: String(cardWidth),
+          height: String(cardHeight),
+          rx: "3",
+          class: `sequence-process-card sequence-process-card--${kind}${process.emphasis ? " sequence-process-card--emphasis" : ""}`,
+        }),
+        svgElement("rect", {
+          x: String(process.x - 8),
+          y: String(cardTop),
+          width: "3",
+          height: String(cardHeight),
+          class: `sequence-process-accent sequence-process-accent--${kind}`,
+        }),
+      );
       const label = svgElement("text", {
         x: String(process.x),
         y: String(process.y + 5),
@@ -335,11 +432,24 @@ export function renderPreview(
           class: "sequence-fragment-frame",
         }),
       );
+      const title = fragment.label
+        ? `${fragment.kind} ${fragment.label}`
+        : fragment.kind;
       group.append(
+        svgElement("rect", {
+          x: String(fragment.x + 6),
+          y: String(fragment.y - 12),
+          width: String(
+            (context?.measureText(title).width ?? title.length * 9) + 18,
+          ),
+          height: "24",
+          rx: "4",
+          class: "sequence-fragment-tag",
+        }),
         svgText(
-          fragment.x + 10,
-          fragment.y + 19,
-          fragment.label ? `${fragment.kind} ${fragment.label}` : fragment.kind,
+          fragment.x + 15,
+          fragment.y + 5,
+          title,
           "sequence-fragment-label",
         ),
       );
@@ -354,15 +464,18 @@ export function renderPreview(
               class: "sequence-fragment-divider",
             }),
           );
-        if (branch.label)
+        if (branch.label) {
+          const branchTitle =
+            branch.label === "else" ? "else" : `case ${branch.label}`;
           group.append(
             svgText(
-              fragment.x + 10,
-              branch.y - 8,
-              branch.label === "else" ? "else" : `case ${branch.label}`,
-              "sequence-fragment-branch-label",
+              fragment.x + 15,
+              branch.y + 3,
+              branchTitle,
+              `sequence-fragment-branch-label${branch.label === "else" ? "" : " sequence-fragment-case-label"}`,
             ),
           );
+        }
       });
       svg.append(group);
     }

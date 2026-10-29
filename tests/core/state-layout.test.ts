@@ -4,15 +4,19 @@ import { layoutSequence, parseGlf } from "../../src/core";
 const measure = (value: string) => value.length * 10;
 
 describe("state layout", () => {
-  it("REQ-009 / REQ-009-S01: 全カラムの幅を取り、次レーンを避ける", () => {
+  it("REQ-009 / REQ-009-S01、REQ-025 / REQ-025-S01: 全カラムの幅を取り図面内に収める", () => {
     const doc = parseGlf(
       'Object DB as "DB" type DB\nObject FILE as "FILE" type FILE\nschema DB.users:\n    uid: int\n    name: text\n    password_hash: text\n    created_at: datetime\n    deleted_at: datetime\nstate DB.users:\n    [1, "a long name", "hashed-xxx", "2026-10-27 22:00:00", null]',
     );
     const layout = layoutSequence(doc, measure);
     expect(layout.dbStates).toHaveLength(1);
     expect(layout.dbStates[0].columns).toHaveLength(5);
+    expect(layout.dbStates[0].x).toBeGreaterThan(layout.lifelines[0].x);
     expect(layout.dbStates[0].x + layout.dbStates[0].width).toBeLessThan(
-      layout.lifelines[1].x - 20,
+      layout.width,
+    );
+    expect(layout.lifelines[1].x - layout.lifelines[0].x).toBeLessThanOrEqual(
+      300,
     );
   });
 

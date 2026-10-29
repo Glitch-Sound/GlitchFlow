@@ -67,7 +67,7 @@ test("REQ-009 / REQ-009-S01、REQ-009-S02: DB全カラムと変更属性", async
   await expect(page.locator(".state-db-cell--removed")).toHaveCount(3);
   await expect(page.locator(".state-db-cell--added")).toHaveCount(3);
   await expect(page.locator(".state-db-cell--updated")).toHaveCount(1);
-  await expect(page.locator(".state-db-cell--updated")).toHaveText('"saburo"');
+  await expect(page.locator(".state-db-cell--updated")).toHaveText("saburo");
   await expect(page.locator(".state-db")).not.toContainText('!"saburo"');
 });
 
@@ -97,7 +97,7 @@ test("REQ-010 / REQ-010-S01、REQ-011 / REQ-011-S01: FILEツリーとSQL枠", as
   ]);
   const db = await page.locator(".state-db").boundingBox();
   const sql = await page.locator(".state-sql").boundingBox();
-  expect(db && sql && sql.y >= db.y + db.height).toBe(true);
+  expect(db && sql && sql.y >= db.y + db.height - 1).toBe(true);
   await page.screenshot({
     path: "test-results/render-state-and-sql.png",
     fullPage: true,

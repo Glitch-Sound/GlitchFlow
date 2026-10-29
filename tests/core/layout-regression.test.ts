@@ -15,7 +15,7 @@ describe("stabilize-layout: 基準DSLの配置回帰", () => {
       expect(target).toBeDefined();
       if (source === undefined) {
         expect(message.from).toBe("Global");
-        expect(message.x1).toBe(24);
+        expect(message.x1).toBe(52);
       } else {
         expect(Math.abs(message.x1 - source)).toBeLessThanOrEqual(9);
       }
@@ -33,8 +33,8 @@ describe("stabilize-layout: 基準DSLの配置回帰", () => {
     expect(db.width).toBe(
       db.columnWidths.reduce((sum, width) => sum + width, 0),
     );
-    expect(db.height).toBe(30 + db.rows.length * 28);
-    expect(sql.y).toBeGreaterThanOrEqual(db.y + db.height);
+    expect(db.height).toBe(60 + db.rows.length * 28);
+    expect(sql.y).toBe(db.y + db.height);
     expect(sql.x).toBe(db.x);
     for (const box of [db, sql, file]) {
       expect(box.x).toBeGreaterThan(

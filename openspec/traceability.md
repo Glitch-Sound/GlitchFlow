@@ -35,6 +35,10 @@
 | REQ-019 | par区画 | 実装済み | [シーケンス図](product.md#シーケンス図) | [正式仕様](specs/other-fragments/spec.md#requirement-req-019---par区画) |
 | REQ-020 | break表示 | 実装済み | [シーケンス図](product.md#シーケンス図) | [正式仕様](specs/other-fragments/spec.md#requirement-req-020---break表示) |
 | REQ-021 | フラグメントの診断 | 実装済み | [設計上の優先事項](product.md#設計上の優先事項) | [正式仕様](specs/other-fragments/spec.md#requirement-req-021---フラグメントの診断) |
+| REQ-022 | 図面とObjectの視覚表現 | 実装済み | [シーケンス図](product.md#シーケンス図) | [正式仕様](specs/preview-appearance/spec.md#requirement-req-022---図面とobjectの視覚表現) |
+| REQ-023 | メッセージと処理の視覚表現 | 実装済み | [シーケンス図](product.md#シーケンス図) | [正式仕様](specs/preview-appearance/spec.md#requirement-req-023---メッセージと処理の視覚表現) |
+| REQ-024 | StateとSQLのカード表現 | 実装済み | [データ状態](product.md#データ状態) | [正式仕様](specs/preview-appearance/spec.md#requirement-req-024---stateとsqlのカード表現) |
+| REQ-025 | フラグメントの視覚表現と配置 | 実装済み | [図面の操作](product.md#図面の操作) | [正式仕様](specs/preview-appearance/spec.md#requirement-req-025---フラグメントの視覚表現と配置) |
 | NREQ-001 | 編集応答時間 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/editor-integration/spec.md#requirement-nreq-001---編集応答時間) |
 
 ## 要件ごとの変更履歴
@@ -70,6 +74,10 @@
 | support-other-fragments | REQ-019 | 追加 | アーカイブ済み | [正式仕様](specs/other-fragments/spec.md#requirement-req-019---par区画) | [提案](changes/archive/2026-10-29-support-other-fragments/proposal.md)、[設計](changes/archive/2026-10-29-support-other-fragments/design.md)、[タスク](changes/archive/2026-10-29-support-other-fragments/tasks.md) |
 | support-other-fragments | REQ-020 | 追加 | アーカイブ済み | [正式仕様](specs/other-fragments/spec.md#requirement-req-020---break表示) | [提案](changes/archive/2026-10-29-support-other-fragments/proposal.md)、[設計](changes/archive/2026-10-29-support-other-fragments/design.md)、[タスク](changes/archive/2026-10-29-support-other-fragments/tasks.md) |
 | support-other-fragments | REQ-021 | 追加 | アーカイブ済み | [正式仕様](specs/other-fragments/spec.md#requirement-req-021---フラグメントの診断) | [提案](changes/archive/2026-10-29-support-other-fragments/proposal.md)、[設計](changes/archive/2026-10-29-support-other-fragments/design.md)、[タスク](changes/archive/2026-10-29-support-other-fragments/tasks.md) |
+| align-preview-with-html-sample | REQ-022 | 追加 | アーカイブ済み | [正式仕様](specs/preview-appearance/spec.md#requirement-req-022---図面とobjectの視覚表現) | [提案](changes/archive/2026-10-30-align-preview-with-html-sample/proposal.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[タスク](changes/archive/2026-10-30-align-preview-with-html-sample/tasks.md) |
+| align-preview-with-html-sample | REQ-023 | 追加 | アーカイブ済み | [正式仕様](specs/preview-appearance/spec.md#requirement-req-023---メッセージと処理の視覚表現) | [提案](changes/archive/2026-10-30-align-preview-with-html-sample/proposal.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[タスク](changes/archive/2026-10-30-align-preview-with-html-sample/tasks.md) |
+| align-preview-with-html-sample | REQ-024 | 追加 | アーカイブ済み | [正式仕様](specs/preview-appearance/spec.md#requirement-req-024---stateとsqlのカード表現) | [提案](changes/archive/2026-10-30-align-preview-with-html-sample/proposal.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[タスク](changes/archive/2026-10-30-align-preview-with-html-sample/tasks.md) |
+| align-preview-with-html-sample | REQ-025 | 追加 | アーカイブ済み | [正式仕様](specs/preview-appearance/spec.md#requirement-req-025---フラグメントの視覚表現と配置) | [提案](changes/archive/2026-10-30-align-preview-with-html-sample/proposal.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[タスク](changes/archive/2026-10-30-align-preview-with-html-sample/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -115,8 +123,194 @@
 | support-other-fragments | REQ-020 / REQ-020-S01 | [シナリオ](specs/other-fragments/spec.md#scenario-req-020-s01---中断枠と後続を描画する) | [解析](../src/core/parser/parse-glf.ts) `parseGlf`、[配置](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Core](../tests/core/other-fragments.test.ts)、[Chromium](../tests/visual/other-fragments.spec.ts) | [検証記録](#support-other-fragments---2026-10-29-複合フラグメント検証) |
 | support-other-fragments | REQ-021 / REQ-021-S01 | [シナリオ](specs/other-fragments/spec.md#scenario-req-021-s01---不正な構造と活性を診断する) | [解析](../src/core/parser/parse-glf.ts) `parseGlf`、[検証](../src/core/validator/validate-glf.ts) `validateGlf` | [Core](../tests/core/other-fragments.test.ts) | [検証記録](#support-other-fragments---2026-10-29-複合フラグメント検証) |
 | support-other-fragments | REQ-021 / REQ-021-S02 | [シナリオ](specs/other-fragments/spec.md#scenario-req-021-s02---並列経路の活性不一致を診断する) | [検証](../src/core/validator/validate-glf.ts) `validateGlf` | [Core](../tests/core/other-fragments.test.ts) | [検証記録](#support-other-fragments---2026-10-29-複合フラグメント検証) |
+| align-preview-with-html-sample | REQ-022 / REQ-022-S01 | [シナリオ](specs/preview-appearance/spec.md#scenario-req-022-s01---種別と活性を区別する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview`、[配色](../src/webview/app/styles.css) | [Chromium](../tests/visual/preview-appearance.spec.ts) `REQ-022 / REQ-022-S01` | [記録](#align-preview-with-html-sample---2026-10-29-object表示)、[ID非表示](#align-preview-with-html-sample---2026-10-30-id非表示と列幅)、[余白](#align-preview-with-html-sample---2026-10-30-case文字とメッセージ余白)、[ボタン表示](#align-preview-with-html-sample---2026-10-30-拡大縮小ボタンのラベル) |
+| align-preview-with-html-sample | REQ-022 / REQ-022-S02 | [シナリオ](specs/preview-appearance/spec.md#scenario-req-022-s02---未使用の種別とテーマ) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[配色](../src/webview/app/styles.css) | [Chromium](../tests/visual/preview-appearance.spec.ts) `REQ-022 / REQ-022-S02` | [記録](#align-preview-with-html-sample---2026-10-29-object表示)、[ID非表示](#align-preview-with-html-sample---2026-10-30-id非表示と列幅) |
+| align-preview-with-html-sample | REQ-023 / REQ-023-S01 | [シナリオ](specs/preview-appearance/spec.md#scenario-req-023-s01---メッセージと処理を区別する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview`、[配色](../src/webview/app/styles.css) | [Chromium](../tests/visual/preview-appearance.spec.ts) `REQ-023 / REQ-023-S01` | [記録](#align-preview-with-html-sample---2026-10-29-メッセージと処理)、[細部調整](#align-preview-with-html-sample---2026-10-29-細部調整)、[余白](#align-preview-with-html-sample---2026-10-30-case文字とメッセージ余白) |
+| align-preview-with-html-sample | REQ-024 / REQ-024-S01 | [シナリオ](specs/preview-appearance/spec.md#scenario-req-024-s01---stateとsqlを一続きに読む) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderState`、[配色](../src/webview/app/styles.css) | [Chromium](../tests/visual/preview-appearance.spec.ts) `REQ-024 / REQ-024-S01` | [記録](#align-preview-with-html-sample---2026-10-29-stateとsql)、[細部調整](#align-preview-with-html-sample---2026-10-29-細部調整)、[列幅調整](#align-preview-with-html-sample---2026-10-30-id非表示と列幅) |
+| align-preview-with-html-sample | REQ-024 / REQ-024-S02 | [シナリオ](specs/preview-appearance/spec.md#scenario-req-024-s02---独立したstateと長文) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderState` | [Chromium](../tests/visual/preview-appearance.spec.ts) `REQ-024 / REQ-024-S02` | [記録](#align-preview-with-html-sample---2026-10-29-stateとsql)、[列幅調整](#align-preview-with-html-sample---2026-10-30-id非表示と列幅) |
+| align-preview-with-html-sample | REQ-025 / REQ-025-S01 | [シナリオ](specs/preview-appearance/spec.md#scenario-req-025-s01---ログイン分岐を読む) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Chromium](../tests/visual/preview-appearance.spec.ts) `REQ-025 / REQ-025-S01` | [記録](#align-preview-with-html-sample---2026-10-29-分岐と配置)、[細部調整](#align-preview-with-html-sample---2026-10-29-細部調整)、[case位置](#align-preview-with-html-sample---2026-10-30-id非表示と列幅)、[文字装飾](#align-preview-with-html-sample---2026-10-30-case文字とメッセージ余白)、[else装飾](#align-preview-with-html-sample---2026-10-30-else文字の装飾) |
+| align-preview-with-html-sample | REQ-025 / REQ-025-S02 | [シナリオ](specs/preview-appearance/spec.md#scenario-req-025-s02---可変内容でも図を読める) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Chromium](../tests/visual/preview-appearance.spec.ts) `REQ-025 / REQ-025-S02` | [記録](#align-preview-with-html-sample---2026-10-29-分岐と配置)、[文字装飾](#align-preview-with-html-sample---2026-10-30-case文字とメッセージ余白)、[else装飾](#align-preview-with-html-sample---2026-10-30-else文字の装飾) |
 
 ## 検証記録
+
+### align-preview-with-html-sample - 2026-10-30 アーカイブ
+
+- 対象: REQ-022からREQ-025の正式仕様への同期と変更のアーカイブ。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 成果物4件とタスク30件の完了をOpenSpec CLIで確認した。
+差分仕様の4要件と7シナリオを新しい`preview-appearance`正式仕様へ同期し、Purposeと要件本文の一致、差分見出しの不在を照合した。
+`npx --no-install openspec validate --specs`、アーカイブ内のMarkdown相対リンク検査、`git diff --check`を実行した。
+- 結果: 正式仕様8件の検証が成功し、REQ-022からREQ-025と7シナリオが同期された。
+変更は`2026-10-30-align-preview-with-html-sample`へ移動し、アクティブな変更一覧から消えた。
+アーカイブ内の相対リンク4ファイルに欠落はなかった。
+- 証跡: [正式仕様](specs/preview-appearance/spec.md)、[差分仕様](changes/archive/2026-10-30-align-preview-with-html-sample/specs/preview-appearance/spec.md)、[提案](changes/archive/2026-10-30-align-preview-with-html-sample/proposal.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[タスク](changes/archive/2026-10-30-align-preview-with-html-sample/tasks.md)。
+- 未検証事項: 最新のボタン表示をVS Code開発ホスト上で目視確認していない。
+
+### align-preview-with-html-sample - 2026-10-30 拡大縮小ボタンのラベル
+
+- 対象: REQ-022-S01の拡大縮小ボタンの表示文字。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: ボタンの表示文字、読み上げ用の名前、縮小・等倍・拡大の動作を検査するChromiumテストを追加した。
+旧実装で表示文字の不一致による失敗を確認した。
+実装後に`npm run check`、`npm run test:visual`、`npm run test:extension`、`npx --no-install openspec validate align-preview-with-html-sample --strict`、`git diff --check`を実行した。
+更新した基準DSL画像を目視確認した。
+- 結果: 左から`-`、`Reset`、`+`が表示され、読み上げ用の名前`縮小`、`等倍`、`拡大`と倍率操作が維持された。
+Core33件、Chromium29件、Extension4件、OpenSpec strict検証、差分チェックが成功した。
+- 証跡: [仕様](specs/preview-appearance/spec.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[Webview描画](../src/webview/pages/preview/ui/render-preview.ts)、[Chromiumテスト](../tests/visual/preview-appearance.spec.ts)、[更新画像](../docs/images/align-preview-login.png)。
+- 未検証事項: 今回のボタン改修後にVS Code開発ホスト上での目視確認は再実施していない。
+
+### align-preview-with-html-sample - 2026-10-30 else文字の装飾
+
+- 対象: REQ-025-S01、REQ-025-S02のelseラベルの外観。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: elseの文字色、背景矩形の不在、分岐線との間隔を検査するChromiumテストを追加した。
+旧実装で文字色の不一致による失敗を確認した。
+実装後に`npm run check`、`npm run test:visual`、`npm run test:extension`、`npx --no-install openspec validate align-preview-with-html-sample --strict`、`git diff --check`を実行した。
+更新した基準DSL画像を目視確認した。
+- 結果: caseとelseはいずれも枠と背景のない`#DD6872`の文字になった。
+altの見出しだけ背景付きラベルを維持し、elseは分岐線の下に8px以上の空きを持つ。
+Core33件、Chromium28件、Extension4件、OpenSpec strict検証、差分チェックが成功した。
+- 証跡: [仕様](specs/preview-appearance/spec.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[SVG描画](../src/webview/pages/preview/ui/render-preview.ts)、[CSS](../src/webview/app/styles.css)、[Chromiumテスト](../tests/visual/preview-appearance.spec.ts)、[更新画像](../docs/images/align-preview-login.png)。
+- 未検証事項: 今回のelse改修後にVS Code開発ホスト上での目視確認は再実施していない。
+
+### align-preview-with-html-sample - 2026-10-30 case文字とメッセージ余白
+
+- 対象: REQ-022-S01、REQ-023-S01、REQ-025-S01、REQ-025-S02の2点の見た目の改修。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: Object下と連続メッセージ、分岐直後の余白、およびcaseの文字色と枠の有無を検査するChromiumテスト2件を追加した。
+旧実装で両テストの失敗を確認した。
+実装後に`npm run check`、`npm run test:visual`、`npm run test:extension`、`npx --no-install openspec validate align-preview-with-html-sample --strict`、`git diff --check`を実行した。
+更新した基準DSL画像を目視確認した。
+- 結果: caseは背景と枠のない`#DD6872`の文字となり、`alt`と`else`の背景付きラベルは維持された。
+Object枠の下端と最初のメッセージラベルには11pxの空きがあり、連続メッセージのY座標差は60pxとなった。
+分岐直後のcase文字とメッセージラベルの空きも8px以上である。
+Core33件、Chromium27件、Extension4件、OpenSpec strict検証、差分チェックが成功した。
+- 証跡: [仕様](specs/preview-appearance/spec.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[Core配置](../src/core/layout/sequence-layout.ts)、[SVG描画](../src/webview/pages/preview/ui/render-preview.ts)、[CSS](../src/webview/app/styles.css)、[Chromiumテスト](../tests/visual/preview-appearance.spec.ts)、[更新画像](../docs/images/align-preview-login.png)。
+- 未検証事項: 今回の2点の改修後にVS Code開発ホスト上での目視確認は再実施していない。
+
+### align-preview-with-html-sample - 2026-10-30 ID非表示と列幅
+
+- 対象: REQ-022-S01、REQ-022-S02、REQ-024-S01、REQ-024-S02、REQ-025-S01の3点の見た目の改修。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: Object IDの非表示、State見出しとDB列幅、caseラベル位置を検査するChromiumテスト3件を追加し、旧実装で3件とも失敗することを確認した。実装後に`npm run check`、`npm run test:visual`、`npm run test:extension`、`npx --no-install openspec validate align-preview-with-html-sample --strict`を実行した。新しい基準DSL画像を参照HTML画像と目視比較した。
+- 結果: Objectカードは表示名と種別のみを描画し、DB見出しは`users`、FILE見出しは`Storage`となった。caseラベルの上端は枠上辺から26pxで、altとの間隔は14px。DB各列は12pxの等幅フォントでカラム名と値を測り、左右合計約20pxから36pxの余白に収めた。Core33件、Chromium25件、Extension4件、OpenSpec strict検証が成功した。
+- 証跡: [仕様](specs/preview-appearance/spec.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[Core配置](../src/core/layout/sequence-layout.ts)、[SVG描画](../src/webview/pages/preview/ui/render-preview.ts)、[Chromiumテスト](../tests/visual/preview-appearance.spec.ts)、[新しい基準DSL画像](../docs/images/align-preview-login.png)、[参照HTML画像](../docs/images/align-preview-reference.png)。
+- 未検証事項: 今回の3点の改修後にVS Code開発ホスト上での目視比較は再実施していない。
+
+### align-preview-with-html-sample - 2026-10-29 細部調整
+
+- 対象: REQ-023-S01、REQ-024-S01、REQ-025-S01の5点の細部改修。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `examples/login.glf`の処理カードの余白、応答線と活性下端、DB値、case位置と活性の継ぎ目を検査するChromiumテスト3件を追加し、旧実装で全件の失敗を確認した。
+修正後に`npm run check`、`npm run test:visual`、`npm run test:extension`、`npx --no-install openspec validate align-preview-with-html-sample --strict`、`git diff --check`を実行した。
+[新しい画像](../docs/images/align-preview-login.png)を[基準画像](../docs/images/glitchflow.png)と目視比較した。
+- 結果: 処理カードの左・下の空きは8px以上で、DBの検索結果とBEの2つの応答は活性下端と一致する。
+DBの`int`と`decimal`は右寄せ、`text`と`datetime`は左寄せとなり、表示文字列の外側の引用符は消えた。
+最初のcaseラベルは枠上辺から30px以上下にあり、分岐開始前から続く活性バーは1本につながって水平の継ぎ目がない。
+Core33件、Chromium22件、Extension4件、OpenSpec strict検証、差分チェックが成功した。
+- 証跡: [仕様](specs/preview-appearance/spec.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[座標とDB表示](../src/core/layout/sequence-layout.ts)、[SVG描画](../src/webview/pages/preview/ui/render-preview.ts)、[視覚テスト](../tests/visual/preview-appearance.spec.ts)、[新しい画像](../docs/images/align-preview-login.png)。
+- 未検証事項: 今回の細部修正後にVS Code開発ホストでの目視確認は再実施していない。
+
+### align-preview-with-html-sample - 2026-10-29 OpenSpec照合
+
+- 対象: REQ-022からREQ-025、7シナリオ、D-01からD-04、タスク全15件。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `npx --no-install openspec validate align-preview-with-html-sample --strict`を実行した。
+`openspec-verify-change`のCompleteness、Correctness、Coherenceの観点で提案、差分仕様、設計、タスク、Core、Webview、Chromiumテスト、台帳を照合した。
+`git diff --check`も実行した。
+- 結果: strict検証と差分チェックは成功した。
+4要件と7シナリオの全てに実装箇所、受け入れテスト、台帳の対応がある。
+D-01からD-04の描画責務と動的計測はCoreとWebviewの分担に沿い、新しい依存関係はない。
+要件に対する未解決の重大事項、警告事項、提案事項は見つからなかった。
+タスク5.3の記録完了時点で15/15件となる。
+- 証跡: [提案](changes/archive/2026-10-30-align-preview-with-html-sample/proposal.md)、[差分仕様](changes/archive/2026-10-30-align-preview-with-html-sample/specs/preview-appearance/spec.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[タスク](changes/archive/2026-10-30-align-preview-with-html-sample/tasks.md)、[新しい描画テスト](../tests/visual/preview-appearance.spec.ts)、[開発ホストと画像比較](#align-preview-with-html-sample---2026-10-29-開発ホストと画像比較)。
+- 未検証事項: macOSの開発ホストとChromium以外の環境での目視比較は実施していない。
+
+### align-preview-with-html-sample - 2026-10-29 開発ホストと画像比較
+
+- 対象: REQ-022からREQ-025、タスク5.2。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `.vscode/launch.json`からF5でVS Code Extension Development Hostを起動し、`examples/login.glf`で`GlitchFlow: プレビューを開く`を実行した。
+既定の`ダーク 2026`で図面を目視し、`ライト 2026`へ切り替えてエディタとWebviewを比較した後、元の`ダーク 2026`に戻した。
+Chromiumで撮影した`test-results/preview-appearance-login.png`と`test-results/reference-html.png`も目視比較した。
+- 結果: 両テーマでWebviewにObjectの種別色と活性、処理カード、DBのStateとSQL、分岐ラベルが表示された。
+ライトではVS Codeの通常エディタが明色になり、Webviewの暗色図面と文字の視認性は維持された。
+参照HTMLの要素構成と配色に近づいたことを確認した。
+開発ホストの分割表示では図面幅が足りないため、右側のObjectと下側のイベントはスクロールして読む構成である。
+- 証跡: [開発ホスト設定](../.vscode/launch.json)、[基準DSL](../examples/login.glf)、[新しいChromium画像](../docs/images/align-preview-login.png)、[参照HTML画像](../docs/images/align-preview-reference.png)、[参照HTML](changes/archive/2026-10-29-glitchflow-spec/glitchflow-sample.html)。
+- 未検証事項: macOSの開発ホストとChromium以外のOS・ブラウザでは目視比較していない。
+開発ホスト画面の画像は保存していない。
+
+### align-preview-with-html-sample - 2026-10-29 全体検査
+
+- 対象: REQ-022からREQ-025の7シナリオと既存要件の回帰。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `npm run check`でBiome、Steiger、型検査、Coreテストを実行した。
+`npm run test:visual`でChromiumの全描画テスト、`npm run test:extension`でビルドとVS Code拡張の統合テストを実行した。
+- 結果: Core33件、Chromium19件、Extension4件が成功した。
+Biome、Steiger、型検査、ビルドも成功した。
+- 証跡: [新しい描画テスト](../tests/visual/preview-appearance.spec.ts)、[配置回帰](../tests/visual/layout-regression.spec.ts)、[Core配置](../tests/core/layout-regression.test.ts)、[Extension統合](../tests/extension/preview.test.ts)。
+- 未検証事項: VS Code開発ホストのダーク・ライト両テーマの目視確認とOpenSpec全体照合は後続タスクで実施する。
+
+### align-preview-with-html-sample - 2026-10-29 分岐と配置
+
+- 対象: REQ-025-S01、REQ-025-S02。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 背景付きフラグメントラベルの欠如による2件の失敗を先に確認した。
+実装後に新しい2件、配置回帰2件、`alt`の1件、ほかのフラグメント1件と関連Core12件をChromiumとVitestで実行した。
+HTML試作をChromiumで撮影し、新しい基準DSL画像と並べて確認した。
+- 結果: 対象と既存の計18件が成功した。
+Objectの種別色、処理カード、DBとFILEの見出し付きカード、SQL、分岐ラベルは試作に近い。
+専用のDSL編集欄は製品ではVS Codeエディタが担い、図面の縦寸法とカード寸法は可変内容に合わせている。
+基準DSLのcaseラベルはFE活性バーより左にあり、内容を隠さない。
+- 証跡: [新しい描画テスト](../tests/visual/preview-appearance.spec.ts)、[新しいChromium画像](../docs/images/align-preview-login.png)、[参照HTML画像](../docs/images/align-preview-reference.png)、[参照HTML](changes/archive/2026-10-29-glitchflow-spec/glitchflow-sample.html)。
+- 未検証事項: VS Code開発ホストのダーク・ライト両テーマは全体検証で確認する。
+
+### align-preview-with-html-sample - 2026-10-29 StateとSQL
+
+- 対象: REQ-024-S01、REQ-024-S02、既存REQ-009からREQ-011。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 新しい2件のテストで見出し欠如による失敗を先に確認した。
+実装後に`tests/visual/preview-appearance.spec.ts`の対象2件、`tests/visual/state.spec.ts`の3件、`tests/core/state-layout.test.ts`の4件を実行した。
+- 結果: 対象2件、既存のChromium3件、Core4件が成功した。
+共有境界の1pxの線幅を既存のSQL配置テストに反映した。
+- 証跡: [新しい描画テスト](../tests/visual/preview-appearance.spec.ts)、[既存描画テスト](../tests/visual/state.spec.ts)、[Coreテスト](../tests/core/state-layout.test.ts)。
+- 未検証事項: HTML試作との全体画像比較は後続タスクで実施する。
+
+### align-preview-with-html-sample - 2026-10-29 メッセージと処理
+
+- 対象: REQ-023-S01、既存REQ-007、REQ-008の描画。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 背景付きラベルのPlaywrightテストを先に実行し、未実装による失敗を確認した。
+実装後に対象テストと`tests/visual/sequence.spec.ts`をChromiumで実行した。
+- 結果: 対象1件と既存2件が成功した。
+SVGテキストが背景内に収まることと応答の破線を確認した。
+- 証跡: [新しい描画テスト](../tests/visual/preview-appearance.spec.ts)、[既存描画テスト](../tests/visual/sequence.spec.ts)。
+- 未検証事項: 全体の画像比較は後続タスクで実施する。
+
+### align-preview-with-html-sample - 2026-10-29 Object表示
+
+- 対象: REQ-022-S01、REQ-022-S02。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 基準DSLとFEATURE、MODULEを使うPlaywrightテストを先に実行し、二段表示の欠如による2件の失敗を確認した。
+暗色パレットと種別表示の実装後、同じテストをChromiumで再実行した。
+- 結果: 対象2件が成功した。
+ライトテーマはWebviewのCSS変数を白にした相当条件で確認した。
+- 証跡: [描画テスト](../tests/visual/preview-appearance.spec.ts)、[基準DSL](../examples/login.glf)。
+- 未検証事項: VS Code開発ホストでのライトテーマと通常エディタへの影響は全体検証で確認する。
 
 ### stabilize-layout - 2026-10-29 アーカイブ
 

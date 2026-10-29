@@ -55,10 +55,45 @@ interface FileLine {
   change: Change;
 }
 
+function dbDisplayValue(value: string): string {
+  return value.startsWith('"') && value.endsWith('"') && value.length >= 2
+    ? value.slice(1, -1).replace(/\\"/g, '"')
+    : value;
+}
+
+function isNumericColumn(type: string): boolean {
+  return /^(?:bigint|decimal|double|float|int|integer|numeric|number|real|smallint|tinyint)(?:\s*\([^)]*\))?$/i.test(
+    type.trim(),
+  );
+}
+
+function joinAdjacentActivations(
+  activations: SequenceLayout["activations"],
+): SequenceLayout["activations"] {
+  const joined: SequenceLayout["activations"] = [];
+  const lastByObject = new Map<string, SequenceLayout["activations"][number]>();
+  for (const activation of activations) {
+    const previous = lastByObject.get(activation.objectId);
+    if (previous && activation.startY <= previous.endY) {
+      previous.endY = Math.max(previous.endY, activation.endY);
+      continue;
+    }
+    const segment = { ...activation };
+    joined.push(segment);
+    lastByObject.set(segment.objectId, segment);
+  }
+  return joined;
+}
+
 export interface SequenceLayout {
   width: number;
   height: number;
-  lifelines: { id: string; label: string; x: number }[];
+  lifelines: {
+    id: string;
+    label: string;
+    type: GlfDocument["objects"][number]["type"];
+    x: number;
+  }[];
   messages: {
     from: string;
     to: string;
@@ -78,11 +113,13 @@ export interface SequenceLayout {
   activations: { objectId: string; x: number; startY: number; endY: number }[];
   dbStates: (PanelBox & {
     reference: string;
+    title: string;
     columns: string[];
     columnWidths: number[];
+    numericColumns: boolean[];
     rows: DbRow[];
   })[];
-  fileStates: (PanelBox & { nodes: FileLine[] })[];
+  fileStates: (PanelBox & { title: string; nodes: FileLine[] })[];
   sqlBlocks: (PanelBox & { lines: string[] })[];
   fragments: {
     kind: "alt" | "opt" | "loop" | "par" | "break";
@@ -103,10 +140,11 @@ function flattenFile(nodes: FileNode[], depth = 0): FileLine[] {
   ]);
 }
 
-/** REQ-006、REQ-008..REQ-013、REQ-018..REQ-020: IRから分岐を含む表示座標を決定的に計算する。 */
+/** REQ-006、REQ-008..REQ-013、REQ-018..REQ-020、REQ-022..REQ-025: IRから分岐を含む表示座標を決定的に計算する。 */
 export function layoutSequence(
   document: GlfDocument,
   measureText: (text: string) => number,
+  measureDbText: (text: string) => number = measureText,
 ): SequenceLayout {
   const basic = timeline(document.events);
   const panelWidths = new Map<string, number>();
@@ -117,17 +155,31 @@ export function layoutSequence(
       );
       if (!schema) return undefined;
       const columns = schema.columns.map((item) => item.name);
+      const numericColumns = schema.columns.map((item) =>
+        isNumericColumn(item.type),
+      );
+      const rows = event.rows.map((row) => ({
+        ...row,
+        cells: row.cells.map((cell) => ({
+          ...cell,
+          value: dbDisplayValue(cell.value),
+        })),
+      }));
       const columnWidths = columns.map((name, index) =>
         Math.max(
-          80,
-          measureText(name) + 40,
-          ...event.rows.map(
-            (row) => measureText(row.cells[index]?.value ?? "") + 40,
-          ),
+          52,
+          Math.ceil(
+            Math.max(
+              measureDbText(name),
+              ...rows.map((row) =>
+                measureDbText(row.cells[index]?.value ?? ""),
+              ),
+            ),
+          ) + 20,
         ),
       );
       const width = columnWidths.reduce((sum, value) => sum + value, 0);
-      const height = 30 + Math.max(1, event.rows.length) * 28;
+      const height = 60 + Math.max(1, event.rows.length) * 28;
       panelWidths.set(
         event.reference.objectId,
         Math.max(width, panelWidths.get(event.reference.objectId) ?? 0),
@@ -138,15 +190,17 @@ export function layoutSequence(
         height,
         columns,
         columnWidths,
+        numericColumns,
+        rows,
       };
     }
     if (event.kind === "file-state") {
       const nodes = flattenFile(event.nodes);
       const width = Math.max(
-        150,
+        300,
         ...nodes.map((node) => node.depth * 20 + measureText(node.name) + 32),
       );
-      const height = Math.max(40, nodes.length * 24 + 20);
+      const height = Math.max(70, nodes.length * 24 + 52);
       panelWidths.set(
         event.objectId,
         Math.max(width, panelWidths.get(event.objectId) ?? 0),
@@ -159,7 +213,7 @@ export function layoutSequence(
         150,
         ...lines.map((line) => measureText(line) + 32),
       );
-      const height = lines.length * 22 + 22;
+      const height = lines.length * 20 + 40;
       panelWidths.set(
         event.objectId,
         Math.max(width, panelWidths.get(event.objectId) ?? 0),
@@ -176,7 +230,25 @@ export function layoutSequence(
         : width,
     0,
   );
-  let x = Math.max(110, globalLabelWidth + 16);
+  const fragmentLabelWidth = basic.reduce((width, event) => {
+    if (event.kind === "branch-open" && event.label)
+      return Math.max(
+        width,
+        measureText(event.label === "else" ? "else" : `case ${event.label}`),
+      );
+    if (event.kind === "alt-open")
+      return Math.max(
+        width,
+        measureText(
+          event.label
+            ? `${event.fragmentKind} ${event.label}`
+            : event.fragmentKind,
+        ),
+      );
+    return width;
+  }, 0);
+  const fragmentGutter = Math.max(190, fragmentLabelWidth + 50);
+  let x = Math.max(220, globalLabelWidth + 86, fragmentGutter + 32);
   const lifelines = document.objects.map((object, index) => {
     if (index > 0) {
       const previous = document.objects[index - 1];
@@ -197,15 +269,17 @@ export function layoutSequence(
         0,
       );
       x += Math.max(
-        190,
-        between + 56,
+        220,
+        between + 72,
         previousProcessWidth + 52,
-        (panelWidths.get(previous.id) ?? 0) + 64,
-        (measureText(previous.label) + measureText(object.label)) / 2 + 48,
+        (Math.max(measureText(previous.label), measureText(previous.type)) +
+          Math.max(measureText(object.label), measureText(object.type))) /
+          2 +
+          48,
       );
     }
     xById.set(object.id, x);
-    return { id: object.id, label: object.label, x };
+    return { id: object.id, label: object.label, type: object.type, x };
   });
   const messages: SequenceLayout["messages"] = [];
   const processes: SequenceLayout["processes"] = [];
@@ -220,14 +294,14 @@ export function layoutSequence(
     inherited: Map<string, number>;
     exits: Map<string, number>[];
   }[] = [];
-  let lastY = 96;
+  let lastY = 58;
   let lastPanel: { kind: string; objectId: string } | undefined;
   for (let index = 0; index < basic.length; index++) {
     const event = basic[index];
     const panel = measured[index];
     if (event.kind === "alt-open") {
       const y = lastY + 28;
-      const left = (lifelines[0]?.x ?? 110) - 72 + event.depth * 12;
+      const left = (lifelines[0]?.x ?? 220) - fragmentGutter + event.depth * 12;
       const right =
         Math.max(
           x + 90,
@@ -266,15 +340,15 @@ export function layoutSequence(
       lastY +=
         event.first &&
         (current.fragment.kind === "alt" || current.fragment.kind === "par")
-          ? 54
+          ? 40
           : event.first
-            ? 38
+            ? 36
             : 36;
       const y = lastY;
       current.fragment.branches.push({ label: event.label, y, endY: y });
       active.clear();
       for (const id of current.inherited.keys())
-        active.set(id, y - (event.first ? 12 : 24));
+        active.set(id, y - (event.first ? 15 : 24));
       lastPanel = undefined;
       continue;
     }
@@ -332,24 +406,44 @@ export function layoutSequence(
         event.kind === "sql" &&
         lastPanel?.kind === "db-state" &&
         lastPanel.objectId === objectId;
-      const y = lastY + (consecutiveSql ? 12 : 40);
+      const preceding = basic[index - 1];
+      const afterActivation =
+        preceding?.kind === "activation" &&
+        preceding.action === "start" &&
+        preceding.objectId === objectId;
+      const y = lastY + (consecutiveSql ? 0 : afterActivation ? 12 : 40);
+      const previousDb = consecutiveSql ? dbStates.at(-1) : undefined;
+      const width = previousDb
+        ? Math.max(previousDb.width, panel.width)
+        : panel.width;
+      if (previousDb) previousDb.width = width;
       const box = {
         objectId,
-        x: laneX + 28,
+        x: previousDb?.x ?? laneX + 28,
         y,
-        width: panel.width,
+        width,
         height: panel.height,
       };
       if (event.kind === "db-state" && panel.kind === "db-state")
         dbStates.push({
           ...box,
           reference: event.reference.raw,
+          title: event.reference.schema
+            ? `${event.reference.schema}.${event.reference.table}`
+            : event.reference.table,
           columns: panel.columns,
           columnWidths: panel.columnWidths,
-          rows: event.rows,
+          numericColumns: panel.numericColumns,
+          rows: panel.rows,
         });
       if (event.kind === "file-state" && panel.kind === "file-state")
-        fileStates.push({ ...box, nodes: panel.nodes });
+        fileStates.push({
+          ...box,
+          title:
+            document.objects.find((object) => object.id === event.objectId)
+              ?.label ?? "State",
+          nodes: panel.nodes,
+        });
       if (event.kind === "sql" && panel.kind === "sql")
         sqlBlocks.push({ ...box, lines: panel.lines });
       lastY = y + panel.height;
@@ -362,7 +456,25 @@ export function layoutSequence(
       event.kind === "sql"
     )
       continue;
-    const y = lastY + 56;
+    const preceding = basic[index - 1];
+    const followsOwnResponse =
+      event.kind === "activation" &&
+      event.action === "end" &&
+      preceding?.kind === "message" &&
+      preceding.mode === "response" &&
+      preceding.from === event.objectId;
+    const y = followsOwnResponse
+      ? lastY
+      : lastY +
+        (event.kind === "activation"
+          ? event.action === "end"
+            ? 18
+            : 4
+          : event.kind === "process"
+            ? 38
+            : preceding?.kind === "branch-open"
+              ? 44
+              : 60);
     lastY = y;
     lastPanel = undefined;
     if (event.kind === "activation") {
@@ -393,11 +505,11 @@ export function layoutSequence(
         objectId: event.objectId,
         text: event.text,
         emphasis: event.emphasis,
-        x: laneX + 20,
+        x: laneX + 24,
         y,
       });
     } else if (event.kind === "message") {
-      const fromX = event.from === "Global" ? 24 : xById.get(event.from);
+      const fromX = event.from === "Global" ? 52 : xById.get(event.from);
       const toX = xById.get(event.to);
       if (fromX === undefined || toX === undefined) continue;
       const direction = Math.sign(toX - fromX) || 1;
@@ -434,7 +546,13 @@ export function layoutSequence(
     0,
   );
   const labelRight = lifelines.reduce(
-    (right, lane) => Math.max(right, lane.x + measureText(lane.label) / 2 + 24),
+    (right, lane) =>
+      Math.max(
+        right,
+        lane.x +
+          Math.max(measureText(lane.label), measureText(lane.type)) / 2 +
+          24,
+      ),
     0,
   );
   return {
@@ -451,7 +569,7 @@ export function layoutSequence(
     lifelines,
     messages,
     processes,
-    activations,
+    activations: joinAdjacentActivations(activations),
     dbStates,
     fileStates,
     sqlBlocks,

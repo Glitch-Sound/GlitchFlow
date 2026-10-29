@@ -27,7 +27,7 @@ BE: *ログイン処理*
 BE ->> DB: ユーザ検索(name, password)
 DB+
 state DB.users:
-    [1, "taro", "hashed-xxx", "2026-10-27 22:00:00", null]
+    [1, "taro", "hashed-xxx", "2026-10-27 22:00:00", "2026-10-27 22:00:00"]
 sql DB:
     SELECT COUNT(uid)
     FROM users

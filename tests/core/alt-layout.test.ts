@@ -36,7 +36,7 @@ describe("alt fragment", () => {
       layout.messages.filter((item) => item.label === "401 Unauthorized"),
     ).toHaveLength(1);
     const fe = layout.activations.filter((item) => item.objectId === "FE");
-    expect(fe).toHaveLength(3);
+    expect(fe).toHaveLength(2);
     const home = layout.processes.find(
       (item) => item.text === "ホーム画面表示",
     );
@@ -58,8 +58,8 @@ describe("alt fragment", () => {
     expect(home?.y).toBeLessThan(success.endY);
     expect(error?.y).toBeGreaterThan(failure.y);
     expect(error?.y).toBeLessThan(failure.endY);
-    expect(fe[1].endY).toBeLessThanOrEqual(success.endY);
-    expect(fe[2].endY).toBeLessThanOrEqual(failure.endY);
+    expect(fe[0].endY).toBeLessThanOrEqual(success.endY);
+    expect(fe[1].endY).toBeLessThanOrEqual(failure.endY);
     expect(model.diagnostics.map((item) => item.code)).not.toContain(
       "activation-branch-mismatch",
     );
