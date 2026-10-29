@@ -15,6 +15,10 @@
 | 要件ID | 要件名 | 状態 | 根拠となる文書の節 | 現在の仕様 |
 | --- | --- | --- | --- | --- |
 | REQ-001 | プレビューの起動 | 実装済み | [対象機能](product.md#対象機能) | [正式仕様](specs/preview/spec.md#requirement-req-001---プレビューの起動) |
+| REQ-002 | 文書メタデータと基本イベント | 実装済み | [DSL](product.md#dslと編集) | [変更仕様](specs/glf-parsing/spec.md) |
+| REQ-003 | DB参照と表示用状態 | 実装済み | [State](product.md#対象機能) | [変更仕様](specs/glf-parsing/spec.md) |
+| REQ-004 | FILE状態とSQL | 実装済み | [State](product.md#対象機能) | [変更仕様](specs/glf-parsing/spec.md) |
+| REQ-005 | 分岐構造と解析診断 | 実装済み | [DSL](product.md#dslと編集) | [変更仕様](specs/glf-parsing/spec.md) |
 
 ## 要件ごとの変更履歴
 
@@ -27,6 +31,10 @@
 | 変更名 | 要件ID | 操作 | 変更の状態 | 対象仕様 | 提案、設計、タスク |
 | --- | --- | --- | --- | --- | --- |
 | glitchflow-spec | REQ-001 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-glitchflow-spec/specs/preview/spec.md#requirement-req-001---プレビューの起動) | [提案](changes/archive/2026-10-29-glitchflow-spec/proposal.md)、[設計](changes/archive/2026-10-29-glitchflow-spec/design.md)、[タスク](changes/archive/2026-10-29-glitchflow-spec/tasks.md) |
+| parse-glf-basics | REQ-002 | 追加 | アーカイブ済み | [変更仕様](specs/glf-parsing/spec.md#requirement-req-002---文書メタデータと基本イベント) | [提案](changes/archive/2026-10-29-parse-glf-basics/proposal.md)、[設計](changes/archive/2026-10-29-parse-glf-basics/design.md)、[タスク](changes/archive/2026-10-29-parse-glf-basics/tasks.md) |
+| parse-glf-basics | REQ-003 | 追加 | アーカイブ済み | [変更仕様](specs/glf-parsing/spec.md#requirement-req-003---db参照と表示用状態) | [提案](changes/archive/2026-10-29-parse-glf-basics/proposal.md)、[設計](changes/archive/2026-10-29-parse-glf-basics/design.md)、[タスク](changes/archive/2026-10-29-parse-glf-basics/tasks.md) |
+| parse-glf-basics | REQ-004 | 追加 | アーカイブ済み | [変更仕様](specs/glf-parsing/spec.md#requirement-req-004---file状態とsql) | [提案](changes/archive/2026-10-29-parse-glf-basics/proposal.md)、[設計](changes/archive/2026-10-29-parse-glf-basics/design.md)、[タスク](changes/archive/2026-10-29-parse-glf-basics/tasks.md) |
+| parse-glf-basics | REQ-005 | 追加 | アーカイブ済み | [変更仕様](specs/glf-parsing/spec.md#requirement-req-005---分岐構造と解析診断) | [提案](changes/archive/2026-10-29-parse-glf-basics/proposal.md)、[設計](changes/archive/2026-10-29-parse-glf-basics/design.md)、[タスク](changes/archive/2026-10-29-parse-glf-basics/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -38,8 +46,52 @@
 | 変更名 | 要件IDとシナリオID | 受け入れ条件 | 実装箇所 | テストまたは手動確認 | 検証記録 |
 | --- | --- | --- | --- | --- | --- |
 | glitchflow-spec | REQ-001 / REQ-001-S01 | [シナリオ](changes/archive/2026-10-29-glitchflow-spec/specs/preview/spec.md#scenario-req-001-s01---glfファイルを開いてプレビューを起動する) | [コマンド登録](../src/extension/extension.ts) `activate`、[パネルとCSP](../src/extension/preview-panel.ts) `openPreview`、[初期画面](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Extension統合テスト](../tests/extension/preview.test.ts) `REQ-001 / REQ-001-S01`、[Chromium描画テスト](../tests/visual/preview.spec.ts) `REQ-001 / REQ-001-S01`、Development Host手動確認 | [プレビュー確認](#glitchflow-spec---2026-10-29-プレビュー確認) |
+| parse-glf-basics | REQ-002 / REQ-002-S01 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-002-s01---基本イベントを入力順に保持する) | [IR](../src/core/model/glf-model.ts)、[Parser](../src/core/parser/parse-glf.ts) `parseGlf` | [Coreテスト](../tests/core/parse-glf.test.ts) `REQ-002 / REQ-002-S01` | [Core解析](#parse-glf-basics---2026-10-29-core解析) |
+| parse-glf-basics | REQ-002 / REQ-002-S02 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-002-s02---タイトルの誤用を診断する) | [Parser](../src/core/parser/parse-glf.ts) `parseGlf` | [Coreテスト](../tests/core/parse-glf.test.ts) `REQ-002 / REQ-002-S02` | [Core解析](#parse-glf-basics---2026-10-29-core解析) |
+| parse-glf-basics | REQ-003 / REQ-003-S01 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-003-s01---db参照と変更属性を保持する) | [Parser](../src/core/parser/parse-glf.ts) `tableReference`、`splitCells` | [Coreテスト](../tests/core/parse-glf.test.ts) `REQ-003 / REQ-003-S01` | [Core解析](#parse-glf-basics---2026-10-29-core解析) |
+| parse-glf-basics | REQ-004 / REQ-004-S01 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-004-s01---file階層とsqlを保持する) | [Parser](../src/core/parser/parse-glf.ts) `parseFileNodes` | [Coreテスト](../tests/core/parse-glf.test.ts) `REQ-004 / REQ-004-S01` | [Core解析](#parse-glf-basics---2026-10-29-core解析) |
+| parse-glf-basics | REQ-005 / REQ-005-S01 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-005-s01---分岐内イベントを保持する) | [Parser](../src/core/parser/parse-glf.ts) `parseGlf` | [Coreテスト](../tests/core/parse-glf.test.ts) `REQ-005 / REQ-005-S01` | [Core解析](#parse-glf-basics---2026-10-29-core解析) |
+| parse-glf-basics | REQ-005 / REQ-005-S02 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-005-s02---誤った構文と参照を診断する) | [Validator](../src/core/validator/validate-glf.ts) `validateGlf` | [Coreテスト](../tests/core/parse-glf.test.ts) `REQ-005 / REQ-005-S02` | [Core解析](#parse-glf-basics---2026-10-29-core解析) |
+| parse-glf-basics | REQ-005 / REQ-005-S03 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-005-s03---入れ子分岐を保持する) | [Parser](../src/core/parser/parse-glf.ts) `parseGlf` | [Coreテスト](../tests/core/parse-glf.test.ts) `REQ-005 / REQ-005-S03` | [Core解析](#parse-glf-basics---2026-10-29-core解析) |
 
 ## 検証記録
+
+### parse-glf-basics - 2026-10-29 Core解析
+
+- 対象: REQ-002からREQ-005の全7シナリオ。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 受け入れテストを先に作成し、未実装による7件の失敗を確認した。
+`npm run check`でBiome、Steiger、型検査、Coreテストを実行し、`npm run test:visual`で既存プレビューをChromiumで検査した。
+- 結果: Coreの9件と描画の1件が成功した。
+CoreからExtensionとWebviewへの依存はない。
+- 証跡: [Coreテスト](../tests/core/parse-glf.test.ts)、[既存描画テスト](../tests/visual/preview.spec.ts)。
+- 未検証事項: 分岐間の活性整合性と描画、VSCodeへの診断通知は後続変更の対象である。
+
+### parse-glf-basics - 2026-10-29 OpenSpec照合
+
+- 対象: REQ-002からREQ-005、7シナリオ、D-01からD-03、タスク9件。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `npx --no-install openspec validate parse-glf-basics --strict`を実行した。
+CLIには`verify`コマンドがないため、`openspec-verify-change`のCompleteness、Correctness、Coherenceに沿って差分仕様、設計、タスク、コード、テスト、台帳を手動照合した。
+- 結果: strict検証が成功した。
+タスク9/9、追加要件4/4、シナリオ7/7の実装とテストを確認した。
+設計の責務分担と新規コードの配置に不一致はなく、重大・警告事項はない。
+- 証跡: [変更仕様](specs/glf-parsing/spec.md)、[設計](changes/archive/2026-10-29-parse-glf-basics/design.md)、[タスク](changes/archive/2026-10-29-parse-glf-basics/tasks.md)、[Coreテスト](../tests/core/parse-glf.test.ts)。
+- 未検証事項: 描画、VSCodeへの診断通知、分岐間の活性整合性は今回の仕様対象外である。
+
+### parse-glf-basics - 2026-10-29 アーカイブ
+
+- 対象: REQ-002からREQ-005。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 差分仕様を[正式仕様](specs/glf-parsing/spec.md)へ同期し、`npx --no-install openspec validate --specs`で検証した。
+差分仕様との要件とシナリオの一致を確認してから、変更を[アーカイブ](changes/archive/2026-10-29-parse-glf-basics/proposal.md)へ移した。
+- 結果: 新しい正式仕様に4要件と7シナリオが反映された。
+正式仕様2件の検証が成功し、台帳と変更成果物のリンクを更新した。
+- 証跡: [正式仕様](specs/glf-parsing/spec.md)、[アーカイブ済みタスク](changes/archive/2026-10-29-parse-glf-basics/tasks.md)。
+- 未検証事項: なし。
 
 変更ごと、実行ごとに見出しを作り、以下を記録する。
 同じ実行結果を複数のシナリオから参照できる。
