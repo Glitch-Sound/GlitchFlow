@@ -1,4 +1,5 @@
 import { type GlfDocument, layoutSequence } from "../../../../core";
+import type { SequenceLayout } from "../../../../core/layout/sequence-layout";
 
 const NS = "http://www.w3.org/2000/svg";
 
@@ -33,6 +34,137 @@ function marker(id: string, filled: boolean): SVGMarkerElement {
     }),
   );
   return element;
+}
+
+function svgText(
+  x: number,
+  y: number,
+  value: string,
+  className: string,
+): SVGTextElement {
+  const element = svgElement("text", {
+    x: String(x),
+    y: String(y),
+    class: className,
+  });
+  element.textContent = value;
+  return element;
+}
+
+/** REQ-009..REQ-011: 表示用状態をIRの明示属性だけで安全なSVGノードへ変換する。 */
+function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
+  for (const state of layout.dbStates) {
+    const group = svgElement("g", {
+      class: "state-db",
+      "data-reference": state.reference,
+    });
+    group.append(
+      svgElement("rect", {
+        x: String(state.x),
+        y: String(state.y),
+        width: String(state.width),
+        height: String(state.height),
+        class: "state-db-background",
+      }),
+    );
+    let offset = 0;
+    for (let index = 0; index < state.columns.length; index++) {
+      const cellX = state.x + offset;
+      const width = state.columnWidths[index];
+      group.append(
+        svgElement("rect", {
+          x: String(cellX),
+          y: String(state.y),
+          width: String(width),
+          height: "30",
+          class: "state-db-header-cell",
+        }),
+      );
+      group.append(
+        svgText(
+          cellX + 10,
+          state.y + 20,
+          state.columns[index],
+          "state-db-heading",
+        ),
+      );
+      for (let rowIndex = 0; rowIndex < state.rows.length; rowIndex++) {
+        const row = state.rows[rowIndex];
+        const cell = row.cells[index];
+        const cellY = state.y + 30 + rowIndex * 28;
+        group.append(
+          svgElement("rect", {
+            x: String(cellX),
+            y: String(cellY),
+            width: String(width),
+            height: "28",
+            class: "state-db-grid-cell",
+          }),
+        );
+        const change =
+          row.change === "unchanged"
+            ? (cell?.change ?? "unchanged")
+            : row.change;
+        group.append(
+          svgText(
+            cellX + 10,
+            cellY + 19,
+            cell?.value ?? "",
+            `state-db-cell state-db-cell--${change}`,
+          ),
+        );
+      }
+      offset += width;
+    }
+    svg.append(group);
+  }
+  for (const state of layout.fileStates) {
+    const group = svgElement("g", {
+      class: "state-file",
+      "data-object-id": state.objectId,
+    });
+    group.append(
+      svgElement("rect", {
+        x: String(state.x),
+        y: String(state.y),
+        width: String(state.width),
+        height: String(state.height),
+        class: "state-file-background",
+      }),
+    );
+    state.nodes.forEach((node, index) => {
+      group.append(
+        svgText(
+          state.x + 12 + node.depth * 20,
+          state.y + 27 + index * 24,
+          node.name,
+          `state-file-node state-file-node--${node.change}`,
+        ),
+      );
+    });
+    svg.append(group);
+  }
+  for (const sql of layout.sqlBlocks) {
+    const group = svgElement("g", {
+      class: "state-sql",
+      "data-object-id": sql.objectId,
+    });
+    group.append(
+      svgElement("rect", {
+        x: String(sql.x),
+        y: String(sql.y),
+        width: String(sql.width),
+        height: String(sql.height),
+        class: "state-sql-background",
+      }),
+    );
+    sql.lines.forEach((line, index) => {
+      group.append(
+        svgText(sql.x + 12, sql.y + 23 + index * 22, line, "state-sql-line"),
+      );
+    });
+    svg.append(group);
+  }
 }
 
 /** REQ-001, REQ-006..REQ-008: 基本シーケンスを安全なSVGノードで描画する。 */
@@ -120,6 +252,7 @@ export function renderPreview(
         }),
       );
     }
+    renderState(layout, svg);
     for (const message of layout.messages) {
       const group = svgElement("g", {
         class: `sequence-arrow sequence-arrow--${message.mode}`,

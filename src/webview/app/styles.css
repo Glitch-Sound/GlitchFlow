@@ -68,3 +68,41 @@ body {
 .sequence-process--emphasis {
   font-weight: 700;
 }
+.state-db-background,
+.state-file-background {
+  fill: #202b38;
+  stroke: #8c9cac;
+}
+.state-db-header-cell {
+  fill: #334453;
+  stroke: #8c9cac;
+}
+.state-db-grid-cell {
+  fill: none;
+  stroke: #67788a;
+}
+.state-db-heading {
+  fill: #e7edf6;
+  font-weight: 700;
+}
+.state-db-cell,
+.state-file-node,
+.state-sql-line {
+  fill: #e7edf6;
+  white-space: pre;
+}
+.state-db-cell--added,
+.state-db-cell--removed,
+.state-db-cell--updated,
+.state-file-node--added,
+.state-file-node--removed {
+  fill: #ff6672;
+}
+.state-db-cell--removed,
+.state-file-node--removed {
+  text-decoration: line-through;
+}
+.state-sql-background {
+  fill: #34404d;
+  stroke: #9ca8b6;
+}

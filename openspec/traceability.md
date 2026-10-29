@@ -22,6 +22,9 @@
 | REQ-006 | 基本シーケンス配置 | 実装済み | [レイアウト](tech.md#レイアウトと描画) | [正式仕様](specs/sequence-rendering/spec.md#requirement-req-006---基本シーケンス配置) |
 | REQ-007 | メッセージの表現 | 実装済み | [対象機能](product.md#対象機能) | [正式仕様](specs/sequence-rendering/spec.md#requirement-req-007---メッセージの表現) |
 | REQ-008 | 活性と処理の表現 | 実装済み | [設計上の優先事項](product.md#設計上の優先事項) | [正式仕様](specs/sequence-rendering/spec.md#requirement-req-008---活性と処理の表現) |
+| REQ-009 | DB状態の描画 | 実装済み | [データ状態](product.md#データ状態) | [正式仕様](specs/state-rendering/spec.md#requirement-req-009---db状態の描画) |
+| REQ-010 | FILE状態の描画 | 実装済み | [データ状態](product.md#データ状態) | [正式仕様](specs/state-rendering/spec.md#requirement-req-010---file状態の描画) |
+| REQ-011 | SQLの描画と状態配置 | 実装済み | [レイアウト](tech.md#レイアウトと描画) | [正式仕様](specs/state-rendering/spec.md#requirement-req-011---sqlの描画と状態配置) |
 
 ## 要件ごとの変更履歴
 
@@ -42,6 +45,9 @@
 | render-sequence | REQ-006 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#requirement-req-006---基本シーケンス配置) | [提案](changes/archive/2026-10-29-render-sequence/proposal.md)、[設計](changes/archive/2026-10-29-render-sequence/design.md)、[タスク](changes/archive/2026-10-29-render-sequence/tasks.md) |
 | render-sequence | REQ-007 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#requirement-req-007---メッセージの表現) | [提案](changes/archive/2026-10-29-render-sequence/proposal.md)、[設計](changes/archive/2026-10-29-render-sequence/design.md)、[タスク](changes/archive/2026-10-29-render-sequence/tasks.md) |
 | render-sequence | REQ-008 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#requirement-req-008---活性と処理の表現) | [提案](changes/archive/2026-10-29-render-sequence/proposal.md)、[設計](changes/archive/2026-10-29-render-sequence/design.md)、[タスク](changes/archive/2026-10-29-render-sequence/tasks.md) |
+| render-state-and-sql | REQ-009 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#requirement-req-009---db状態の描画) | [提案](changes/archive/2026-10-29-render-state-and-sql/proposal.md)、[設計](changes/archive/2026-10-29-render-state-and-sql/design.md)、[タスク](changes/archive/2026-10-29-render-state-and-sql/tasks.md) |
+| render-state-and-sql | REQ-010 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#requirement-req-010---file状態の描画) | [提案](changes/archive/2026-10-29-render-state-and-sql/proposal.md)、[設計](changes/archive/2026-10-29-render-state-and-sql/design.md)、[タスク](changes/archive/2026-10-29-render-state-and-sql/tasks.md) |
+| render-state-and-sql | REQ-011 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#requirement-req-011---sqlの描画と状態配置) | [提案](changes/archive/2026-10-29-render-state-and-sql/proposal.md)、[設計](changes/archive/2026-10-29-render-state-and-sql/design.md)、[タスク](changes/archive/2026-10-29-render-state-and-sql/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -66,8 +72,38 @@
 | render-sequence | REQ-007 / REQ-007-S02 | [シナリオ](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#scenario-req-007-s02---応答なしの同期要求を表示する) | [レイアウト](../src/core/layout/sequence-layout.ts)、[画面](../src/webview/pages/preview/ui/render-preview.ts) | [Core](../tests/core/sequence-layout.test.ts)、[Chromium](../tests/visual/sequence.spec.ts) `REQ-007 / REQ-007-S02` | [描画検証](#render-sequence---2026-10-29-描画検証) |
 | render-sequence | REQ-008 / REQ-008-S01 | [シナリオ](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#scenario-req-008-s01---活性と処理を表示する) | [レイアウト](../src/core/layout/sequence-layout.ts)、[画面](../src/webview/pages/preview/ui/render-preview.ts) | [Core](../tests/core/sequence-layout.test.ts)、[Chromium](../tests/visual/sequence.spec.ts) `REQ-008 / REQ-008-S01` | [描画検証](#render-sequence---2026-10-29-描画検証) |
 | render-sequence | REQ-008 / REQ-008-S02 | [シナリオ](changes/archive/2026-10-29-render-sequence/specs/sequence-rendering/spec.md#scenario-req-008-s02---構文エラーを含む文書の描画) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/sequence-layout.test.ts) `REQ-008 / REQ-008-S02` | [描画検証](#render-sequence---2026-10-29-描画検証) |
+| render-state-and-sql | REQ-009 / REQ-009-S01 | [シナリオ](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#scenario-req-009-s01---全カラムを表示する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderState` | [Core](../tests/core/state-layout.test.ts)、[Chromium](../tests/visual/state.spec.ts) `REQ-009-S01` | [検証記録](#render-state-and-sql---2026-10-29-描画検証) |
+| render-state-and-sql | REQ-009 / REQ-009-S02 | [シナリオ](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#scenario-req-009-s02---変更属性を表示する) | [描画](../src/webview/pages/preview/ui/render-preview.ts) `renderState`、[CSS](../src/webview/app/styles.css) | [Chromium](../tests/visual/state.spec.ts) `REQ-009-S02` | [検証記録](#render-state-and-sql---2026-10-29-描画検証) |
+| render-state-and-sql | REQ-010 / REQ-010-S01 | [シナリオ](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#scenario-req-010-s01---階層と個別の変更属性を表示する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderState` | [Core](../tests/core/state-layout.test.ts)、[Chromium](../tests/visual/state.spec.ts) `REQ-010-S01` | [検証記録](#render-state-and-sql---2026-10-29-描画検証) |
+| render-state-and-sql | REQ-011 / REQ-011-S01 | [シナリオ](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#scenario-req-011-s01---sqlをstateの下に表示する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderState` | [Core](../tests/core/state-layout.test.ts)、[Chromium](../tests/visual/state.spec.ts) `REQ-011-S01` | [検証記録](#render-state-and-sql---2026-10-29-描画検証) |
+| render-state-and-sql | REQ-011 / REQ-011-S02 | [シナリオ](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#scenario-req-011-s02---指定位置だけに表示する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/state-layout.test.ts) `REQ-011-S02` | [検証記録](#render-state-and-sql---2026-10-29-描画検証) |
 
 ## 検証記録
+
+### render-state-and-sql - 2026-10-29 描画検証
+
+- 対象: REQ-009-S01、REQ-009-S02、REQ-010-S01、REQ-011-S01、REQ-011-S02。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `npm run check`、`npm run test:visual`、`npx --no-install openspec validate render-state-and-sql --strict`、`git diff --check`を実行した。
+  CLIに`verify`コマンドがないため、`openspec-verify-change`の3観点で手動照合した。
+- 結果: Coreの18件、Chromiumの6件、Biome、Steiger、型検査、OpenSpec strict検証が成功した。
+  Chromium画像でDBの5カラムと全値、FILE階層、SQL枠と変更属性を確認した。
+  日時の値が隣のセルへはみ出す問題を修正し、文字の境界検査が成功した。
+- 証跡: [Coreテスト](../tests/core/state-layout.test.ts)、[描画テスト](../tests/visual/state.spec.ts)、[Verify報告](changes/archive/2026-10-29-render-state-and-sql/verification.md)、`test-results/render-state-five-columns.png`、`test-results/render-state-and-sql.png`。
+- 未検証事項: `alt`内の状態描画は次の変更の範囲である。
+
+### render-state-and-sql - 2026-10-29 アーカイブ
+
+- 対象: REQ-009、REQ-010、REQ-011。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `state-rendering`のREQ-009からREQ-011を正式仕様へ同期した。
+  差分仕様と同期後の要件本文・シナリオを照合し、`npx --no-install openspec validate --specs`で正式仕様4件を検証した。
+  変更を`changes/archive/2026-10-29-render-state-and-sql/`へ移し、台帳の参照を更新した。
+- 結果: 3要件と5シナリオが一致し、正式仕様4件の検証が成功した。
+- 証跡: [正式仕様](specs/state-rendering/spec.md)、[アーカイブ](changes/archive/2026-10-29-render-state-and-sql/proposal.md)。
+- 未検証事項: なし。
 
 ### render-sequence - 2026-10-29 描画検証
 
