@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 128 128" role="img" aria-label="GlitchFlow icon: a timeline connected to a state panel">
+  <rect width="128" height="128" fill="#171D26"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M26 27V101" stroke="#9AA4B2" stroke-width="5.8"/>
+    <path d="M26 62H51" stroke="#C65A66" stroke-width="5.8"/>
+    <rect x="51" y="41" width="55" height="42" rx="6" stroke="#C65A66" stroke-width="5.8"/>
+    <path d="M65 55H92M65 69H84" stroke="#9AA4B2" stroke-width="4.5"/>
+  </g>
+  <g fill="#9AA4B2">
+    <circle cx="26" cy="27" r="7.5"/>
+    <circle cx="26" cy="101" r="7.5"/>
+  </g>
+</svg>
