@@ -39,6 +39,9 @@
 | REQ-023 | メッセージと処理の視覚表現 | 実装済み | [シーケンス図](product.md#シーケンス図) | [正式仕様](specs/preview-appearance/spec.md#requirement-req-023---メッセージと処理の視覚表現) |
 | REQ-024 | StateとSQLのカード表現 | 実装済み | [データ状態](product.md#データ状態) | [正式仕様](specs/preview-appearance/spec.md#requirement-req-024---stateとsqlのカード表現) |
 | REQ-025 | フラグメントの視覚表現と配置 | 実装済み | [図面の操作](product.md#図面の操作) | [正式仕様](specs/preview-appearance/spec.md#requirement-req-025---フラグメントの視覚表現と配置) |
+| REQ-026 | プレビュー自動起動 | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/preview/spec.md#requirement-req-026---プレビュー自動起動) |
+| REQ-027 | プレビューの再利用とクローズ | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/preview/spec.md#requirement-req-027---プレビューの再利用とクローズ) |
+| REQ-028 | エディタの起動アイコン | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/preview/spec.md#requirement-req-028---エディタの起動アイコン) |
 | NREQ-001 | 編集応答時間 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/editor-integration/spec.md#requirement-nreq-001---編集応答時間) |
 
 ## 要件ごとの変更履歴
@@ -78,6 +81,9 @@
 | align-preview-with-html-sample | REQ-023 | 追加 | アーカイブ済み | [正式仕様](specs/preview-appearance/spec.md#requirement-req-023---メッセージと処理の視覚表現) | [提案](changes/archive/2026-10-30-align-preview-with-html-sample/proposal.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[タスク](changes/archive/2026-10-30-align-preview-with-html-sample/tasks.md) |
 | align-preview-with-html-sample | REQ-024 | 追加 | アーカイブ済み | [正式仕様](specs/preview-appearance/spec.md#requirement-req-024---stateとsqlのカード表現) | [提案](changes/archive/2026-10-30-align-preview-with-html-sample/proposal.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[タスク](changes/archive/2026-10-30-align-preview-with-html-sample/tasks.md) |
 | align-preview-with-html-sample | REQ-025 | 追加 | アーカイブ済み | [正式仕様](specs/preview-appearance/spec.md#requirement-req-025---フラグメントの視覚表現と配置) | [提案](changes/archive/2026-10-30-align-preview-with-html-sample/proposal.md)、[設計](changes/archive/2026-10-30-align-preview-with-html-sample/design.md)、[タスク](changes/archive/2026-10-30-align-preview-with-html-sample/tasks.md) |
+| improve-preview-opening | REQ-026 | 追加 | アーカイブ済み | [正式仕様](specs/preview/spec.md#requirement-req-026---プレビュー自動起動) | [提案](changes/archive/2026-10-30-improve-preview-opening/proposal.md)、[設計](changes/archive/2026-10-30-improve-preview-opening/design.md)、[タスク](changes/archive/2026-10-30-improve-preview-opening/tasks.md) |
+| improve-preview-opening | REQ-027 | 追加 | アーカイブ済み | [正式仕様](specs/preview/spec.md#requirement-req-027---プレビューの再利用とクローズ) | [提案](changes/archive/2026-10-30-improve-preview-opening/proposal.md)、[設計](changes/archive/2026-10-30-improve-preview-opening/design.md)、[タスク](changes/archive/2026-10-30-improve-preview-opening/tasks.md) |
+| improve-preview-opening | REQ-028 | 追加 | アーカイブ済み | [正式仕様](specs/preview/spec.md#requirement-req-028---エディタの起動アイコン) | [提案](changes/archive/2026-10-30-improve-preview-opening/proposal.md)、[設計](changes/archive/2026-10-30-improve-preview-opening/design.md)、[タスク](changes/archive/2026-10-30-improve-preview-opening/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -130,8 +136,39 @@
 | align-preview-with-html-sample | REQ-024 / REQ-024-S02 | [シナリオ](specs/preview-appearance/spec.md#scenario-req-024-s02---独立したstateと長文) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderState` | [Chromium](../tests/visual/preview-appearance.spec.ts) `REQ-024 / REQ-024-S02` | [記録](#align-preview-with-html-sample---2026-10-29-stateとsql)、[列幅調整](#align-preview-with-html-sample---2026-10-30-id非表示と列幅) |
 | align-preview-with-html-sample | REQ-025 / REQ-025-S01 | [シナリオ](specs/preview-appearance/spec.md#scenario-req-025-s01---ログイン分岐を読む) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Chromium](../tests/visual/preview-appearance.spec.ts) `REQ-025 / REQ-025-S01` | [記録](#align-preview-with-html-sample---2026-10-29-分岐と配置)、[細部調整](#align-preview-with-html-sample---2026-10-29-細部調整)、[case位置](#align-preview-with-html-sample---2026-10-30-id非表示と列幅)、[文字装飾](#align-preview-with-html-sample---2026-10-30-case文字とメッセージ余白)、[else装飾](#align-preview-with-html-sample---2026-10-30-else文字の装飾) |
 | align-preview-with-html-sample | REQ-025 / REQ-025-S02 | [シナリオ](specs/preview-appearance/spec.md#scenario-req-025-s02---可変内容でも図を読める) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Chromium](../tests/visual/preview-appearance.spec.ts) `REQ-025 / REQ-025-S02` | [記録](#align-preview-with-html-sample---2026-10-29-分岐と配置)、[文字装飾](#align-preview-with-html-sample---2026-10-30-case文字とメッセージ余白)、[else装飾](#align-preview-with-html-sample---2026-10-30-else文字の装飾) |
+| improve-preview-opening | REQ-026 / REQ-026-S01 | [シナリオ](specs/preview/spec.md#scenario-req-026-s01---編集開始時の自動起動) | [起動](../src/extension/extension.ts) `activate` | [Extension](../tests/extension/preview.test.ts) `REQ-026` | [記録](#improve-preview-opening---2026-10-30-起動動作の検証) |
+| improve-preview-opening | REQ-026 / REQ-026-S02 | [シナリオ](specs/preview/spec.md#scenario-req-026-s02---設定と対象外ファイル) | [設定](../package.json)、[起動](../src/extension/extension.ts) | [Extension](../tests/extension/preview.test.ts) `REQ-026` | [記録](#improve-preview-opening---2026-10-30-起動動作の検証) |
+| improve-preview-opening | REQ-026 / REQ-026-S03 | [シナリオ](specs/preview/spec.md#scenario-req-026-s03---内部読み込みでは起動しない) | [起動](../src/extension/extension.ts) `activate` | [Extension](../tests/extension/preview.test.ts) `REQ-026` | [記録](#improve-preview-opening---2026-10-30-起動動作の検証) |
+| improve-preview-opening | REQ-027 / REQ-027-S01 | [シナリオ](specs/preview/spec.md#scenario-req-027-s01---単一パネルの再利用) | [単一パネル](../src/extension/preview-panel.ts) `openPreview` | [Extension](../tests/extension/preview.test.ts) `REQ-027` | [記録](#improve-preview-opening---2026-10-30-起動動作の検証) |
+| improve-preview-opening | REQ-027 / REQ-027-S02 | [シナリオ](specs/preview/spec.md#scenario-req-027-s02---手動クローズを尊重する) | [閉鎖](../src/extension/extension.ts) `activate` | [Extension](../tests/extension/preview.test.ts) `REQ-027` | [記録](#improve-preview-opening---2026-10-30-起動動作の検証) |
+| improve-preview-opening | REQ-027 / REQ-027-S03 | [シナリオ](specs/preview/spec.md#scenario-req-027-s03---連続起動で重複しない) | [単一パネル](../src/extension/preview-panel.ts) `openPreview` | [Extension](../tests/extension/preview.test.ts) `REQ-027` | [記録](#improve-preview-opening---2026-10-30-起動動作の検証) |
+| improve-preview-opening | REQ-028 / REQ-028-S01 | [シナリオ](specs/preview/spec.md#scenario-req-028-s01---アイコンからの手動起動) | [メニュー](../package.json) | [Extension](../tests/extension/preview.test.ts) `REQ-028` | [記録](#improve-preview-opening---2026-10-30-起動動作の検証) |
+| improve-preview-opening | REQ-028 / REQ-028-S02 | [シナリオ](specs/preview/spec.md#scenario-req-028-s02---対象外のエディタ) | [メニュー](../package.json) | [Extension](../tests/extension/preview.test.ts) `REQ-028` | [記録](#improve-preview-opening---2026-10-30-起動動作の検証) |
 
 ## 検証記録
+
+### improve-preview-opening - 2026-10-30 アーカイブ
+
+- 対象: REQ-026からREQ-028、[変更](changes/archive/2026-10-30-improve-preview-opening/proposal.md)。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 差分仕様を[正式仕様](specs/preview/spec.md)へ同期し、`npx --no-install openspec validate --specs`で全仕様を検証した。
+- 結果: 8仕様が成功し、REQ-001を保持したままREQ-026からREQ-028を追加した。
+  成果物4件とタスク8件の完了を確認してアーカイブした。
+- 証跡: [正式仕様](specs/preview/spec.md)、[アーカイブ](changes/archive/2026-10-30-improve-preview-opening/tasks.md)。
+- 未検証事項: アイコンとツールチップの開発ホスト上での目視確認。
+
+### improve-preview-opening - 2026-10-30 起動動作の検証
+
+- 対象: REQ-026/REQ-026-S01からS03、REQ-027/REQ-027-S01からS03、REQ-028/REQ-028-S01からS02。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `npm run check`、`npm run test:extension`、`npx --no-install openspec validate improve-preview-opening --strict`を実行する。
+- 結果: `npm run check`でBiome、Steiger、型検査、Core単体テスト33件が成功した。
+  `npm run test:extension`で7件が成功し、起動、設定OFF、内部読み込み、切り替え、クローズ後の抑制、連続起動、メニュー定義を確認した。
+  OpenSpec strict検証と`git diff --check`も成功した。
+- 証跡: [Extensionテスト](../tests/extension/preview.test.ts)、[設定とアイコン](../package.json)、[起動](../src/extension/extension.ts)、[単一パネル](../src/extension/preview-panel.ts)。
+- 未検証事項: Development Hostでのアイコンとツールチップの目視確認。
 
 ### align-preview-with-html-sample - 2026-10-30 アーカイブ
 

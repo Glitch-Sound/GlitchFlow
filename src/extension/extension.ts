@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { isGlfFileName } from "../core";
 import { diagnoseDocument } from "./diagnostics";
 import {
+  onDidClosePreview,
   onDidRenderPreview,
   openPreview,
   updatePreview,
@@ -15,6 +16,8 @@ export function activate(context: vscode.ExtensionContext): {
   const diagnostics = vscode.languages.createDiagnosticCollection("glitchflow");
   const timers = new Map<string, ReturnType<typeof setTimeout>>();
   const revisions = new Map<string, number>();
+  let lastGlfEditor = vscode.window.activeTextEditor;
+  let suppressedUri: string | undefined;
   const refresh = (document: vscode.TextDocument) => {
     const parsed = diagnoseDocument(document, diagnostics);
     if (parsed) updatePreview(document, parsed);
@@ -22,9 +25,30 @@ export function activate(context: vscode.ExtensionContext): {
   context.subscriptions.push(diagnostics);
   context.subscriptions.push(
     vscode.commands.registerCommand("glitchflow.openPreview", () => {
-      const document = vscode.window.activeTextEditor?.document;
-      if (document) refresh(document);
-      return openPreview(context);
+      const document =
+        vscode.window.activeTextEditor?.document ?? lastGlfEditor?.document;
+      if (!document || !isGlfFileName(document.fileName)) return;
+      suppressedUri = undefined;
+      refresh(document);
+      return openPreview(context, document);
+    }),
+    onDidClosePreview((uri) => {
+      suppressedUri = uri;
+    }),
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+      if (!editor) return;
+      const uri = editor.document.uri.toString();
+      if (suppressedUri && suppressedUri !== uri) suppressedUri = undefined;
+      if (!isGlfFileName(editor.document.fileName)) return;
+      lastGlfEditor = editor;
+      if (
+        vscode.workspace
+          .getConfiguration("glitchflow.preview", editor.document.uri)
+          .get<boolean>("autoOpen", true) &&
+        suppressedUri !== uri
+      ) {
+        void openPreview(context, editor.document, true);
+      }
     }),
     vscode.workspace.onDidOpenTextDocument(refresh),
     vscode.workspace.onDidChangeTextDocument(({ document }) => {
@@ -58,6 +82,15 @@ export function activate(context: vscode.ExtensionContext): {
   );
   for (const document of vscode.workspace.textDocuments) refresh(document);
   registerSyntaxColors(context);
+  if (
+    lastGlfEditor &&
+    isGlfFileName(lastGlfEditor.document.fileName) &&
+    vscode.workspace
+      .getConfiguration("glitchflow.preview", lastGlfEditor.document.uri)
+      .get<boolean>("autoOpen", true)
+  ) {
+    void openPreview(context, lastGlfEditor.document, true);
+  }
   return { onDidRenderPreview };
 }
 

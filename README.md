@@ -17,7 +17,11 @@ SQLや業務ファイルを実際に操作する機能は持たず、設計上�
 
 ## 現在使える機能
 
-`.glf` ファイルを開き、コマンドパレットから `GlitchFlow: プレビューを開く` を実行すると、現在の文書をシーケンス図として表示する。
+`.glf` ファイルをエディタで開くと、右側にプレビューが自動表示される。
+入力フォーカスはエディタに残り、別の`.glf`へ切り替えると同じプレビューが更新される。
+自動表示は設定`glitchflow.preview.autoOpen`で無効にできる。
+エディタ右上のプレビューアイコン、またはコマンドパレットの`GlitchFlow: プレビューを開く`から手動で表示できる。
+プレビューを閉じた後は、同じファイルの編集中に自動で再表示されない。
 編集するとプレビューが更新され、構文や参照の誤りはProblemsに表示される。
 解析に誤りがある間は最後の正常な図を保持する。
 
@@ -36,7 +40,7 @@ npx --no-install lefthook install
 npm run build
 ```
 
-VS Code でリポジトリを開き、ビルド後に F5 を押す。`.vscode/launch.json` の構成が Extension Development Host を起動し、`examples/login.glf` を開く。開発ホストのコマンドパレットから `GlitchFlow: プレビューを開く` を実行する。
+VS Code でリポジトリを開き、ビルド後に F5 を押す。`.vscode/launch.json` の構成が Extension Development Host を起動し、`examples/login.glf` を開く。開発ホストで`.glf`を開くとプレビューが右側に表示される。
 
 ## 検査
 

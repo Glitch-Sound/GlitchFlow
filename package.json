@@ -48,15 +48,30 @@
           ],
           "default": "theme",
           "description": "`.glf`のエディタ構文配色"
+        },
+        "glitchflow.preview.autoOpen": {
+          "type": "boolean",
+          "default": true,
+          "description": "`.glf`をエディタで開いたときにプレビューを自動表示する"
         }
       }
     },
     "commands": [
       {
         "command": "glitchflow.openPreview",
-        "title": "GlitchFlow: プレビューを開く"
+        "title": "GlitchFlow: プレビューを開く",
+        "icon": "$(open-preview)"
       }
-    ]
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "glitchflow.openPreview",
+          "when": "resourceExtname == .glf",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "build": "npm run build:extension && npm run build:webview",
