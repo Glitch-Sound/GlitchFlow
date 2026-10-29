@@ -1,6 +1,6 @@
 import type { Diagnostic, GlfDocument, GlfEvent } from "../model/glf-model";
 
-/** REQ-005, REQ-013: Object参照と経路ごとの明示的な活性操作を検証する。 */
+/** REQ-005、REQ-013、REQ-021: Object参照と経路ごとの明示的な活性操作を検証する。 */
 export function validateGlf(document: GlfDocument): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   const known = new Set(document.objects.map((object) => object.id));
@@ -43,21 +43,36 @@ export function validateGlf(document: GlfDocument): Diagnostic[] {
           });
         else active.delete(event.objectId);
       }
-      if (event.kind === "alt") {
+      if (
+        event.kind === "opt" ||
+        event.kind === "loop" ||
+        event.kind === "break"
+      ) {
+        const path = walk(event.events, new Map(active));
+        if (!sameActive(active, path))
+          diagnostics.push({
+            code: "activation-fragment-mismatch",
+            line: event.line,
+            message: `${event.kind}の出口で活性状態が一致しない`,
+          });
+      }
+      if (event.kind === "alt" || event.kind === "par") {
         const paths = event.branches.map((branch) =>
           walk(branch.events, new Map(active)),
         );
         if (paths.length > 0) {
-          const same = paths.every(
-            (path) =>
-              path.size === paths[0].size &&
-              [...path.keys()].every((id) => paths[0].has(id)),
-          );
+          const same =
+            paths.every((path) => sameActive(path, paths[0])) &&
+            (event.kind !== "par" ||
+              paths.every((path) => sameActive(path, active)));
           if (!same)
             diagnostics.push({
-              code: "activation-branch-mismatch",
+              code:
+                event.kind === "alt"
+                  ? "activation-branch-mismatch"
+                  : "activation-fragment-mismatch",
               line: event.line,
-              message: "altの分岐出口で活性状態が一致しない",
+              message: `${event.kind}の分岐出口で活性状態が一致しない`,
             });
           active = same
             ? paths[0]
@@ -66,6 +81,9 @@ export function validateGlf(document: GlfDocument): Diagnostic[] {
       }
     }
     return active;
+  }
+  function sameActive(a: Map<string, number>, b: Map<string, number>): boolean {
+    return a.size === b.size && [...a.keys()].every((id) => b.has(id));
   }
   const active = walk(document.events, new Map());
   for (const [id, line] of active)

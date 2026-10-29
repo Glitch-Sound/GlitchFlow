@@ -168,7 +168,7 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
   }
 }
 
-/** REQ-001, REQ-006..REQ-008, REQ-012: 分岐を含むシーケンスを安全なSVGノードで描画する。 */
+/** REQ-001、REQ-006..REQ-008、REQ-012、REQ-018..REQ-020: 複合フラグメントを含むシーケンスを安全なSVGノードで描画する。 */
 export function renderPreview(
   container: HTMLElement,
   documentData?: GlfDocument,
@@ -339,7 +339,7 @@ export function renderPreview(
         svgText(
           fragment.x + 10,
           fragment.y + 19,
-          "alt",
+          fragment.label ? `${fragment.kind} ${fragment.label}` : fragment.kind,
           "sequence-fragment-label",
         ),
       );
@@ -354,14 +354,15 @@ export function renderPreview(
               class: "sequence-fragment-divider",
             }),
           );
-        group.append(
-          svgText(
-            fragment.x + 10,
-            branch.y - 8,
-            branch.label === "else" ? "else" : `case ${branch.label}`,
-            "sequence-fragment-branch-label",
-          ),
-        );
+        if (branch.label)
+          group.append(
+            svgText(
+              fragment.x + 10,
+              branch.y - 8,
+              branch.label === "else" ? "else" : `case ${branch.label}`,
+              "sequence-fragment-branch-label",
+            ),
+          );
       });
       svg.append(group);
     }

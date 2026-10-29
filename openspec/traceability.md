@@ -31,6 +31,10 @@
 | REQ-015 | Problems診断 | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/editor-integration/spec.md#requirement-req-015---problems診断) |
 | REQ-016 | DSL構文配色 | 実装済み | [DSLエディタの配色](product.md#dslエディタの配色) | [正式仕様](specs/editor-integration/spec.md#requirement-req-016---dsl構文配色) |
 | REQ-017 | プレビュー操作 | 実装済み | [設計上の優先事項](product.md#設計上の優先事項) | [正式仕様](specs/editor-integration/spec.md#requirement-req-017---プレビュー操作) |
+| REQ-018 | optとloop | 実装済み | [シーケンス図](product.md#シーケンス図) | [正式仕様](specs/other-fragments/spec.md#requirement-req-018---optとloop) |
+| REQ-019 | par区画 | 実装済み | [シーケンス図](product.md#シーケンス図) | [正式仕様](specs/other-fragments/spec.md#requirement-req-019---par区画) |
+| REQ-020 | break表示 | 実装済み | [シーケンス図](product.md#シーケンス図) | [正式仕様](specs/other-fragments/spec.md#requirement-req-020---break表示) |
+| REQ-021 | フラグメントの診断 | 実装済み | [設計上の優先事項](product.md#設計上の優先事項) | [正式仕様](specs/other-fragments/spec.md#requirement-req-021---フラグメントの診断) |
 | NREQ-001 | 編集応答時間 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/editor-integration/spec.md#requirement-nreq-001---編集応答時間) |
 
 ## 要件ごとの変更履歴
@@ -62,6 +66,10 @@
 | integrate-glf-editor | REQ-016 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-integrate-glf-editor/specs/editor-integration/spec.md#requirement-req-016---dsl構文配色) | [提案](changes/archive/2026-10-29-integrate-glf-editor/proposal.md)、[設計](changes/archive/2026-10-29-integrate-glf-editor/design.md)、[タスク](changes/archive/2026-10-29-integrate-glf-editor/tasks.md) |
 | integrate-glf-editor | REQ-017 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-integrate-glf-editor/specs/editor-integration/spec.md#requirement-req-017---プレビュー操作) | [提案](changes/archive/2026-10-29-integrate-glf-editor/proposal.md)、[設計](changes/archive/2026-10-29-integrate-glf-editor/design.md)、[タスク](changes/archive/2026-10-29-integrate-glf-editor/tasks.md) |
 | integrate-glf-editor | NREQ-001 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-integrate-glf-editor/specs/editor-integration/spec.md#requirement-nreq-001---編集応答時間) | [提案](changes/archive/2026-10-29-integrate-glf-editor/proposal.md)、[設計](changes/archive/2026-10-29-integrate-glf-editor/design.md)、[タスク](changes/archive/2026-10-29-integrate-glf-editor/tasks.md) |
+| support-other-fragments | REQ-018 | 追加 | アーカイブ済み | [正式仕様](specs/other-fragments/spec.md#requirement-req-018---optとloop) | [提案](changes/archive/2026-10-29-support-other-fragments/proposal.md)、[設計](changes/archive/2026-10-29-support-other-fragments/design.md)、[タスク](changes/archive/2026-10-29-support-other-fragments/tasks.md) |
+| support-other-fragments | REQ-019 | 追加 | アーカイブ済み | [正式仕様](specs/other-fragments/spec.md#requirement-req-019---par区画) | [提案](changes/archive/2026-10-29-support-other-fragments/proposal.md)、[設計](changes/archive/2026-10-29-support-other-fragments/design.md)、[タスク](changes/archive/2026-10-29-support-other-fragments/tasks.md) |
+| support-other-fragments | REQ-020 | 追加 | アーカイブ済み | [正式仕様](specs/other-fragments/spec.md#requirement-req-020---break表示) | [提案](changes/archive/2026-10-29-support-other-fragments/proposal.md)、[設計](changes/archive/2026-10-29-support-other-fragments/design.md)、[タスク](changes/archive/2026-10-29-support-other-fragments/tasks.md) |
+| support-other-fragments | REQ-021 | 追加 | アーカイブ済み | [正式仕様](specs/other-fragments/spec.md#requirement-req-021---フラグメントの診断) | [提案](changes/archive/2026-10-29-support-other-fragments/proposal.md)、[設計](changes/archive/2026-10-29-support-other-fragments/design.md)、[タスク](changes/archive/2026-10-29-support-other-fragments/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -102,8 +110,31 @@
 | integrate-glf-editor | REQ-016 / REQ-016-S02 | [シナリオ](specs/editor-integration/spec.md#scenario-req-016-s02---ライトテーマで読める) | [装飾](../src/extension/syntax-colors.ts) `registerSyntaxColors` | Development Hostでライト・ダーク両テーマを目視確認 | [検証記録](#integrate-glf-editor---2026-10-29-編集連携) |
 | integrate-glf-editor | REQ-017 / REQ-017-S01 | [シナリオ](specs/editor-integration/spec.md#scenario-req-017-s01---図の全体を確認する) | [倍率](../src/webview/pages/preview/model/zoom.ts)、[画面](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Chromium](../tests/visual/editor.spec.ts) | [検証記録](#integrate-glf-editor---2026-10-29-編集連携) |
 | integrate-glf-editor | NREQ-001 / NREQ-001-S01 | [シナリオ](specs/editor-integration/spec.md#scenario-nreq-001-s01---編集応答時間を測る) | [更新](../src/extension/extension.ts) `activate`、[描画通知](../src/webview/app/main.ts) | [Extension](../tests/extension/preview.test.ts) | [検証記録](#integrate-glf-editor---2026-10-29-編集連携) |
+| support-other-fragments | REQ-018 / REQ-018-S01 | [シナリオ](specs/other-fragments/spec.md#scenario-req-018-s01---単一区画を描画する) | [解析](../src/core/parser/parse-glf.ts) `parseGlf`、[配置](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Core](../tests/core/other-fragments.test.ts)、[Chromium](../tests/visual/other-fragments.spec.ts) | [検証記録](#support-other-fragments---2026-10-29-複合フラグメント検証) |
+| support-other-fragments | REQ-019 / REQ-019-S01 | [シナリオ](specs/other-fragments/spec.md#scenario-req-019-s01---並列区画を描画する) | [解析](../src/core/parser/parse-glf.ts) `parseGlf`、[配置](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Core](../tests/core/other-fragments.test.ts)、[Chromium](../tests/visual/other-fragments.spec.ts) | [検証記録](#support-other-fragments---2026-10-29-複合フラグメント検証) |
+| support-other-fragments | REQ-020 / REQ-020-S01 | [シナリオ](specs/other-fragments/spec.md#scenario-req-020-s01---中断枠と後続を描画する) | [解析](../src/core/parser/parse-glf.ts) `parseGlf`、[配置](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Core](../tests/core/other-fragments.test.ts)、[Chromium](../tests/visual/other-fragments.spec.ts) | [検証記録](#support-other-fragments---2026-10-29-複合フラグメント検証) |
+| support-other-fragments | REQ-021 / REQ-021-S01 | [シナリオ](specs/other-fragments/spec.md#scenario-req-021-s01---不正な構造と活性を診断する) | [解析](../src/core/parser/parse-glf.ts) `parseGlf`、[検証](../src/core/validator/validate-glf.ts) `validateGlf` | [Core](../tests/core/other-fragments.test.ts) | [検証記録](#support-other-fragments---2026-10-29-複合フラグメント検証) |
+| support-other-fragments | REQ-021 / REQ-021-S02 | [シナリオ](specs/other-fragments/spec.md#scenario-req-021-s02---並列経路の活性不一致を診断する) | [検証](../src/core/validator/validate-glf.ts) `validateGlf` | [Core](../tests/core/other-fragments.test.ts) | [検証記録](#support-other-fragments---2026-10-29-複合フラグメント検証) |
 
 ## 検証記録
+
+### support-other-fragments - 2026-10-29 アーカイブ
+
+- 対象: REQ-018からREQ-021。
+- 方法: 差分仕様の4要件と5シナリオを[正式仕様](specs/other-fragments/spec.md)へ同期した。
+  `npx --no-install openspec validate --specs`で全7仕様の成功を確認した。
+  変更を[アーカイブ](changes/archive/2026-10-29-support-other-fragments/proposal.md)へ移し、台帳の参照を更新した。
+- 結果: 正式仕様と差分仕様の要件本文、シナリオが一致する。
+- 証跡: [正式仕様](specs/other-fragments/spec.md)、[差分仕様](changes/archive/2026-10-29-support-other-fragments/specs/other-fragments/spec.md)。
+
+### support-other-fragments - 2026-10-29 複合フラグメント検証
+
+- 対象: REQ-018からREQ-021の全5シナリオ。
+- 方法: Coreテスト、Chromium描画テスト、`npm run check`、`npm run test:visual`、OpenSpec strict検証、Verifyで照合する。
+- 結果: `npm run check`はCore 30件を含め成功し、`npm run test:visual`はChromium 10件すべて成功した。
+  上下のスクリーンショットでラベル、枠、区画線、後続イベントの表示を確認した。
+  既存`alt`の回帰テストも成功した。
+- 証跡: [Core](../tests/core/other-fragments.test.ts)、[Chromium](../tests/visual/other-fragments.spec.ts)、[Verify](changes/archive/2026-10-29-support-other-fragments/verification.md)。
 
 ### integrate-glf-editor - 2026-10-29 編集連携
 

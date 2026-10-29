@@ -74,6 +74,17 @@ export type GlfEvent =
       kind: "alt";
       branches: { label: string; events: GlfEvent[]; line: number }[];
       line: number;
+    }
+  | {
+      kind: "opt" | "loop" | "break";
+      label: string;
+      events: GlfEvent[];
+      line: number;
+    }
+  | {
+      kind: "par";
+      branches: { label: string; events: GlfEvent[]; line: number }[];
+      line: number;
     };
 
 export interface GlfDocument {

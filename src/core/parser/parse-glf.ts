@@ -74,7 +74,7 @@ function changeFor(marker: string | undefined): Change {
   return marker === "+" ? "added" : marker === "-" ? "removed" : "unchanged";
 }
 
-/** REQ-002..REQ-005: .glfを表示用IRと行番号付き診断に変換する。 */
+/** REQ-002..REQ-005、REQ-018..REQ-021: .glfを表示用IRと行番号付き診断に変換する。 */
 export function parseGlf(source: string): GlfDocument {
   const document: GlfDocument = {
     objects: [],
@@ -291,12 +291,31 @@ export function parseGlf(source: string): GlfDocument {
           });
         continue;
       }
-      if (text === "alt:") {
+      const single = /^(opt|loop|break)\s+(.+):$/.exec(text);
+      if (single) {
+        if (
+          lines[index] &&
+          lines[index].indent > indent &&
+          lines[index].indent !== indent + 4
+        )
+          error("indent", lines[index].number, "本体は4空白下げる");
+        const body = parseEvents(indent + 4);
+        if (body.length === 0) error("indent", line.number, "空のフラグメント");
+        events.push({
+          kind: single[1] as "opt" | "loop" | "break",
+          label: single[2],
+          events: body,
+          line: line.number,
+        });
+        continue;
+      }
+      if (text === "alt:" || text === "par:") {
+        const kind = text === "alt:" ? "alt" : "par";
         const branches: { label: string; events: GlfEvent[]; line: number }[] =
           [];
         if (!lines[index] || lines[index].indent <= indent) {
-          error("indent", line.number, "altの分岐がない");
-          events.push({ kind: "alt", branches, line: line.number });
+          error("indent", line.number, `${kind}の分岐がない`);
+          events.push({ kind, branches, line: line.number });
           continue;
         }
         const branchIndent = lines[index].indent;
@@ -305,8 +324,12 @@ export function parseGlf(source: string): GlfDocument {
         while (index < lines.length && lines[index].indent === branchIndent) {
           const branchLine = lines[index++];
           const branch = /^case\s+(.+):$/.exec(branchLine.text);
-          if (!branch && branchLine.text !== "else:") {
-            error("syntax", branchLine.number, "caseまたはelseが必要");
+          if (!branch && !(kind === "alt" && branchLine.text === "else:")) {
+            error(
+              "syntax",
+              branchLine.number,
+              kind === "par" ? "caseが必要" : "caseまたはelseが必要",
+            );
             continue;
           }
           const label = branch?.[1] ?? "else";
@@ -319,7 +342,9 @@ export function parseGlf(source: string): GlfDocument {
             line: branchLine.number,
           });
         }
-        events.push({ kind: "alt", branches, line: line.number });
+        if (kind === "par" && branches.length < 2)
+          error("fragment-branches", line.number, "parには2区画以上が必要");
+        events.push({ kind, branches, line: line.number });
         continue;
       }
       const message = messagePattern.exec(text);

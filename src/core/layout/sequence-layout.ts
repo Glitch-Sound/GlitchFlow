@@ -7,18 +7,32 @@ import type {
 } from "../model/glf-model";
 
 type TimelineItem =
-  | Exclude<GlfEvent, { kind: "alt" }>
-  | { kind: "alt-open"; depth: number }
+  | Exclude<GlfEvent, { events: GlfEvent[] } | { branches: unknown[] }>
+  | {
+      kind: "alt-open";
+      depth: number;
+      fragmentKind: "alt" | "opt" | "loop" | "par" | "break";
+      label: string;
+    }
   | { kind: "branch-open"; label: string; depth: number; first: boolean }
   | { kind: "branch-close" }
   | { kind: "alt-close" };
 
 function timeline(events: GlfEvent[], depth = 0): TimelineItem[] {
   return events.flatMap((event): TimelineItem[] => {
-    if (event.kind !== "alt") return [event];
+    if (!("branches" in event) && !("events" in event)) return [event];
+    const branches =
+      event.kind === "alt" || event.kind === "par"
+        ? event.branches
+        : [{ label: "", events: event.events, line: event.line }];
     return [
-      { kind: "alt-open", depth },
-      ...event.branches.flatMap((branch, index): TimelineItem[] => [
+      {
+        kind: "alt-open",
+        depth,
+        fragmentKind: event.kind,
+        label: "label" in event ? event.label : "",
+      },
+      ...branches.flatMap((branch, index): TimelineItem[] => [
         { kind: "branch-open", label: branch.label, depth, first: index === 0 },
         ...timeline(branch.events, depth + 1),
         { kind: "branch-close" },
@@ -71,6 +85,8 @@ export interface SequenceLayout {
   fileStates: (PanelBox & { nodes: FileLine[] })[];
   sqlBlocks: (PanelBox & { lines: string[] })[];
   fragments: {
+    kind: "alt" | "opt" | "loop" | "par" | "break";
+    label: string;
     x: number;
     y: number;
     width: number;
@@ -87,7 +103,7 @@ function flattenFile(nodes: FileNode[], depth = 0): FileLine[] {
   ]);
 }
 
-/** REQ-006, REQ-008..REQ-013: IRから分岐を含む表示座標を決定的に計算する。 */
+/** REQ-006、REQ-008..REQ-013、REQ-018..REQ-020: IRから分岐を含む表示座標を決定的に計算する。 */
 export function layoutSequence(
   document: GlfDocument,
   measureText: (text: string) => number,
@@ -224,6 +240,8 @@ export function layoutSequence(
         ) -
         event.depth * 12;
       const fragment = {
+        kind: event.fragmentKind,
+        label: event.label,
         x: left,
         y,
         width: right - left,
@@ -245,7 +263,13 @@ export function layoutSequence(
     if (event.kind === "branch-open") {
       const current = fragmentStack.at(-1);
       if (!current) continue;
-      lastY += event.first ? 38 : 36;
+      lastY +=
+        event.first &&
+        (current.fragment.kind === "alt" || current.fragment.kind === "par")
+          ? 54
+          : event.first
+            ? 38
+            : 36;
       const y = lastY;
       current.fragment.branches.push({ label: event.label, y, endY: y });
       active.clear();
