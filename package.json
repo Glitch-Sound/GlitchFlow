@@ -1,13 +1,27 @@
 {
   "name": "glitchflow",
   "displayName": "GlitchFlow",
-  "description": "処理の流れとデータの状態を可視化するVS Code拡張機能",
+  "description": "処理の流れとデータの期待状態を同じ時間軸で可視化する .glf エディタとプレビュー",
   "version": "0.0.1",
+  "license": "MIT",
   "icon": "images/icon.png",
-  "private": true,
-  "publisher": "glitch-sound",
+  "publisher": "Glitch-Sound",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Glitch-Sound/glitchflow.git"
+  },
+  "homepage": "https://github.com/Glitch-Sound/glitchflow#readme",
+  "bugs": {
+    "url": "https://github.com/Glitch-Sound/glitchflow/issues"
+  },
+  "keywords": [
+    "glf",
+    "sequence diagram",
+    "flow visualization",
+    "database state"
+  ],
   "engines": {
-    "vscode": "^1.96.0"
+    "vscode": "^1.140.0"
   },
   "categories": [
     "Visualization"
@@ -74,6 +88,7 @@
     }
   },
   "scripts": {
+    "vscode:prepublish": "npm run build",
     "build": "npm run build:extension && npm run build:webview",
     "build:extension": "node esbuild.mjs",
     "build:webview": "vite build",
@@ -95,6 +110,7 @@
     "@types/node": "^26.6.6",
     "@types/vscode": "^1.140.0",
     "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^4.1.0",
     "esbuild": "^0.28.2",
     "lefthook": "^2.2.2",
     "mocha": "^12.0.3",
