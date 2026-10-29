@@ -118,6 +118,32 @@
 
 ## 検証記録
 
+### stabilize-layout - 2026-10-29 アーカイブ
+
+- 対象: [D-01からD-03](changes/archive/2026-10-29-stabilize-layout/design.md)。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: OpenSpecの成果物とタスクの完了、`skip_specs: true`による差分仕様の省略、アーカイブ先の未使用を確認した。
+  変更を`changes/archive/2026-10-29-stabilize-layout/`へ移し、台帳と成果物の相対リンクを更新した。
+- 結果: 成果物は完了または意図的な省略、タスクは5/5件完了である。
+  同期する差分仕様はなく、正式仕様に変更はない。
+- 証跡: [アーカイブ済み提案](changes/archive/2026-10-29-stabilize-layout/proposal.md)、[タスク](changes/archive/2026-10-29-stabilize-layout/tasks.md)、[Verify報告](changes/archive/2026-10-29-stabilize-layout/verification.md)。
+- 未検証事項: なし。
+
+### stabilize-layout - 2026-10-29 レイアウト回帰と基本操作
+
+- 対象: [D-01](changes/archive/2026-10-29-stabilize-layout/design.md#d-01---配置の構造をcoreで検査する)、[D-02](changes/archive/2026-10-29-stabilize-layout/design.md#d-02---chromiumで描画境界と前面順を検査する)、[D-03](changes/archive/2026-10-29-stabilize-layout/design.md#d-03---基本操作を同一画面で確認する)。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `examples/login.glf`と小画面のプレビューで`npm run check`、`npm run test:visual`、`npm run test:extension`、`git diff --check`を実行した。
+  Chromiumの全体画像と右下端の画像を目視した。
+- 結果: Coreの33件、Chromiumの12件、Extensionの4件が成功した。
+  ライフライン中心、矢印端点、State寸法、DBセル境界、フラグメントの前面順、活性終了、倍率変更、縦横スクロール、文書更新を確認した。
+  最初の`npm run check`は新しいテストのNodeList反復と`findLastIndex`が型検査で失敗したため、互換な`Array.from`と`lastIndexOf`へ修正して再実行し、成功した。
+  全体画像ではDB表、SQL、FILEツリー、分岐枠と活性の終了位置に切れや不自然な重なりは見つからなかった。
+- 証跡: [Core回帰テスト](../tests/core/layout-regression.test.ts)、[Chromium回帰テスト](../tests/visual/layout-regression.spec.ts)、`test-results/stabilize-layout-diagram.png`、`test-results/stabilize-layout-right-bottom.png`、[Verify報告](changes/archive/2026-10-29-stabilize-layout/verification.md)。
+- 未検証事項: CIサービス上での実行は、実行先が未選択のため未実施である。
+
 ### support-other-fragments - 2026-10-29 アーカイブ
 
 - 対象: REQ-018からREQ-021。
@@ -365,3 +391,4 @@ skip_specsの理由、設計節、タスク、検証記録へリンクし、要�
 | 変更名 | 目的 | 提案 | 設計 | タスク | 検証記録 |
 | --- | --- | --- | --- | --- | --- |
 | glitchflow-spec | Core、ビルド、検査、将来のCI移植性、基準DSLの基盤 | [提案](changes/archive/2026-10-29-glitchflow-spec/proposal.md) | [D-01](changes/archive/2026-10-29-glitchflow-spec/design.md#d-01---実行環境を分けた最小ビルド)、[D-03](changes/archive/2026-10-29-glitchflow-spec/design.md#d-03---開発時とciの同一検査)、[D-04](changes/archive/2026-10-29-glitchflow-spec/design.md#d-04---初期画面と基準dslの検証) | [タスク](changes/archive/2026-10-29-glitchflow-spec/tasks.md) | [Core基盤](#glitchflow-spec---2026-10-29-core基盤)、[CI相当の検査](#glitchflow-spec---2026-10-29-ci相当の検査)、[開発手順と基準入力](#glitchflow-spec---2026-10-29-開発手順と基準入力)、[GitHub Actions撤去](#glitchflow-spec---2026-10-29-github-actions撤去)、[Lefthook対象調整](#glitchflow-spec---2026-10-29-lefthook対象調整) |
+| stabilize-layout | 既存表示の配置回帰と基本操作の検証 | [提案](changes/archive/2026-10-29-stabilize-layout/proposal.md) | [D-01](changes/archive/2026-10-29-stabilize-layout/design.md#d-01---配置の構造をcoreで検査する)、[D-02](changes/archive/2026-10-29-stabilize-layout/design.md#d-02---chromiumで描画境界と前面順を検査する)、[D-03](changes/archive/2026-10-29-stabilize-layout/design.md#d-03---基本操作を同一画面で確認する) | [タスク](changes/archive/2026-10-29-stabilize-layout/tasks.md) | [レイアウト回帰と基本操作](#stabilize-layout---2026-10-29-レイアウト回帰と基本操作) |
