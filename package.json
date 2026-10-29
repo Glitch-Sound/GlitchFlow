@@ -3,6 +3,7 @@
   "displayName": "GlitchFlow",
   "description": "処理の流れとデータの状態を可視化するVS Code拡張機能",
   "version": "0.0.1",
+  "icon": "images/icon.png",
   "private": true,
   "publisher": "glitch-sound",
   "engines": {
