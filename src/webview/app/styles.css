@@ -106,3 +106,14 @@ body {
   fill: #34404d;
   stroke: #9ca8b6;
 }
+.sequence-fragment-frame,
+.sequence-fragment-divider {
+  fill: none;
+  stroke: #dd6872;
+  stroke-width: 2;
+}
+.sequence-fragment-label,
+.sequence-fragment-branch-label {
+  fill: #dd6872;
+  font-weight: 700;
+}

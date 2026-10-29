@@ -1,4 +1,32 @@
-import type { Change, DbRow, FileNode, GlfDocument } from "../model/glf-model";
+import type {
+  Change,
+  DbRow,
+  FileNode,
+  GlfDocument,
+  GlfEvent,
+} from "../model/glf-model";
+
+type TimelineItem =
+  | Exclude<GlfEvent, { kind: "alt" }>
+  | { kind: "alt-open"; depth: number }
+  | { kind: "branch-open"; label: string; depth: number; first: boolean }
+  | { kind: "branch-close" }
+  | { kind: "alt-close" };
+
+function timeline(events: GlfEvent[], depth = 0): TimelineItem[] {
+  return events.flatMap((event): TimelineItem[] => {
+    if (event.kind !== "alt") return [event];
+    return [
+      { kind: "alt-open", depth },
+      ...event.branches.flatMap((branch, index): TimelineItem[] => [
+        { kind: "branch-open", label: branch.label, depth, first: index === 0 },
+        ...timeline(branch.events, depth + 1),
+        { kind: "branch-close" },
+      ]),
+      { kind: "alt-close" },
+    ];
+  });
+}
 
 interface PanelBox {
   objectId: string;
@@ -42,6 +70,14 @@ export interface SequenceLayout {
   })[];
   fileStates: (PanelBox & { nodes: FileLine[] })[];
   sqlBlocks: (PanelBox & { lines: string[] })[];
+  fragments: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    depth: number;
+    branches: { label: string; y: number; endY: number }[];
+  }[];
 }
 
 function flattenFile(nodes: FileNode[], depth = 0): FileLine[] {
@@ -51,20 +87,12 @@ function flattenFile(nodes: FileNode[], depth = 0): FileLine[] {
   ]);
 }
 
-/** REQ-006, REQ-008..REQ-011: IRからシーケンスと表示用状態の座標を決定的に計算する。 */
+/** REQ-006, REQ-008..REQ-013: IRから分岐を含む表示座標を決定的に計算する。 */
 export function layoutSequence(
   document: GlfDocument,
   measureText: (text: string) => number,
 ): SequenceLayout {
-  const basic = document.events.filter(
-    (event) =>
-      event.kind === "message" ||
-      event.kind === "process" ||
-      event.kind === "activation" ||
-      event.kind === "db-state" ||
-      event.kind === "file-state" ||
-      event.kind === "sql",
-  );
+  const basic = timeline(document.events);
   const panelWidths = new Map<string, number>();
   const measured = basic.map((event) => {
     if (event.kind === "db-state") {
@@ -169,12 +197,90 @@ export function layoutSequence(
   const dbStates: SequenceLayout["dbStates"] = [];
   const fileStates: SequenceLayout["fileStates"] = [];
   const sqlBlocks: SequenceLayout["sqlBlocks"] = [];
+  const fragments: SequenceLayout["fragments"] = [];
   const active = new Map<string, number>();
+  const fragmentStack: {
+    fragment: SequenceLayout["fragments"][number];
+    inherited: Map<string, number>;
+    exits: Map<string, number>[];
+  }[] = [];
   let lastY = 96;
   let lastPanel: { kind: string; objectId: string } | undefined;
   for (let index = 0; index < basic.length; index++) {
     const event = basic[index];
     const panel = measured[index];
+    if (event.kind === "alt-open") {
+      const y = lastY + 28;
+      const left = (lifelines[0]?.x ?? 110) - 72 + event.depth * 12;
+      const right =
+        Math.max(
+          x + 90,
+          ...[...dbStates, ...fileStates, ...sqlBlocks].map(
+            (box) => box.x + box.width + 18,
+          ),
+          ...[...panelWidths.entries()].map(
+            ([id, width]) => (xById.get(id) ?? 0) + width + 50,
+          ),
+        ) -
+        event.depth * 12;
+      const fragment = {
+        x: left,
+        y,
+        width: right - left,
+        height: 0,
+        depth: event.depth,
+        branches: [] as { label: string; y: number; endY: number }[],
+      };
+      fragments.push(fragment);
+      fragmentStack.push({ fragment, inherited: new Map(active), exits: [] });
+      for (const [objectId, startY] of active) {
+        const laneX = xById.get(objectId);
+        if (laneX !== undefined)
+          activations.push({ objectId, x: laneX, startY, endY: y + 26 });
+      }
+      active.clear();
+      lastY = y;
+      continue;
+    }
+    if (event.kind === "branch-open") {
+      const current = fragmentStack.at(-1);
+      if (!current) continue;
+      lastY += event.first ? 38 : 36;
+      const y = lastY;
+      current.fragment.branches.push({ label: event.label, y, endY: y });
+      active.clear();
+      for (const id of current.inherited.keys())
+        active.set(id, y - (event.first ? 12 : 24));
+      lastPanel = undefined;
+      continue;
+    }
+    if (event.kind === "branch-close") {
+      const current = fragmentStack.at(-1);
+      if (!current) continue;
+      lastY += 22;
+      const branch = current.fragment.branches.at(-1);
+      if (branch) branch.endY = lastY;
+      current.exits.push(new Map(active));
+      for (const [objectId, startY] of active) {
+        const laneX = xById.get(objectId);
+        if (laneX !== undefined)
+          activations.push({ objectId, x: laneX, startY, endY: lastY });
+      }
+      active.clear();
+      continue;
+    }
+    if (event.kind === "alt-close") {
+      const current = fragmentStack.pop();
+      if (!current) continue;
+      current.fragment.height = lastY + 10 - current.fragment.y;
+      const common = current.exits[0] ?? new Map<string, number>();
+      for (const id of common.keys())
+        if (current.exits.every((path) => path.has(id)))
+          active.set(id, lastY + 10);
+      lastY += 30;
+      lastPanel = undefined;
+      continue;
+    }
     if (
       event.kind === "message" &&
       (xById.get(event.to) === undefined ||
@@ -325,5 +431,6 @@ export function layoutSequence(
     dbStates,
     fileStates,
     sqlBlocks,
+    fragments,
   };
 }

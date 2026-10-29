@@ -167,7 +167,7 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
   }
 }
 
-/** REQ-001, REQ-006..REQ-008: 基本シーケンスを安全なSVGノードで描画する。 */
+/** REQ-001, REQ-006..REQ-008, REQ-012: 分岐を含むシーケンスを安全なSVGノードで描画する。 */
 export function renderPreview(
   container: HTMLElement,
   documentData?: GlfDocument,
@@ -294,6 +294,47 @@ export function renderPreview(
       });
       label.textContent = process.text;
       svg.append(label);
+    }
+    for (const fragment of layout.fragments) {
+      const group = svgElement("g", { class: "sequence-fragment" });
+      group.append(
+        svgElement("rect", {
+          x: String(fragment.x),
+          y: String(fragment.y),
+          width: String(fragment.width),
+          height: String(fragment.height),
+          class: "sequence-fragment-frame",
+        }),
+      );
+      group.append(
+        svgText(
+          fragment.x + 10,
+          fragment.y + 19,
+          "alt",
+          "sequence-fragment-label",
+        ),
+      );
+      fragment.branches.forEach((branch, index) => {
+        if (index > 0)
+          group.append(
+            svgElement("line", {
+              x1: String(fragment.x),
+              x2: String(fragment.x + fragment.width),
+              y1: String(branch.y - 24),
+              y2: String(branch.y - 24),
+              class: "sequence-fragment-divider",
+            }),
+          );
+        group.append(
+          svgText(
+            fragment.x + 10,
+            branch.y - 8,
+            branch.label === "else" ? "else" : `case ${branch.label}`,
+            "sequence-fragment-branch-label",
+          ),
+        );
+      });
+      svg.append(group);
     }
     scroller.append(svg);
     main.append(scroller);

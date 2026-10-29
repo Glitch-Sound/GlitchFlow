@@ -25,6 +25,8 @@
 | REQ-009 | DB状態の描画 | 実装済み | [データ状態](product.md#データ状態) | [正式仕様](specs/state-rendering/spec.md#requirement-req-009---db状態の描画) |
 | REQ-010 | FILE状態の描画 | 実装済み | [データ状態](product.md#データ状態) | [正式仕様](specs/state-rendering/spec.md#requirement-req-010---file状態の描画) |
 | REQ-011 | SQLの描画と状態配置 | 実装済み | [レイアウト](tech.md#レイアウトと描画) | [正式仕様](specs/state-rendering/spec.md#requirement-req-011---sqlの描画と状態配置) |
+| REQ-012 | alt分岐の描画 | 実装済み | [シーケンス図](product.md#シーケンス図) | [正式仕様](specs/alt-fragment/spec.md#requirement-req-012---alt分岐の描画) |
+| REQ-013 | 分岐の活性整合性 | 実装済み | [設計上の優先事項](product.md#設計上の優先事項) | [正式仕様](specs/alt-fragment/spec.md#requirement-req-013---分岐の活性整合性) |
 
 ## 要件ごとの変更履歴
 
@@ -48,6 +50,8 @@
 | render-state-and-sql | REQ-009 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#requirement-req-009---db状態の描画) | [提案](changes/archive/2026-10-29-render-state-and-sql/proposal.md)、[設計](changes/archive/2026-10-29-render-state-and-sql/design.md)、[タスク](changes/archive/2026-10-29-render-state-and-sql/tasks.md) |
 | render-state-and-sql | REQ-010 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#requirement-req-010---file状態の描画) | [提案](changes/archive/2026-10-29-render-state-and-sql/proposal.md)、[設計](changes/archive/2026-10-29-render-state-and-sql/design.md)、[タスク](changes/archive/2026-10-29-render-state-and-sql/tasks.md) |
 | render-state-and-sql | REQ-011 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#requirement-req-011---sqlの描画と状態配置) | [提案](changes/archive/2026-10-29-render-state-and-sql/proposal.md)、[設計](changes/archive/2026-10-29-render-state-and-sql/design.md)、[タスク](changes/archive/2026-10-29-render-state-and-sql/tasks.md) |
+| support-alt-fragment | REQ-012 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#requirement-req-012---alt分岐の描画) | [提案](changes/archive/2026-10-29-support-alt-fragment/proposal.md)、[設計](changes/archive/2026-10-29-support-alt-fragment/design.md)、[タスク](changes/archive/2026-10-29-support-alt-fragment/tasks.md) |
+| support-alt-fragment | REQ-013 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#requirement-req-013---分岐の活性整合性) | [提案](changes/archive/2026-10-29-support-alt-fragment/proposal.md)、[設計](changes/archive/2026-10-29-support-alt-fragment/design.md)、[タスク](changes/archive/2026-10-29-support-alt-fragment/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -77,8 +81,36 @@
 | render-state-and-sql | REQ-010 / REQ-010-S01 | [シナリオ](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#scenario-req-010-s01---階層と個別の変更属性を表示する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderState` | [Core](../tests/core/state-layout.test.ts)、[Chromium](../tests/visual/state.spec.ts) `REQ-010-S01` | [検証記録](#render-state-and-sql---2026-10-29-描画検証) |
 | render-state-and-sql | REQ-011 / REQ-011-S01 | [シナリオ](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#scenario-req-011-s01---sqlをstateの下に表示する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderState` | [Core](../tests/core/state-layout.test.ts)、[Chromium](../tests/visual/state.spec.ts) `REQ-011-S01` | [検証記録](#render-state-and-sql---2026-10-29-描画検証) |
 | render-state-and-sql | REQ-011 / REQ-011-S02 | [シナリオ](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#scenario-req-011-s02---指定位置だけに表示する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/state-layout.test.ts) `REQ-011-S02` | [検証記録](#render-state-and-sql---2026-10-29-描画検証) |
+| support-alt-fragment | REQ-012 / REQ-012-S01 | [シナリオ](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#scenario-req-012-s01---ログインの成功と失敗を描画する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Core](../tests/core/alt-layout.test.ts)、[Chromium](../tests/visual/alt.spec.ts) | [検証記録](#support-alt-fragment---2026-10-29-描画検証) |
+| support-alt-fragment | REQ-012 / REQ-012-S02 | [シナリオ](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#scenario-req-012-s02---入れ子の分岐を描画する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/alt-layout.test.ts) | [検証記録](#support-alt-fragment---2026-10-29-描画検証) |
+| support-alt-fragment | REQ-013 / REQ-013-S01 | [シナリオ](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#scenario-req-013-s01---分岐ごとに活性を終了する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/alt-layout.test.ts)、[Chromium](../tests/visual/alt.spec.ts) | [検証記録](#support-alt-fragment---2026-10-29-描画検証) |
+| support-alt-fragment | REQ-013 / REQ-013-S02 | [シナリオ](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#scenario-req-013-s02---活性状態の不一致を診断する) | [Validator](../src/core/validator/validate-glf.ts) `validateGlf` | [Core](../tests/core/alt-layout.test.ts) | [検証記録](#support-alt-fragment---2026-10-29-描画検証) |
 
 ## 検証記録
+
+### support-alt-fragment - 2026-10-29 アーカイブ
+
+- 対象: REQ-012、REQ-013。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `alt-fragment`のREQ-012とREQ-013を正式仕様へ同期した。
+  差分仕様と正式仕様のPurpose、要件、4シナリオを照合し、`npx --no-install openspec validate --specs`で正式仕様5件を検証した。
+  変更を`changes/archive/2026-10-29-support-alt-fragment/`へ移し、台帳の参照を更新した。
+- 結果: 2要件と4シナリオが一致し、正式仕様5件の検証が成功した。
+- 証跡: [正式仕様](specs/alt-fragment/spec.md)、[アーカイブ](changes/archive/2026-10-29-support-alt-fragment/proposal.md)。
+- 未検証事項: なし。
+
+### support-alt-fragment - 2026-10-29 描画検証
+
+- 対象: REQ-012-S01、REQ-012-S02、REQ-013-S01、REQ-013-S02。
+- 実行日: 2026-10-29 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `npm run check`、`npm run test:visual`、`npx --no-install openspec validate support-alt-fragment --strict`、`git diff --check`を実行した。
+  CLIに`verify`コマンドがないため、`openspec-verify-change`の3観点で手動照合する。
+- 結果: Coreの21件、Chromiumの7件、Biome、Steiger、型検査、OpenSpec strict検証が成功した。
+  Chromium画像で両分岐の枠、ラベル、イベント、活性区間を確認した。
+- 証跡: [Coreテスト](../tests/core/alt-layout.test.ts)、[描画テスト](../tests/visual/alt.spec.ts)、[Verify報告](changes/archive/2026-10-29-support-alt-fragment/verification.md)、`test-results/render-alt.png`、`test-results/render-alt-right.png`。
+- 未検証事項: なし。
 
 ### render-state-and-sql - 2026-10-29 描画検証
 

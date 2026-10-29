@@ -1,6 +1,6 @@
 import type { Diagnostic, GlfDocument, GlfEvent } from "../model/glf-model";
 
-/** REQ-005: Object参照と明示的な活性操作を検証する。 */
+/** REQ-005, REQ-013: Object参照と経路ごとの明示的な活性操作を検証する。 */
 export function validateGlf(document: GlfDocument): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   const known = new Set(document.objects.map((object) => object.id));
@@ -47,14 +47,22 @@ export function validateGlf(document: GlfDocument): Diagnostic[] {
         const paths = event.branches.map((branch) =>
           walk(branch.events, new Map(active)),
         );
-        if (
-          paths.length > 0 &&
-          paths.every(
+        if (paths.length > 0) {
+          const same = paths.every(
             (path) =>
-              [...path.keys()].join(",") === [...paths[0].keys()].join(","),
-          )
-        )
-          active = paths[0];
+              path.size === paths[0].size &&
+              [...path.keys()].every((id) => paths[0].has(id)),
+          );
+          if (!same)
+            diagnostics.push({
+              code: "activation-branch-mismatch",
+              line: event.line,
+              message: "altの分岐出口で活性状態が一致しない",
+            });
+          active = same
+            ? paths[0]
+            : new Map(paths.flatMap((path) => [...path.entries()]));
+        }
       }
     }
     return active;
