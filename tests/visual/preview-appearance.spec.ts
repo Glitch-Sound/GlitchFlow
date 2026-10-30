@@ -51,6 +51,7 @@ test("REQ-022 / REQ-022-S01: 拡大縮小ボタンの表示文字と操作をそ
     "-",
     "Reset",
     "+",
+    "⇩",
   ]);
   const diagram = page.locator(".sequence-diagram");
   const initialWidth = Number(await diagram.getAttribute("width"));

@@ -29,6 +29,7 @@
   "main": "./dist/extension/extension.js",
   "activationEvents": [
     "onCommand:glitchflow.openPreview",
+    "onCommand:glitchflow.exportDiagram",
     "onLanguage:glitchflow"
   ],
   "contributes": {
@@ -75,6 +76,10 @@
         "command": "glitchflow.openPreview",
         "title": "GlitchFlow: プレビューを開く",
         "icon": "$(open-preview)"
+      },
+      {
+        "command": "glitchflow.exportDiagram",
+        "title": "GlitchFlow: 図をエクスポート"
       }
     ],
     "menus": {

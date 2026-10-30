@@ -3,6 +3,7 @@ import { isGlfFileName } from "../core";
 import { registerCompletion } from "./completion";
 import { diagnoseDocument } from "./diagnostics";
 import {
+  exportCurrentPreview,
   onDidClosePreview,
   onDidRenderPreview,
   openPreview,
@@ -33,6 +34,9 @@ export function activate(context: vscode.ExtensionContext): {
       refresh(document);
       return openPreview(context, document);
     }),
+    vscode.commands.registerCommand("glitchflow.exportDiagram", () =>
+      exportCurrentPreview(),
+    ),
     onDidClosePreview((uri) => {
       suppressedUri = uri;
     }),

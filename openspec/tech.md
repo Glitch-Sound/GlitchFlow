@@ -17,6 +17,7 @@ WebviewにはFSD v2.1を適用し、Pages Firstで必要な構造だけを作る
 | `.glf` 構文ハイライト | VSCode TextMate Grammar(標準) |
 | 任意の専用配色 | VSCode TextEditorDecorationType(`.glf` に限定) |
 | プレビュー | VSCode Webview API |
+| 図のエクスポート | SVG、Canvas、VSCode保存ダイアログ |
 | UI | Vanilla TypeScript、HTML、CSS |
 | 配置 | CSS Gridと計算済みレイアウト座標 |
 | 線、矢印 | 必要最小限のSVG |
@@ -61,6 +62,8 @@ VSCodeとWebviewのデータ交換にはメッセージ通信を使う。
 - 複合フラグメントの線とラベルは前面に配置し、背景は内部要素を隠さない。
 - SQLとDB表の文字列はDOMのテキストとして描画し、選択、コピーを可能にする。
 - 図が大きくなった場合はスクロールを優先し、内容を勝手に切り詰めない。
+- エクスポートは表示中SVGの全viewBoxを使い、計算済みスタイルを埋め込んで単独のSVGとする。
+- PNGは同じSVGをCanvasへラスタライズし、拡大倍率とCanvas寸法の上限を考慮する。
 
 ## 構文と安全性
 

@@ -17,6 +17,7 @@ await build({
     "tests/extension/diagnostics.test.ts",
     "tests/extension/syntax-colors.test.ts",
     "tests/extension/completion.test.ts",
+    "tests/extension/export.test.ts",
   ],
   bundle: true,
   platform: "node",

@@ -45,6 +45,9 @@
 | REQ-029 | 定型構文補完 | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/dsl-completion/spec.md#requirement-req-029---定型構文補完) |
 | REQ-030 | 定義参照補完 | 実装済み | [データ状態](product.md#データ状態) | [正式仕様](specs/dsl-completion/spec.md#requirement-req-030---定義参照補完) |
 | REQ-031 | 文脈別補完 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/dsl-completion/spec.md#requirement-req-031---文脈別補完) |
+| REQ-032 | 画像エクスポート操作 | 実装済み | [図面の操作](product.md#図面の操作) | [変更仕様](changes/add-image-export/specs/diagram-export/spec.md#requirement-req-032---画像エクスポート操作) |
+| REQ-033 | 全体図の品質 | 実装済み | [描画規則](tech.md#描画規則) | [変更仕様](changes/add-image-export/specs/diagram-export/spec.md#requirement-req-033---全体図の品質) |
+| REQ-034 | 失敗と状態保持 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [変更仕様](changes/add-image-export/specs/diagram-export/spec.md#requirement-req-034---失敗と状態保持) |
 | NREQ-001 | 編集応答時間 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/editor-integration/spec.md#requirement-nreq-001---編集応答時間) |
 
 ## 要件ごとの変更履歴
@@ -91,6 +94,9 @@
 | add-glf-completion | REQ-029 | 追加 | アーカイブ済み | [正式仕様](specs/dsl-completion/spec.md#requirement-req-029---定型構文補完) | [提案](changes/archive/2026-10-30-add-glf-completion/proposal.md)、[設計](changes/archive/2026-10-30-add-glf-completion/design.md)、[タスク](changes/archive/2026-10-30-add-glf-completion/tasks.md) |
 | add-glf-completion | REQ-030 | 追加 | アーカイブ済み | [正式仕様](specs/dsl-completion/spec.md#requirement-req-030---定義参照補完) | [提案](changes/archive/2026-10-30-add-glf-completion/proposal.md)、[設計](changes/archive/2026-10-30-add-glf-completion/design.md)、[タスク](changes/archive/2026-10-30-add-glf-completion/tasks.md) |
 | add-glf-completion | REQ-031 | 追加 | アーカイブ済み | [正式仕様](specs/dsl-completion/spec.md#requirement-req-031---文脈別補完) | [提案](changes/archive/2026-10-30-add-glf-completion/proposal.md)、[設計](changes/archive/2026-10-30-add-glf-completion/design.md)、[タスク](changes/archive/2026-10-30-add-glf-completion/tasks.md) |
+| add-image-export | REQ-032 | 追加 | 検証済み | [変更仕様](changes/add-image-export/specs/diagram-export/spec.md#requirement-req-032---画像エクスポート操作) | [提案](changes/add-image-export/proposal.md)、[設計](changes/add-image-export/design.md)、[タスク](changes/add-image-export/tasks.md) |
+| add-image-export | REQ-033 | 追加 | 検証済み | [変更仕様](changes/add-image-export/specs/diagram-export/spec.md#requirement-req-033---全体図の品質) | [提案](changes/add-image-export/proposal.md)、[設計](changes/add-image-export/design.md)、[タスク](changes/add-image-export/tasks.md) |
+| add-image-export | REQ-034 | 追加 | 検証済み | [変更仕様](changes/add-image-export/specs/diagram-export/spec.md#requirement-req-034---失敗と状態保持) | [提案](changes/add-image-export/proposal.md)、[設計](changes/add-image-export/design.md)、[タスク](changes/add-image-export/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -158,8 +164,19 @@
 | add-glf-completion | REQ-030 / REQ-030-S01 | [シナリオ](specs/dsl-completion/spec.md#scenario-req-030-s01---定義済み参照) | [補完](../src/extension/completion.ts) | [Extension](../tests/extension/completion.test.ts) `REQ-030-S01` | [記録](#add-glf-completion---2026-10-30-入力補完の検証) |
 | add-glf-completion | REQ-031 / REQ-031-S01 | [シナリオ](specs/dsl-completion/spec.md#scenario-req-031-s01---ブロックごとの候補) | [補完](../src/extension/completion.ts) | [Extension](../tests/extension/completion.test.ts) `REQ-031-S01` | [記録](#add-glf-completion---2026-10-30-入力補完の検証) |
 | add-glf-completion | REQ-031 / REQ-031-S02 | [シナリオ](specs/dsl-completion/spec.md#scenario-req-031-s02---未完成の文書) | [補完](../src/extension/completion.ts) | [Extension](../tests/extension/completion.test.ts) `REQ-031-S02` | [記録](#add-glf-completion---2026-10-30-入力補完の検証) |
+| add-image-export | REQ-032 / REQ-032-S01 | [シナリオ](changes/add-image-export/specs/diagram-export/spec.md#scenario-req-032-s01---コマンドから保存) | [保存](../src/extension/preview-panel.ts)、[登録](../src/extension/extension.ts) | [Extension](../tests/extension/export.test.ts) | [記録](#add-image-export---2026-10-30-画像出力の検証) |
+| add-image-export | REQ-032 / REQ-032-S02 | [シナリオ](changes/add-image-export/specs/diagram-export/spec.md#scenario-req-032-s02---プレビューから保存) | [ボタン](../src/webview/pages/preview/ui/render-preview.ts)、[通信](../src/webview/app/main.ts) | [Chromium](../tests/visual/export.spec.ts) | [記録](#add-image-export---2026-10-30-画像出力の検証) |
+| add-image-export | REQ-033 / REQ-033-S01 | [シナリオ](changes/add-image-export/specs/diagram-export/spec.md#scenario-req-033-s01---図全体を出力) | [生成](../src/webview/pages/preview/model/export-diagram.ts) | [Chromium](../tests/visual/export.spec.ts) | [記録](#add-image-export---2026-10-30-画像出力の検証) |
+| add-image-export | REQ-033 / REQ-033-S02 | [シナリオ](changes/add-image-export/specs/diagram-export/spec.md#scenario-req-033-s02---拡大縮小から独立した出力) | [生成](../src/webview/pages/preview/model/export-diagram.ts) | [Chromium](../tests/visual/export.spec.ts) | [記録](#add-image-export---2026-10-30-画像出力の検証) |
+| add-image-export | REQ-034 / REQ-034-S01 | [シナリオ](changes/add-image-export/specs/diagram-export/spec.md#scenario-req-034-s01---失敗を通知する) | [通知](../src/extension/preview-panel.ts)、[生成](../src/webview/pages/preview/model/export-diagram.ts) | [Extension](../tests/extension/export.test.ts)、[Chromium](../tests/visual/export.spec.ts) | [記録](#add-image-export---2026-10-30-画像出力の検証) |
 
 ## 検証記録
+
+### add-image-export - 2026-10-30 画像出力の検証
+
+- 対象: REQ-032-S01、REQ-032-S02、REQ-033-S01、REQ-033-S02、REQ-034-S01。
+- 実行日: 2026-10-30 JST。
+- 結果: [検証記録](changes/add-image-export/verification.md)に記載したCore34件、Chromium36件、Extension13件、OpenSpec strict検証が成功した。
 
 ### add-glf-completion - 2026-10-30 入力補完の検証
 

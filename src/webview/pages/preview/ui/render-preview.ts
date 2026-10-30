@@ -220,6 +220,7 @@ export function renderPreview(
   container: HTMLElement,
   documentData?: GlfDocument,
   fileName = "GlitchFlow Preview",
+  onExport?: () => void,
 ): void {
   const previousScroller =
     container.querySelector<HTMLElement>(".preview__scroller");
@@ -280,6 +281,13 @@ export function renderPreview(
     button("-", "縮小", () => changeZoom(-0.1));
     button("Reset", "等倍", resetZoom);
     button("+", "拡大", () => changeZoom(0.1));
+    const exportButton = document.createElement("button");
+    exportButton.type = "button";
+    exportButton.textContent = "⇩";
+    exportButton.title = "図をエクスポート";
+    exportButton.setAttribute("aria-label", "図をエクスポート");
+    exportButton.addEventListener("click", () => onExport?.());
+    toolbar.append(exportButton);
     toolbar.append(level);
     applyZoom(getZoom());
     main.append(toolbar);
