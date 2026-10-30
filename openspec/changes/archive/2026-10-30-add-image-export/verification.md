@@ -16,12 +16,12 @@ REQ-032-S01、REQ-032-S02、REQ-033-S01、REQ-033-S02、REQ-034-S01を検証し�
 
 ## 出力の確認
 
-- [Chromiumテスト](../../../tests/visual/export.spec.ts)で、SVGをXMLとして、PNGを画像として読み戻した。
+- [Chromiumテスト](../../../../tests/visual/export.spec.ts)で、SVGをXMLとして、PNGを画像として読み戻した。
 - SVGにDBテーブル、FILEツリー、SQL、分岐、矢印、日本語のテキスト要素が含まれることを確認した。
 - PNGは2028×1496ピクセルの実ファイルとして出力し、開いて欠落と文字化けがないことを目視確認した。
 - ズームとスクロール後も全体寸法が変わらず、65件のメッセージを持つ長い図の末尾まで出力できることを確認した。
 - プレビューとPNGの画素差、ボタンからの操作、描画不能時のエラー応答を確認した。
-- [Extensionテスト](../../../tests/extension/export.test.ts)でPNGとSVGの保存、初期ファイル名、保存失敗時の通知、DSL本文の保持を確認した。
+- [Extensionテスト](../../../../tests/extension/export.test.ts)でPNGとSVGの保存、初期ファイル名、保存失敗時の通知、DSL本文の保持を確認した。
 
 ## 制約
 

@@ -4,7 +4,7 @@
 
 - 提案: [proposal.md](proposal.md)。
 - 対象仕様: [diagram-export](specs/diagram-export/spec.md)。
-- 前提と制約: [既存の描画規則](../../tech.md#描画規則)と単一プレビューを再利用する。
+- 前提と制約: [既存の描画規則](../../../tech.md#描画規則)と単一プレビューを再利用する。
 - 実装調査: `renderPreview`は図本体とDB、FILE、SQLを単一のSVGに描画する。
 
 ## Goals / Non-Goals
