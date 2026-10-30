@@ -1,7 +1,7 @@
 {
   "name": "glitchflow",
   "displayName": "GlitchFlow",
-  "description": "処理の流れとデータの期待状態を同じ時間軸で可視化する .glf エディタとプレビュー",
+  "description": "Visualize sequence diagrams and database/file states together in VS Code.",
   "version": "0.0.5",
   "license": "MIT",
   "icon": "images/icon.png",
@@ -15,16 +15,23 @@
     "url": "https://github.com/Glitch-Sound/glitchflow/issues"
   },
   "keywords": [
-    "glf",
     "sequence diagram",
-    "flow visualization",
-    "database state"
+    "sequence-diagram",
+    "uml",
+    "flow diagram",
+    "database",
+    "data state",
+    "software design",
+    "system design",
+    "dsl",
+    "glf"
   ],
   "engines": {
     "vscode": "^1.140.0"
   },
   "categories": [
-    "Visualization"
+    "Visualization",
+    "Programming Languages"
   ],
   "main": "./dist/extension/extension.js",
   "activationEvents": [
