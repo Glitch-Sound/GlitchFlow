@@ -41,7 +41,7 @@ describe("layoutSequence", () => {
       'Object FE as "FE" type APP\nObject BE as "BE" type API\nFE ->> BE: 保存\nBE+\nBE-',
     );
     const layout = layoutSequence(document, measure);
-    expect(layout.messages[0].x2).toBe(layout.lifelines[1].x - 9);
+    expect(layout.messages[0].x2).toBe(layout.lifelines[1].x - 6);
   });
 
   it("REQ-006 / REQ-006-S01: 長いGlobalラベルと処理に必要な幅を確保する", () => {

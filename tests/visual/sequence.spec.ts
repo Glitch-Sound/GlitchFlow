@@ -50,6 +50,10 @@ test("REQ-007 / REQ-007-S01、REQ-008 / REQ-008-S01: 矢印、Global、活性と
   expect(activation).not.toBeNull();
   expect(response).not.toBeNull();
   if (!activation || !response) throw new Error("描画要素が見つからない");
+  await expect(page.locator(".sequence-activation")).toHaveAttribute(
+    "width",
+    "10",
+  );
   expect(activation.y + activation.height).toBeGreaterThan(response.y);
   await page.screenshot({
     path: "test-results/render-sequence.png",

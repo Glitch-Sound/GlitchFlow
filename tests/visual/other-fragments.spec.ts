@@ -45,3 +45,46 @@ test("REQ-018 / REQ-018-S01、REQ-019 / REQ-019-S01、REQ-020 / REQ-020-S01: 4�
   await page.locator(".sequence-fragment").last().scrollIntoViewIfNeeded();
   await page.screenshot({ path: "test-results/render-other-fragments.png" });
 });
+
+test("opt 枠を通過する活性が途切れず、幅が 10px になる", async ({ page }) => {
+  await page.goto(process.env.GLITCHFLOW_PREVIEW_URL ?? "/");
+  const document = parseGlf(
+    'Object FE as "FE" type APP\nFE+\nopt test:\n    FE: aaa\nFE-',
+  );
+  await page.evaluate(
+    (data) =>
+      window.postMessage(
+        { type: "glitchflow.document", document: data, fileName: "opt.glf" },
+        "*",
+      ),
+    document,
+  );
+  await expect(page.locator(".sequence-fragment-frame")).toBeVisible();
+  const frame = page.locator(".sequence-fragment-frame");
+  const activation = page.locator(".sequence-activation");
+  const frameBox = await frame.boundingBox();
+  const activationBox = await activation.boundingBox();
+  expect(frameBox).not.toBeNull();
+  expect(activationBox).not.toBeNull();
+  if (!frameBox || !activationBox) return;
+  expect(activationBox.y).toBeLessThan(frameBox.y);
+  expect(activationBox.y + activationBox.height).toBeGreaterThan(
+    frameBox.y + frameBox.height,
+  );
+  expect(
+    await frame.evaluate((element) => {
+      const bar = element.ownerDocument.querySelector(".sequence-activation");
+      return (
+        bar !== null &&
+        (element.compareDocumentPosition(bar) &
+          Node.DOCUMENT_POSITION_FOLLOWING) !==
+          0
+      );
+    }),
+  ).toBe(true);
+  await expect(activation).toHaveAttribute("width", "10");
+  for (let index = 0; index < 10; index++)
+    await page.getByRole("button", { name: "拡大" }).click();
+  await expect(page.locator(".preview__zoom-level")).toHaveText("200%");
+  await page.screenshot({ path: "test-results/opt-activation-200.png" });
+});

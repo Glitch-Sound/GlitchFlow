@@ -118,4 +118,30 @@ describe("other fragments", () => {
       layout.fragments[3].y + layout.fragments[3].height,
     );
   });
+
+  it("継続中の活性を各複合フラグメントの下端までつなぐ", () => {
+    const bodies = [
+      "alt:\n    case A:\n        FE: A\n    else:\n        FE: B",
+      "opt 条件:\n    FE: A",
+      "loop 再試行:\n    FE: A",
+      "par:\n    case A:\n        FE: A\n    case B:\n        FE: B",
+      "break 中断:\n    FE: A",
+    ];
+    for (const body of bodies) {
+      const model = parseGlf(`${header}FE+\n${body}\nFE-`);
+      expect(model.diagnostics).toEqual([]);
+      const layout = layoutSequence(model, measure);
+      const fragment = layout.fragments[0];
+      const bottom = fragment.y + fragment.height;
+      expect(
+        layout.activations.some(
+          (activation) =>
+            activation.objectId === "FE" &&
+            activation.startY < bottom &&
+            activation.endY > bottom,
+        ),
+        fragment.kind,
+      ).toBe(true);
+    }
+  });
 });

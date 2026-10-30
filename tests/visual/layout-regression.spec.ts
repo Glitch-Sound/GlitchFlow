@@ -44,16 +44,9 @@ test("REQ-006 / REQ-006-S01、REQ-009 / REQ-009-S01、REQ-012 / REQ-012-S01: 基
     const firstFragment = children.findIndex((item) =>
       item.classList.contains("sequence-fragment"),
     );
-    const lastContent = children
-      .map(
-        (item) =>
-          item.classList.contains("state-db") ||
-          item.classList.contains("state-file") ||
-          item.classList.contains("state-sql") ||
-          item.classList.contains("sequence-arrow") ||
-          item.classList.contains("sequence-process"),
-      )
-      .lastIndexOf(true);
+    const firstActivation = children.findIndex((item) =>
+      item.classList.contains("sequence-activation"),
+    );
     const feCenter = Number(
       svg
         .querySelector('.sequence-lifeline[data-object-id="FE"] line')
@@ -62,7 +55,11 @@ test("REQ-006 / REQ-006-S01、REQ-009 / REQ-009-S01、REQ-012 / REQ-012-S01: 基
     const feBars = Array.from(svg.querySelectorAll(".sequence-activation"))
       .filter(
         (item) =>
-          Math.abs(Number(item.getAttribute("x")) + 8 - feCenter) < 0.01,
+          Math.abs(
+            Number(item.getAttribute("x")) +
+              Number(item.getAttribute("width")) / 2 -
+              feCenter,
+          ) < 0.01,
       )
       .map((item) => ({
         y: Number(item.getAttribute("y")),
@@ -91,7 +88,7 @@ test("REQ-006 / REQ-006-S01、REQ-009 / REQ-009-S01、REQ-012 / REQ-012-S01: 基
       text,
       states,
       firstFragment,
-      lastContent,
+      firstActivation,
       feBars,
       processes,
       divider,
@@ -104,7 +101,7 @@ test("REQ-006 / REQ-006-S01、REQ-009 / REQ-009-S01、REQ-012 / REQ-012-S01: 基
     expect(item.right).toBeLessThanOrEqual(geometry.width);
     expect(item.bottom).toBeLessThanOrEqual(geometry.height);
   }
-  expect(geometry.firstFragment).toBeGreaterThan(geometry.lastContent);
+  expect(geometry.firstFragment).toBeLessThan(geometry.firstActivation);
   for (const process of geometry.processes) {
     expect(
       geometry.feBars.some(

@@ -1,5 +1,8 @@
 import { type GlfDocument, layoutSequence } from "../../../../core";
-import type { SequenceLayout } from "../../../../core/layout/sequence-layout";
+import {
+  ACTIVATION_WIDTH,
+  type SequenceLayout,
+} from "../../../../core/layout/sequence-layout";
 import { changeZoom, getZoom, resetZoom } from "../model/zoom";
 
 const NS = "http://www.w3.org/2000/svg";
@@ -330,9 +333,9 @@ export function renderPreview(
     for (const activation of layout.activations) {
       svg.append(
         svgElement("rect", {
-          x: String(activation.x - 8),
+          x: String(activation.x - ACTIVATION_WIDTH / 2),
           y: String(activation.startY),
-          width: "16",
+          width: String(ACTIVATION_WIDTH),
           height: String(Math.max(2, activation.endY - activation.startY)),
           class: `sequence-activation sequence-activation--${layout.lifelines.find((lane) => lane.id === activation.objectId)?.type.toLowerCase() ?? "module"}`,
           "data-object-id": activation.objectId,
@@ -477,7 +480,12 @@ export function renderPreview(
           );
         }
       });
-      svg.append(group);
+      svg.insertBefore(
+        group,
+        svg.querySelector(
+          ".sequence-activation, .state-db, .state-file, .state-sql, .sequence-arrow, .sequence-process-card",
+        ),
+      );
     }
     scroller.append(svg);
     main.append(scroller);

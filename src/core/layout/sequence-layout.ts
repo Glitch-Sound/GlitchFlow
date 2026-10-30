@@ -6,6 +6,8 @@ import type {
   GlfEvent,
 } from "../model/glf-model";
 
+export const ACTIVATION_WIDTH = 10;
+
 type TimelineItem =
   | Exclude<GlfEvent, { events: GlfEvent[] } | { branches: unknown[] }>
   | {
@@ -359,10 +361,17 @@ export function layoutSequence(
       const branch = current.fragment.branches.at(-1);
       if (branch) branch.endY = lastY;
       current.exits.push(new Map(active));
+      const activationEndY =
+        basic[index + 1]?.kind === "alt-close" ? lastY + 10 : lastY;
       for (const [objectId, startY] of active) {
         const laneX = xById.get(objectId);
         if (laneX !== undefined)
-          activations.push({ objectId, x: laneX, startY, endY: lastY });
+          activations.push({
+            objectId,
+            x: laneX,
+            startY,
+            endY: activationEndY,
+          });
       }
       active.clear();
       continue;
@@ -524,8 +533,10 @@ export function layoutSequence(
         to: event.to,
         mode: event.mode,
         label: event.label,
-        x1: fromX + (active.has(event.from) ? direction * 9 : 0),
-        x2: toX - (targetActive ? direction * 9 : 0),
+        x1:
+          fromX +
+          (active.has(event.from) ? direction * (ACTIVATION_WIDTH / 2 + 1) : 0),
+        x2: toX - (targetActive ? direction * (ACTIVATION_WIDTH / 2 + 1) : 0),
         y,
       });
     }
