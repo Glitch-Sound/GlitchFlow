@@ -80,7 +80,7 @@ test("REQ-007 / REQ-007-S02: 応答のない同期要求を補わない", async 
   await expect(page.locator(".sequence-arrow--response")).toHaveCount(0);
 });
 
-test("REQ-008 / REQ-008-S03、REQ-023 / REQ-023-S02: 複数行の処理を重ねず表示する", async ({
+test("REQ-008 / REQ-008-S03、REQ-022 / REQ-022-S03、REQ-023 / REQ-023-S02: 複数行の処理を重ねず表示する", async ({
   page,
 }) => {
   await page.goto("/");
@@ -110,6 +110,20 @@ test("REQ-008 / REQ-008-S03、REQ-023 / REQ-023-S02: 複数行の処理を重ね
   await expect(lines).toHaveCount(2);
   await expect(lines.nth(0)).toHaveText("重要な処理");
   await expect(lines.nth(1)).toHaveText("入力を確認");
+  const objectAndActivation = await page.evaluate(() => {
+    const object = window.document.querySelector<SVGRectElement>(
+      '.sequence-lifeline[data-object-id="FE"] .sequence-object',
+    );
+    const activation = window.document.querySelector<SVGRectElement>(
+      '.sequence-activation[data-object-id="FE"]',
+    );
+    if (!object || !activation) return null;
+    const objectBox = object.getBBox();
+    const activationBox = activation.getBBox();
+    return activationBox.y - (objectBox.y + objectBox.height);
+  });
+  expect(objectAndActivation).not.toBeNull();
+  expect(objectAndActivation).toBeGreaterThanOrEqual(8);
   const firstCardBox = await cards.nth(0).boundingBox();
   const cardBox = await cards.nth(1).boundingBox();
   const arrowBox = await page.locator(".sequence-arrow--sync").boundingBox();

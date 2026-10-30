@@ -1,6 +1,7 @@
 import { type GlfDocument, layoutSequence } from "../../../../core";
 import {
   ACTIVATION_WIDTH,
+  OBJECT_HEADER_BOTTOM_Y,
   type SequenceLayout,
 } from "../../../../core/layout/sequence-layout";
 import { changeZoom, getZoom, resetZoom } from "../model/zoom";
@@ -325,7 +326,7 @@ export function renderPreview(
           x: String(lane.x - labelWidth / 2),
           y: "18",
           width: String(labelWidth),
-          height: "60",
+          height: String(OBJECT_HEADER_BOTTOM_Y - 18),
           rx: "8",
           class: `sequence-object sequence-object--${lane.type.toLowerCase()}`,
         }),
@@ -343,7 +344,7 @@ export function renderPreview(
         svgElement("line", {
           x1: String(lane.x),
           x2: String(lane.x),
-          y1: "78",
+          y1: String(OBJECT_HEADER_BOTTOM_Y),
           y2: String(layout.height - 24),
           class: "sequence-lifeline-line",
         }),

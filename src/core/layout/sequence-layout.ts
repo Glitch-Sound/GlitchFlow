@@ -7,6 +7,7 @@ import type {
 } from "../model/glf-model";
 
 export const ACTIVATION_WIDTH = 10;
+export const OBJECT_HEADER_BOTTOM_Y = 78;
 
 type TimelineItem =
   | Exclude<GlfEvent, { events: GlfEvent[] } | { branches: unknown[] }>
@@ -528,7 +529,7 @@ export function layoutSequence(
       preceding?.kind === "message" &&
       preceding.mode === "response" &&
       preceding.from === event.objectId;
-    const y = followsOwnResponse
+    const eventY = followsOwnResponse
       ? lastY
       : lastY +
         (event.kind === "activation"
@@ -540,6 +541,10 @@ export function layoutSequence(
             : preceding?.kind === "branch-open"
               ? 44
               : 60);
+    const y =
+      event.kind === "activation" && event.action === "start"
+        ? Math.max(eventY, OBJECT_HEADER_BOTTOM_Y + 10)
+        : eventY;
     lastY = y;
     lastPanel = undefined;
     if (event.kind === "activation") {

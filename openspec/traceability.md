@@ -70,6 +70,7 @@
 
 | 変更名 | 要件ID | 操作 | 変更の状態 | 対象仕様 | 提案、設計、タスク |
 | --- | --- | --- | --- | --- | --- |
+| fix-initial-activation-overlap | REQ-022 | 変更 | アーカイブ済み | [正式仕様](specs/preview-appearance/spec.md#requirement-req-022---図面とobjectの視覚表現) | [提案](changes/archive/2026-10-31-fix-initial-activation-overlap/proposal.md)、[設計](changes/archive/2026-10-31-fix-initial-activation-overlap/design.md)、[タスク](changes/archive/2026-10-31-fix-initial-activation-overlap/tasks.md) |
 | multiline-process-labels | REQ-002 | 変更 | アーカイブ済み | [正式仕様](specs/glf-parsing/spec.md) | [提案](changes/archive/2026-10-31-multiline-process-labels/proposal.md)、[設計](changes/archive/2026-10-31-multiline-process-labels/design.md)、[タスク](changes/archive/2026-10-31-multiline-process-labels/tasks.md) |
 | multiline-process-labels | REQ-008 | 変更 | アーカイブ済み | [正式仕様](specs/sequence-rendering/spec.md) | [提案](changes/archive/2026-10-31-multiline-process-labels/proposal.md)、[設計](changes/archive/2026-10-31-multiline-process-labels/design.md)、[タスク](changes/archive/2026-10-31-multiline-process-labels/tasks.md) |
 | multiline-process-labels | REQ-023 | 変更 | アーカイブ済み | [正式仕様](specs/preview-appearance/spec.md) | [提案](changes/archive/2026-10-31-multiline-process-labels/proposal.md)、[設計](changes/archive/2026-10-31-multiline-process-labels/design.md)、[タスク](changes/archive/2026-10-31-multiline-process-labels/tasks.md) |
@@ -130,6 +131,7 @@
 
 | 変更名 | 要件IDとシナリオID | 受け入れ条件 | 実装箇所 | テストまたは手動確認 | 検証記録 |
 | --- | --- | --- | --- | --- | --- |
+| fix-initial-activation-overlap | REQ-022 / REQ-022-S03 | [シナリオ](specs/preview-appearance/spec.md#scenario-req-022-s03---先頭の活性をobject枠の下に置く) | [配置](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Chromium](../tests/visual/sequence.spec.ts) `REQ-022 / REQ-022-S03`、[Core](../tests/core/sequence-layout.test.ts) `REQ-022 / REQ-022-S03`、[実画面](../docs/images/multiline-process-preview.png) | [記録](#fix-initial-activation-overlap---2026-10-31-object枠と活性の間隔) |
 | multiline-process-labels | REQ-002 / REQ-002-S03 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-002-s03---複数行の処理を保持する) | [解析](../src/core/parser/parse-glf.ts) `parseGlf` | [Core](../tests/core/parse-glf.test.ts) `REQ-002 / REQ-002-S03` | [記録](#multiline-process-labels---2026-10-31-複数行処理) |
 | multiline-process-labels | REQ-002 / REQ-002-S04 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-002-s04---空の処理を診断する) | [解析](../src/core/parser/parse-glf.ts) `parseGlf` | [Core](../tests/core/parse-glf.test.ts) `REQ-002 / REQ-002-S04` | [記録](#multiline-process-labels---2026-10-31-複数行処理) |
 | multiline-process-labels | REQ-008 / REQ-008-S03 | [シナリオ](specs/sequence-rendering/spec.md#scenario-req-008-s03---複数行処理の時間軸を確保する) | [配置](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/sequence-layout.test.ts) `REQ-008 / REQ-008-S03`、[Chromium](../tests/visual/sequence.spec.ts) `REQ-008 / REQ-008-S03` | [記録](#multiline-process-labels---2026-10-31-複数行処理) |
@@ -843,4 +845,27 @@ OpenSpecのstrict検証も成功した。\
 - 方法: 差分仕様の3要件ブロックを正式仕様へ同期し、`npx --no-install openspec validate --specs`と要件ブロックの一致を確認した。
 - 結果: 正式仕様13件の検証が成功し、変更を[アーカイブ](changes/archive/2026-10-31-multiline-process-labels/proposal.md)へ移した。
 - 証跡: [解析仕様](specs/glf-parsing/spec.md)、[配置仕様](specs/sequence-rendering/spec.md)、[表示仕様](specs/preview-appearance/spec.md)、[完了タスク](changes/archive/2026-10-31-multiline-process-labels/tasks.md)。
+- 未検証事項: なし。
+
+### fix-initial-activation-overlap - 2026-10-31 Object枠と活性の間隔
+
+- 対象: REQ-022-S01、REQ-022-S02、REQ-022-S03。
+- 実行日: 2026-10-31 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 先頭に`FE+`がある複数行処理のChromiumテストを追加し、Object枠との間隔が-16pxで失敗することを確認した。\
+配置の下限を修正して同じテストと`npm run check`、関連するChromiumテスト、`npm run build`、`npx --no-install openspec validate fix-initial-activation-overlap --strict`を実行した。
+- 結果: Coreテスト44件とChromiumテスト20件が成功した。\
+Object枠と活性の間に空きがある[実画面](../docs/images/multiline-process-preview.png)を確認した。\
+OpenSpecのstrict検証とビルドも成功した。
+- 証跡: [変更仕様](changes/archive/2026-10-31-fix-initial-activation-overlap/specs/preview-appearance/spec.md)、[配置](../src/core/layout/sequence-layout.ts)、[Chromium](../tests/visual/sequence.spec.ts)、[Core](../tests/core/sequence-layout.test.ts)。
+- 未検証事項: なし。
+
+### fix-initial-activation-overlap - 2026-10-31 アーカイブ
+
+- 対象: REQ-022、REQ-022-S03。
+- 実行日: 2026-10-31 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 差分仕様のREQ-022を正式仕様へ同期し、要件ブロックの一致と`npx --no-install openspec validate --specs`を確認した。
+- 結果: 正式仕様13件の検証が成功し、変更を[アーカイブ](changes/archive/2026-10-31-fix-initial-activation-overlap/proposal.md)へ移した。
+- 証跡: [正式仕様](specs/preview-appearance/spec.md)、[完了タスク](changes/archive/2026-10-31-fix-initial-activation-overlap/tasks.md)。
 - 未検証事項: なし。

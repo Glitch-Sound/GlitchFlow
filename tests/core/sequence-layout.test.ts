@@ -26,6 +26,14 @@ describe("layoutSequence", () => {
     expect(layout.processes[0].emphasis).toBe(true);
   });
 
+  it("REQ-022 / REQ-022-S03: メッセージ後の活性はメッセージ位置から始まる", () => {
+    const layout = layoutSequence(
+      parseGlf('Object FE as "FE" type APP\nGlobal ->> FE: 入力\nFE+\nFE-'),
+      measure,
+    );
+    expect(layout.activations[0].startY).toBe(layout.messages[0].y);
+  });
+
   it("REQ-008 / REQ-008-S02: 未宣言の参照を配置せず既知の処理を残す", () => {
     const document = parseGlf(
       'Object FE as "FE" type APP\nFE ->> X: call\nFE: work',
