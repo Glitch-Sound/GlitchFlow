@@ -10,13 +10,38 @@
 `.glf`の解析結果を、図の描画、エディタの支援、画像の出力で利用する。\
 以下は機能を理解するための関係であり、実装の呼び出し順を示すものではない。
 
-```text
-.glf -> glf-parsing -> 描画4仕様 -> preview -> 外観・図からDSLへの移動・画像出力
-             |-> dsl-completion
-             +-> dsl-symbol-navigation
+```mermaid
+flowchart LR
+    glf[".glf"] --> parsing["glf-parsing"]
+    imports["glf-imports"] -->|共有定義| parsing
 
-glf-imports -> 解析・補完・シンボル移動に共有定義を提供
-editor-integration -> 解析結果とプレビューを編集操作につなぐ
+    subgraph rendering[図の描画]
+        sequence["sequence-rendering"]
+        state["state-rendering"]
+        alt["alt-fragment"]
+        other["other-fragments"]
+    end
+
+    parsing --> sequence
+    parsing --> state
+    parsing --> alt
+    parsing --> other
+    sequence --> preview["preview"]
+    state --> preview
+    alt --> preview
+    other --> preview
+
+    parsing --> completion["dsl-completion"]
+    imports --> completion
+    parsing --> symbols["dsl-symbol-navigation"]
+    imports --> symbols
+
+    parsing --> editor["editor-integration"]
+    preview --> editor
+    preview --> appearance["preview-appearance"]
+    preview --> navigation["preview-navigation"]
+    preview --> export["diagram-export"]
+    symbols -.->|カラム型Hover| preview
 ```
 
 `glf-parsing`は文書をIR(描画などが共有する解析結果)へ変換し、構文や参照の誤りを診断する。\
