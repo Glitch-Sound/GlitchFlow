@@ -108,6 +108,7 @@ OpenSpecによる変更仕様は `openspec/changes/<change-name>/specs/<capabili
 - 専用配色を使っても、VSCode全体のテーマやほかの言語の設定を書き換えない。
 - VSCode APIへの依存をここへ集める。
 - `.glf`の入力補完は`extension/completion.ts`でVSCode標準APIとCoreの解析結果を組み合わせる。
+- `.glf`の定義移動、参照検索、Hoverは`extension/symbols.ts`で同じ解決済み定義を利用する。
 - 図の保存ダイアログとファイル書き込みは`extension/preview-panel.ts`、SVGとPNGの画像生成は`webview/pages/preview/model/export-diagram.ts`が扱う。
 
 ### webview

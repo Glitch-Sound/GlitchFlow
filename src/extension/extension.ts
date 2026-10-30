@@ -12,6 +12,7 @@ import {
   openPreview,
   updatePreview,
 } from "./preview-panel";
+import { registerSymbols } from "./symbols";
 import { registerSyntaxColors } from "./syntax-colors";
 
 /** REQ-001: register the user-facing preview command. */
@@ -140,7 +141,7 @@ export function activate(context: vscode.ExtensionContext): {
   );
   for (const document of vscode.workspace.textDocuments) void refresh(document);
   registerSyntaxColors(context);
-  registerCompletion(context, async (document) => {
+  const resolveForLanguage = async (document: vscode.TextDocument) => {
     const key = document.uri.toString();
     const cached = resolved.get(key);
     if (cached?.version === document.version) return cached.document;
@@ -149,7 +150,9 @@ export function activate(context: vscode.ExtensionContext): {
     if (document.version === version)
       resolved.set(key, { version, document: parsed });
     return parsed;
-  });
+  };
+  registerCompletion(context, resolveForLanguage);
+  registerSymbols(context, resolveForLanguage);
   const initialEditor = lastGlfEditor;
   if (
     initialEditor &&

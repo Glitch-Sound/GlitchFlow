@@ -55,7 +55,7 @@ function svgText(
   return element;
 }
 
-/** REQ-009..REQ-011、REQ-024: 表示用状態をIRの明示属性だけで安全なSVGノードへ変換する。 */
+/** REQ-009..REQ-011、REQ-024、REQ-044: 表示用状態と明示されたカラム型を安全なSVGノードへ変換する。 */
 function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
   for (const state of layout.dbStates) {
     const group = svgElement("g", {
@@ -97,7 +97,12 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
     for (let index = 0; index < state.columns.length; index++) {
       const cellX = state.x + offset;
       const width = state.columnWidths[index];
-      group.append(
+      const column = svgElement("g", {
+        class: "state-db-column",
+        "data-column-name": state.columns[index],
+        "data-column-type": state.columnTypes[index],
+      });
+      column.append(
         svgElement("rect", {
           x: String(cellX),
           y: String(state.y + 30),
@@ -106,7 +111,7 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
           class: "state-db-header-cell",
         }),
       );
-      group.append(
+      column.append(
         svgText(
           cellX + 10,
           state.y + 50,
@@ -114,6 +119,7 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
           "state-db-heading",
         ),
       );
+      group.append(column);
       for (let rowIndex = 0; rowIndex < state.rows.length; rowIndex++) {
         const row = state.rows[rowIndex];
         const cell = row.cells[index];
@@ -218,7 +224,7 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
   }
 }
 
-/** REQ-001、REQ-006..REQ-008、REQ-012、REQ-018..REQ-025、REQ-038: ソース位置付きの安全なSVGノードを描画する。 */
+/** REQ-001、REQ-006..REQ-008、REQ-012、REQ-018..REQ-025、REQ-038、REQ-044: ソース位置とカラム型Hoverを含むSVGを描画する。 */
 export function renderPreview(
   container: HTMLElement,
   documentData?: GlfDocument,
@@ -518,6 +524,38 @@ export function renderPreview(
       );
     }
     scroller.append(svg);
+    const columnTooltip = document.createElement("div");
+    columnTooltip.className = "preview__column-tooltip";
+    columnTooltip.setAttribute("role", "tooltip");
+    columnTooltip.hidden = true;
+    main.append(columnTooltip);
+    svg.addEventListener("pointermove", (event) => {
+      const target = event.target;
+      const column =
+        target instanceof Element
+          ? target.closest<SVGElement>(".state-db-column")
+          : null;
+      if (!column || !svg.contains(column)) {
+        columnTooltip.hidden = true;
+        return;
+      }
+      const type = column.dataset.columnType;
+      const name = column.dataset.columnName;
+      if (!type || !name) {
+        columnTooltip.hidden = true;
+        return;
+      }
+      columnTooltip.textContent = `${name}: ${type}`;
+      columnTooltip.hidden = false;
+      columnTooltip.style.left = `${Math.min(event.clientX + 14, window.innerWidth - columnTooltip.offsetWidth - 8)}px`;
+      columnTooltip.style.top = `${Math.min(event.clientY + 14, window.innerHeight - columnTooltip.offsetHeight - 8)}px`;
+    });
+    svg.addEventListener("pointerleave", () => {
+      columnTooltip.hidden = true;
+    });
+    scroller.addEventListener("scroll", () => {
+      columnTooltip.hidden = true;
+    });
     svg.addEventListener("click", (event) => {
       if (window.getSelection()?.toString()) return;
       const target = event.target;

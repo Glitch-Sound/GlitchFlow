@@ -20,6 +20,7 @@ await build({
     "tests/extension/export.test.ts",
     "tests/extension/imports.test.ts",
     "tests/extension/navigation.test.ts",
+    "tests/extension/symbols.test.ts",
   ],
   bundle: true,
   platform: "node",

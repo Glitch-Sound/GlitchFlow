@@ -137,6 +137,7 @@ export interface SequenceLayout {
     title: string;
     connectedToPrevious: boolean;
     columns: string[];
+    columnTypes: string[];
     columnWidths: number[];
     numericColumns: boolean[];
     rows: DbRow[];
@@ -163,7 +164,7 @@ function flattenFile(nodes: FileNode[], depth = 0): FileLine[] {
   ]);
 }
 
-/** REQ-006、REQ-008..REQ-013、REQ-018..REQ-020、REQ-022..REQ-025、REQ-038: IRの行番号を保持し、表示座標を決定的に計算する。 */
+/** REQ-006、REQ-008..REQ-013、REQ-018..REQ-020、REQ-022..REQ-025、REQ-038、REQ-044: IRの行番号とschema型を保持し、表示座標を決定的に計算する。 */
 export function layoutSequence(
   document: GlfDocument,
   measureText: (text: string) => number,
@@ -178,6 +179,7 @@ export function layoutSequence(
       );
       if (!schema) return undefined;
       const columns = schema.columns.map((item) => item.name);
+      const columnTypes = schema.columns.map((item) => item.type);
       const numericColumns = schema.columns.map((item) =>
         isNumericColumn(item.type),
       );
@@ -212,6 +214,7 @@ export function layoutSequence(
         width,
         height,
         columns,
+        columnTypes,
         columnWidths,
         numericColumns,
         rows,
@@ -485,6 +488,7 @@ export function layoutSequence(
             : event.reference.table,
           connectedToPrevious: dbGroupHasState,
           columns: panel.columns,
+          columnTypes: panel.columnTypes,
           columnWidths: panel.columnWidths,
           numericColumns: panel.numericColumns,
           rows: panel.rows,

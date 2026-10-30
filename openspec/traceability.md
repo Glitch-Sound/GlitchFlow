@@ -54,6 +54,10 @@
 | REQ-038 | 描画要素からDSLへの移動 | 実装済み | [図面の操作](product.md#図面の操作) | [正式仕様](specs/preview-navigation/spec.md) |
 | REQ-039 | エディタ表示と配置 | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/preview-navigation/spec.md) |
 | REQ-040 | 位置情報の鮮度と安全性 | 実装済み | [構文と安全性](tech.md#診断安全性品質) | [正式仕様](specs/preview-navigation/spec.md) |
+| REQ-041 | 定義への移動 | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/dsl-symbol-navigation/spec.md#requirement-req-041---定義への移動) |
+| REQ-042 | 参照箇所の検索 | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/dsl-symbol-navigation/spec.md#requirement-req-042---参照箇所の検索) |
+| REQ-043 | DSLの型情報Hover | 実装済み | [データ状態](product.md#データ状態) | [正式仕様](specs/dsl-symbol-navigation/spec.md#requirement-req-043---dslの型情報hover) |
+| REQ-044 | プレビューのカラム型Hover | 実装済み | [データ状態](product.md#データ状態) | [正式仕様](specs/dsl-symbol-navigation/spec.md#requirement-req-044---プレビューのカラム型hover) |
 | NREQ-001 | 編集応答時間 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/editor-integration/spec.md#requirement-nreq-001---編集応答時間) |
 
 ## 要件ごとの変更履歴
@@ -109,6 +113,10 @@
 | preview-to-dsl-navigation | REQ-038 | 追加 | アーカイブ済み | [正式仕様](specs/preview-navigation/spec.md#requirement-req-038---描画要素からdslへの移動) | [提案](changes/archive/2026-10-30-preview-to-dsl-navigation/proposal.md)、[設計](changes/archive/2026-10-30-preview-to-dsl-navigation/design.md)、[タスク](changes/archive/2026-10-30-preview-to-dsl-navigation/tasks.md) |
 | preview-to-dsl-navigation | REQ-039 | 追加 | アーカイブ済み | [正式仕様](specs/preview-navigation/spec.md#requirement-req-039---エディタ表示と配置) | [提案](changes/archive/2026-10-30-preview-to-dsl-navigation/proposal.md)、[設計](changes/archive/2026-10-30-preview-to-dsl-navigation/design.md)、[タスク](changes/archive/2026-10-30-preview-to-dsl-navigation/tasks.md) |
 | preview-to-dsl-navigation | REQ-040 | 追加 | アーカイブ済み | [正式仕様](specs/preview-navigation/spec.md#requirement-req-040---位置情報の鮮度と安全性) | [提案](changes/archive/2026-10-30-preview-to-dsl-navigation/proposal.md)、[設計](changes/archive/2026-10-30-preview-to-dsl-navigation/design.md)、[タスク](changes/archive/2026-10-30-preview-to-dsl-navigation/tasks.md) |
+| definition-references-and-type-hover | REQ-041 | 追加 | アーカイブ済み | [正式仕様](specs/dsl-symbol-navigation/spec.md#requirement-req-041---定義への移動) | [提案](changes/archive/2026-10-30-definition-references-and-type-hover/proposal.md)、[設計](changes/archive/2026-10-30-definition-references-and-type-hover/design.md)、[タスク](changes/archive/2026-10-30-definition-references-and-type-hover/tasks.md) |
+| definition-references-and-type-hover | REQ-042 | 追加 | アーカイブ済み | [正式仕様](specs/dsl-symbol-navigation/spec.md#requirement-req-042---参照箇所の検索) | [提案](changes/archive/2026-10-30-definition-references-and-type-hover/proposal.md)、[設計](changes/archive/2026-10-30-definition-references-and-type-hover/design.md)、[タスク](changes/archive/2026-10-30-definition-references-and-type-hover/tasks.md) |
+| definition-references-and-type-hover | REQ-043 | 追加 | アーカイブ済み | [正式仕様](specs/dsl-symbol-navigation/spec.md#requirement-req-043---dslの型情報hover) | [提案](changes/archive/2026-10-30-definition-references-and-type-hover/proposal.md)、[設計](changes/archive/2026-10-30-definition-references-and-type-hover/design.md)、[タスク](changes/archive/2026-10-30-definition-references-and-type-hover/tasks.md) |
+| definition-references-and-type-hover | REQ-044 | 追加 | アーカイブ済み | [正式仕様](specs/dsl-symbol-navigation/spec.md#requirement-req-044---プレビューのカラム型hover) | [提案](changes/archive/2026-10-30-definition-references-and-type-hover/proposal.md)、[設計](changes/archive/2026-10-30-definition-references-and-type-hover/design.md)、[タスク](changes/archive/2026-10-30-definition-references-and-type-hover/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -197,8 +205,46 @@
 | preview-to-dsl-navigation | REQ-040 / REQ-040-S01 | [シナリオ](changes/archive/2026-10-30-preview-to-dsl-navigation/specs/preview-navigation/spec.md#scenario-req-040-s01---古い位置の拒否) | [版照合](../src/extension/preview-panel.ts) `navigateToSource` | [Extension](../tests/extension/navigation.test.ts) | [記録](#preview-to-dsl-navigation---2026-10-30-検証) |
 | preview-to-dsl-navigation | REQ-040 / REQ-040-S02 | [シナリオ](changes/archive/2026-10-30-preview-to-dsl-navigation/specs/preview-navigation/spec.md#scenario-req-040-s02---無効な要求の拒否) | [行照合](../src/extension/preview-panel.ts) `navigateToSource` | [Extension](../tests/extension/navigation.test.ts) | [記録](#preview-to-dsl-navigation---2026-10-30-検証) |
 | preview-to-dsl-navigation | REQ-040 / REQ-040-S03 | [シナリオ](changes/archive/2026-10-30-preview-to-dsl-navigation/specs/preview-navigation/spec.md#scenario-req-040-s03---図の操作を維持) | [クリック](../src/webview/pages/preview/ui/render-preview.ts)、[ズーム](../src/webview/pages/preview/model/zoom.ts) | [Chromium](../tests/visual/navigation.spec.ts) | [記録](#preview-to-dsl-navigation---2026-10-30-検証) |
+| definition-references-and-type-hover | REQ-041-S01、REQ-041-S02、REQ-041-S03 | [シナリオ](changes/archive/2026-10-30-definition-references-and-type-hover/specs/dsl-symbol-navigation/spec.md) | [定義](../src/extension/symbols.ts) `registerSymbols` | [Extension](../tests/extension/symbols.test.ts) | [記録](#definition-references-and-type-hover---2026-10-30-検証) |
+| definition-references-and-type-hover | REQ-042-S01、REQ-042-S02 | [シナリオ](changes/archive/2026-10-30-definition-references-and-type-hover/specs/dsl-symbol-navigation/spec.md) | [参照](../src/extension/symbols.ts) `registerSymbols` | [Extension](../tests/extension/symbols.test.ts) | [記録](#definition-references-and-type-hover---2026-10-30-検証) |
+| definition-references-and-type-hover | REQ-043-S01、REQ-043-S02 | [シナリオ](changes/archive/2026-10-30-definition-references-and-type-hover/specs/dsl-symbol-navigation/spec.md) | [Hover](../src/extension/symbols.ts) `registerSymbols` | [Extension](../tests/extension/symbols.test.ts) | [記録](#definition-references-and-type-hover---2026-10-30-検証) |
+| definition-references-and-type-hover | REQ-044-S01、REQ-044-S02 | [シナリオ](changes/archive/2026-10-30-definition-references-and-type-hover/specs/dsl-symbol-navigation/spec.md) | [Layout](../src/core/layout/sequence-layout.ts) `layoutSequence`、[Webview](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Core](../tests/core/type-hover.test.ts)、[Chromium](../tests/visual/type-hover.spec.ts) | [記録](#definition-references-and-type-hover---2026-10-30-検証) |
 
 ## 検証記録
+
+### definition-references-and-type-hover - 2026-10-30 検証
+
+- 対象: REQ-041-S01からS03、REQ-042-S01とS02、REQ-043-S01とS02、REQ-044-S01とS02。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: Coreの型伝達前に受け入れテストの失敗を確認し、Provider登録を一時的に外した状態でもExtensionの受け入れテスト2件が失敗することを確認した。
+  実装後に`npm run check`、`npm run test:visual`、`npm run test:extension`、`npx --no-install openspec validate definition-references-and-type-hover --strict`を実行した。
+- 結果: Core 40件、Chromium 42件、Extension 21件が通過した。
+  複数import、2形式の参照、同名カラム、未解決参照、import先の未保存編集後の更新を確認した。
+- 証跡: [Extension](../tests/extension/symbols.test.ts)、[Core](../tests/core/type-hover.test.ts)、[Chromium](../tests/visual/type-hover.spec.ts)。
+- 未検証事項: なし。
+
+### definition-references-and-type-hover - 2026-10-30 OpenSpec照合
+
+- 対象: REQ-041からREQ-044、9シナリオ、D-01からD-03、タスク8件。
+- 実行日: 2026-10-30 JST。
+- 方法: `openspec-verify-change`のCompleteness、Correctness、Coherenceに従い、差分仕様、設計、タスク、コード、受け入れテストを照合した。
+- 結果: タスク8/8、要件4/4、シナリオ9/9、設計判断3/3の対応を確認した。
+  Critical、Warning、Suggestionはない。
+- 証跡: [仕様](changes/archive/2026-10-30-definition-references-and-type-hover/specs/dsl-symbol-navigation/spec.md)、[設計](changes/archive/2026-10-30-definition-references-and-type-hover/design.md)、[タスク](changes/archive/2026-10-30-definition-references-and-type-hover/tasks.md)。
+- 未検証事項: なし。
+
+### definition-references-and-type-hover - 2026-10-30 アーカイブ
+
+- 対象: REQ-041からREQ-044。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 差分仕様のPurpose、4要件、9シナリオを[正式仕様](specs/dsl-symbol-navigation/spec.md)へ同期した。
+  `npx --no-install openspec validate --specs`で検証し、変更成果物を[アーカイブ](changes/archive/2026-10-30-definition-references-and-type-hover/)へ移した。
+- 結果: 正式仕様13件が成功し、同期後の本文とシナリオは差分仕様と一致した。
+  成果物とタスク8件はすべて完了している。
+- 証跡: [正式仕様](specs/dsl-symbol-navigation/spec.md)、[差分仕様](changes/archive/2026-10-30-definition-references-and-type-hover/specs/dsl-symbol-navigation/spec.md)、[タスク](changes/archive/2026-10-30-definition-references-and-type-hover/tasks.md)。
+- 未検証事項: なし。
 
 ### preview-to-dsl-navigation - 2026-10-30 アーカイブ
 
