@@ -12,8 +12,23 @@ export function validateGlf(document: GlfDocument): Diagnostic[] {
         message: `未宣言のObject: ${id}`,
       });
   };
-  for (const schema of document.schemas)
-    check(schema.reference.objectId, schema.line);
+  const schemas = new Set<string>();
+  for (const schema of document.schemas) {
+    if (schemas.has(schema.reference.raw))
+      diagnostics.push({
+        code: "schema-duplicate",
+        line: schema.line,
+        message: `schemaが重複: ${schema.reference.raw}`,
+      });
+    schemas.add(schema.reference.raw);
+    if (schema.origin && !known.has(schema.reference.objectId))
+      diagnostics.push({
+        code: "unknown-object",
+        line: schema.line,
+        message: `${schema.origin.uri}:${schema.origin.line} のschemaが未宣言のObjectを参照: ${schema.reference.objectId}`,
+      });
+    else check(schema.reference.objectId, schema.line);
+  }
 
   function walk(
     events: GlfEvent[],

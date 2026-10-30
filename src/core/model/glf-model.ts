@@ -7,11 +7,22 @@ export interface Diagnostic {
   message: string;
 }
 
+export interface DefinitionOrigin {
+  uri: string;
+  line: number;
+}
+
+export interface GlfImport {
+  path: string;
+  line: number;
+}
+
 export interface GlfObject {
   id: string;
   label: string;
   type: ObjectType;
   line: number;
+  origin?: DefinitionOrigin;
 }
 
 export interface TableReference {
@@ -25,6 +36,7 @@ export interface Schema {
   reference: TableReference;
   columns: { name: string; type: string; line: number }[];
   line: number;
+  origin?: DefinitionOrigin;
 }
 
 export interface DbCell {
@@ -89,6 +101,7 @@ export type GlfEvent =
 
 export interface GlfDocument {
   title?: string;
+  imports: GlfImport[];
   objects: GlfObject[];
   schemas: Schema[];
   events: GlfEvent[];

@@ -48,6 +48,9 @@
 | REQ-032 | 画像エクスポート操作 | 実装済み | [図面の操作](product.md#図面の操作) | [正式仕様](specs/diagram-export/spec.md#requirement-req-032---画像エクスポート操作) |
 | REQ-033 | 全体図の品質 | 実装済み | [描画規則](tech.md#描画規則) | [正式仕様](specs/diagram-export/spec.md#requirement-req-033---全体図の品質) |
 | REQ-034 | 失敗と状態保持 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/diagram-export/spec.md#requirement-req-034---失敗と状態保持) |
+| REQ-035 | GLF定義のインポート | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/glf-imports/spec.md#requirement-req-035---glf定義のインポート) |
+| REQ-036 | インポートの診断 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/glf-imports/spec.md#requirement-req-036---インポートの診断) |
+| REQ-037 | 依存更新と補完 | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/glf-imports/spec.md#requirement-req-037---依存更新と補完) |
 | NREQ-001 | 編集応答時間 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/editor-integration/spec.md#requirement-nreq-001---編集応答時間) |
 
 ## 要件ごとの変更履歴
@@ -97,6 +100,9 @@
 | add-image-export | REQ-032 | 追加 | アーカイブ済み | [正式仕様](specs/diagram-export/spec.md#requirement-req-032---画像エクスポート操作) | [提案](changes/archive/2026-10-30-add-image-export/proposal.md)、[設計](changes/archive/2026-10-30-add-image-export/design.md)、[タスク](changes/archive/2026-10-30-add-image-export/tasks.md) |
 | add-image-export | REQ-033 | 追加 | アーカイブ済み | [正式仕様](specs/diagram-export/spec.md#requirement-req-033---全体図の品質) | [提案](changes/archive/2026-10-30-add-image-export/proposal.md)、[設計](changes/archive/2026-10-30-add-image-export/design.md)、[タスク](changes/archive/2026-10-30-add-image-export/tasks.md) |
 | add-image-export | REQ-034 | 追加 | アーカイブ済み | [正式仕様](specs/diagram-export/spec.md#requirement-req-034---失敗と状態保持) | [提案](changes/archive/2026-10-30-add-image-export/proposal.md)、[設計](changes/archive/2026-10-30-add-image-export/design.md)、[タスク](changes/archive/2026-10-30-add-image-export/tasks.md) |
+| add-glf-imports | REQ-035 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md#requirement-req-035---glf定義のインポート) | [提案](changes/archive/2026-10-30-add-glf-imports/proposal.md)、[設計](changes/archive/2026-10-30-add-glf-imports/design.md)、[タスク](changes/archive/2026-10-30-add-glf-imports/tasks.md) |
+| add-glf-imports | REQ-036 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md#requirement-req-036---インポートの診断) | [提案](changes/archive/2026-10-30-add-glf-imports/proposal.md)、[設計](changes/archive/2026-10-30-add-glf-imports/design.md)、[タスク](changes/archive/2026-10-30-add-glf-imports/tasks.md) |
+| add-glf-imports | REQ-037 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md#requirement-req-037---依存更新と補完) | [提案](changes/archive/2026-10-30-add-glf-imports/proposal.md)、[設計](changes/archive/2026-10-30-add-glf-imports/design.md)、[タスク](changes/archive/2026-10-30-add-glf-imports/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -170,7 +176,43 @@
 | add-image-export | REQ-033 / REQ-033-S02 | [シナリオ](changes/archive/2026-10-30-add-image-export/specs/diagram-export/spec.md#scenario-req-033-s02---拡大縮小から独立した出力) | [生成](../src/webview/pages/preview/model/export-diagram.ts) | [Chromium](../tests/visual/export.spec.ts) | [記録](#add-image-export---2026-10-30-画像出力の検証) |
 | add-image-export | REQ-034 / REQ-034-S01 | [シナリオ](changes/archive/2026-10-30-add-image-export/specs/diagram-export/spec.md#scenario-req-034-s01---失敗を通知する) | [通知](../src/extension/preview-panel.ts)、[生成](../src/webview/pages/preview/model/export-diagram.ts) | [Extension](../tests/extension/export.test.ts)、[Chromium](../tests/visual/export.spec.ts) | [記録](#add-image-export---2026-10-30-画像出力の検証) |
 
+| add-glf-imports | REQ-035 / REQ-035-S01 | [共通定義](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md) | [定義合成](../src/core/validator/merge-glf-definitions.ts)、[レイアウト](../src/core/layout/sequence-layout.ts) | [Core](../tests/core/imports.test.ts) `REQ-035-S01` | [記録](#add-glf-imports---2026-10-30-定義インポートの検証) |
+| add-glf-imports | REQ-035 / REQ-035-S02 | [複数と多段](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md) | [依存解決](../src/extension/imports.ts) `resolve` | [Extension](../tests/extension/imports.test.ts) `REQ-035-S02` | [記録](#add-glf-imports---2026-10-30-定義インポートの検証) |
+| add-glf-imports | REQ-035 / REQ-035-S03 | [定義のみ](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md) | [定義合成](../src/core/validator/merge-glf-definitions.ts) | [Core](../tests/core/imports.test.ts) `REQ-035-S03` | [記録](#add-glf-imports---2026-10-30-定義インポートの検証) |
+| add-glf-imports | REQ-035 / REQ-035-S04 | [既存文書](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md) | [Parser](../src/core/parser/parse-glf.ts)、[拡張](../src/extension/extension.ts) | [Core](../tests/core/imports.test.ts) `REQ-035-S04`、既存回帰テスト | [記録](#add-glf-imports---2026-10-30-定義インポートの検証) |
+| add-glf-imports | REQ-036 / REQ-036-S01 | [衝突](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md) | [定義合成](../src/core/validator/merge-glf-definitions.ts) | [Core](../tests/core/imports.test.ts)、[Extension](../tests/extension/imports.test.ts) | [記録](#add-glf-imports---2026-10-30-定義インポートの検証) |
+| add-glf-imports | REQ-036 / REQ-036-S02 | [循環](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md) | [依存解決](../src/extension/imports.ts) `resolve` | [Extension](../tests/extension/imports.test.ts) `REQ-036-S02` | [記録](#add-glf-imports---2026-10-30-定義インポートの検証) |
+| add-glf-imports | REQ-036 / REQ-036-S03 | [読み込みと構文](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md) | [依存解決](../src/extension/imports.ts) `resolve` | [Extension](../tests/extension/imports.test.ts) `REQ-036-S03` | [記録](#add-glf-imports---2026-10-30-定義インポートの検証) |
+| add-glf-imports | REQ-037 / REQ-037-S01 | [依存更新](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md) | [更新接続](../src/extension/extension.ts) `scheduleDependents` | [Extension](../tests/extension/imports.test.ts) `REQ-037-S01` | [記録](#add-glf-imports---2026-10-30-定義インポートの検証) |
+| add-glf-imports | REQ-037 / REQ-037-S02 | [定義補完](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md) | [補完](../src/extension/completion.ts) `registerCompletion` | [Extension](../tests/extension/imports.test.ts) `REQ-037-S02` | [記録](#add-glf-imports---2026-10-30-定義インポートの検証) |
+
 ## 検証記録
+
+### add-glf-imports - 2026-10-30 定義インポートの検証
+
+- 対象: REQ-035-S01からS04、REQ-036-S01からS03、REQ-037-S01、S02。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `npm run check`、`npm run test:visual`、`npm run test:extension`、`npx --no-install openspec validate add-glf-imports --strict`、`git diff --check`を実行した。
+  9シナリオを設計とコードへ照合した。
+- 結果: Core 37件、Chromium 36件、Extension Host 17件、strict検証、差分チェックが成功した。
+  3要件と9シナリオに実装とテストが対応する。
+  未解決の重大事項・警告事項はない。
+- 証跡: [検証詳細](changes/archive/2026-10-30-add-glf-imports/verification.md)、[Core](../tests/core/imports.test.ts)、[Extension](../tests/extension/imports.test.ts)、[設計](changes/archive/2026-10-30-add-glf-imports/design.md)。
+- 未検証事項: なし。
+
+### add-glf-imports - 2026-10-30 アーカイブ
+
+- 対象: REQ-035、REQ-036、REQ-037。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 差分仕様を[正式仕様](specs/glf-imports/spec.md)へ同期した。
+  要件とシナリオの本文一致を確認し、`npx --no-install openspec validate --specs`で正式仕様11件を検証した。
+  変更成果物を[アーカイブ](changes/archive/2026-10-30-add-glf-imports/proposal.md)へ移し、台帳と成果物内の参照先を更新した。
+- 結果: 3要件と9シナリオを正式仕様に反映した。
+  正式仕様11件がすべて検証を通過し、成果物の状態は完了、タスクは9/9件完了である。
+- 証跡: [正式仕様](specs/glf-imports/spec.md)、[変更仕様](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md)、[検証詳細](changes/archive/2026-10-30-add-glf-imports/verification.md)。
+- 未検証事項: なし。
 
 ### add-image-export - 2026-10-30 画像出力の検証
 

@@ -46,21 +46,28 @@ function parentBlock(document: vscode.TextDocument, line: number): string {
 }
 
 /** REQ-029..REQ-031: 既存Parserの定義を文脈別のVSCode補完へ変換する。 */
-export function registerCompletion(context: vscode.ExtensionContext): void {
+export function registerCompletion(
+  context: vscode.ExtensionContext,
+  resolve?: (document: vscode.TextDocument) => Promise<GlfDocument>,
+): void {
   const parsed = new Map<string, { version: number; value: GlfDocument }>();
   const provider: vscode.CompletionItemProvider = {
-    provideCompletionItems(document, position) {
+    async provideCompletionItems(document, position) {
       if (!isGlfFileName(document.fileName)) return [];
       const uri = document.uri.toString();
-      let cached = parsed.get(uri);
-      if (!cached || cached.version !== document.version) {
-        cached = {
-          version: document.version,
-          value: parseGlf(document.getText()),
-        };
-        parsed.set(uri, cached);
+      let model: GlfDocument;
+      if (resolve) model = await resolve(document);
+      else {
+        let cached = parsed.get(uri);
+        if (!cached || cached.version !== document.version) {
+          cached = {
+            version: document.version,
+            value: parseGlf(document.getText()),
+          };
+          parsed.set(uri, cached);
+        }
+        model = cached.value;
       }
-      const model = cached.value;
       const line = document.lineAt(position.line).text;
       const prefix = line.slice(0, position.character);
       const trimmed = prefix.trimStart();
@@ -155,7 +162,7 @@ export function registerCompletion(context: vscode.ExtensionContext): void {
         );
       }
       if (
-        /^(Object|title|case|else|alt|par|opt|loop|break)\b.*\s|^title:/.test(
+        /^(Object|import|title|case|else|alt|par|opt|loop|break)\b.*\s|^title:/.test(
           trimmed,
         )
       )
@@ -273,6 +280,12 @@ export function registerCompletion(context: vscode.ExtensionContext): void {
         ["loop", "繰り返し", "loop ${1:条件}:\n    ${2:イベント}"],
         ["break", "中断", "break ${1:条件}:\n    ${2:イベント}"],
       ];
+      if (block === "root")
+        snippets.push([
+          "import",
+          "別のGLFからObjectとschemaを読み込む",
+          'import "${1:./common.glf}"',
+        ]);
       if (
         block === "root" &&
         !model.title &&

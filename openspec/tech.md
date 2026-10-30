@@ -74,7 +74,9 @@ VSCodeとWebviewのデータ交換にはメッセージ通信を使う。
 - `Object` の種別は `APP`、`API`、`DB`、`FILE`、`FEATURE`、`MODULE` を許可する。
 - 種別による色分けは `product.md` の規則に従う。
 - DBテーブルの参照には `ObjectID.table` と `ObjectID.schema.table` を許可し、実行時の識別子解決は行わない。
-- エディタ補完はParserが解析したObjectとschemaを候補に使い、文書版ごとに結果を再利用する。
+- エディタ補完はParserが解析したObjectとschemaを候補に使い、import解決済みの結果を文書版ごとに再利用する。
+- Parserは`import "相対パス.glf"`をIRに保持する。Coreの定義合成はimport先のObjectとschemaだけを結合し、共通のValidatorで参照を検査する。
+- Extensionはローカルファイルの相対パス、循環、重複読み込み、未保存の文書内容とディスク変更を扱い、依存元の診断、補完、プレビューを再解析する。
 - 補完Providerは現在行とインデントの文脈だけを判定し、DSLの定義解析を重複実装しない。
 - DBレコードの行操作は `added`、`removed`、`unchanged`、セル操作は `updated`、`unchanged` としてIRに保持する。
 - FILEの各ノードの操作は `added`、`removed`、`unchanged` としてIRに保持し、子への伝播は行わない。

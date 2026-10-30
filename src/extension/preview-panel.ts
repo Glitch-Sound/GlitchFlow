@@ -32,11 +32,16 @@ const rendered = new vscode.EventEmitter<{ uri: string; title: string }>();
 const closed = new vscode.EventEmitter<string>();
 export const onDidRenderPreview = rendered.event;
 export const onDidClosePreview = closed.event;
+export const currentPreviewUri = (): string | undefined =>
+  panel ? currentUri : undefined;
 
-function toPreviewData(document: vscode.TextDocument): PreviewData {
+function toPreviewData(
+  document: vscode.TextDocument,
+  parsed?: GlfDocument,
+): PreviewData {
   return {
     type: "glitchflow.document",
-    document: parseGlf(document.getText()),
+    document: parsed ?? parseGlf(document.getText()),
     fileName:
       vscode.Uri.file(document.fileName).path.split("/").at(-1) ??
       document.fileName,
@@ -203,10 +208,11 @@ export async function openPreview(
   context: vscode.ExtensionContext,
   document: vscode.TextDocument,
   preserveFocus = false,
+  parsed?: GlfDocument,
 ): Promise<void> {
   if (!isGlfFileName(document.fileName)) return;
   currentUri = document.uri.toString();
-  currentData = toPreviewData(document);
+  currentData = toPreviewData(document, parsed);
   if (panel) {
     panel.reveal(vscode.ViewColumn.Beside, preserveFocus);
     sendCurrent();
@@ -226,6 +232,9 @@ export async function openPreview(
   );
   panel = created;
   isReady = false;
+  created.onDidChangeViewState(() => {
+    if (created.visible) sendCurrent();
+  });
   const listener = created.webview.onDidReceiveMessage((message: unknown) => {
     if (typeof message !== "object" || message === null || !("type" in message))
       return;

@@ -89,6 +89,7 @@ OpenSpecによる変更仕様は `openspec/changes/<change-name>/specs/<capabili
 - `parser` は字句解析と構文解析を扱う。
 - DBの `+`、`-`、`!` とFILEの `+`、`-` は `parser` で解釈し、表示文字列から取り除く。
 - `validator` は構文上の参照、活性、分岐の意味検証と診断情報を扱う。
+- `validator` の定義合成はローカルとimport先のObject、schemaを同じ名前空間で検査し、定義元のURIと行を保持する。
 - `validator` は前後のStateの比較、FILEの親子操作の整合性、SQLとのデータ整合性を検証しない。
 - `layout` は要素のサイズと位置を計算する。
 - `core/index.ts` をCoreの公開APIとする。
@@ -98,6 +99,7 @@ OpenSpecによる変更仕様は `openspec/changes/<change-name>/specs/<capabili
 
 - `extension.ts` は拡張機能の起動と登録を行う。
 - `preview-panel.ts` はWebviewの生成と通信を行う。
+- `imports.ts` はローカルGLFの依存グラフ、ファイル監視、循環検出を扱い、Coreへ解析済み定義を渡す。
 - `diagnostics.ts` はVSCode上のエラーと警告を表示する。
 - `syntax-colors.ts` は専用配色設定を読み、`.glf` エディタのみに装飾を適用、解除する。
 - `glitchflow.syntaxHighlighting` の既定値は `theme` とし、`glitchflow` はユーザーが選んだ場合だけ適用する。

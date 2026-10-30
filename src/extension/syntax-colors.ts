@@ -3,7 +3,7 @@ import { isGlfFileName } from "../core";
 
 type TokenKind = "keyword" | "control" | "type" | "operator" | "string";
 const tokenPattern =
-  /"(?:\\.|[^"\\])*"|->>|-->|<--|<<-|->|<-|\b(?:title|Object|schema|state|sql|type|as|alt|case|else|opt|loop|par|break|APP|API|DB|FILE|FEATURE|MODULE)\b|[+!-]/g;
+  /"(?:\\.|[^"\\])*"|->>|-->|<--|<<-|->|<-|\b(?:title|import|Object|schema|state|sql|type|as|alt|case|else|opt|loop|par|break|APP|API|DB|FILE|FEATURE|MODULE)\b|[+!-]/g;
 const controls = new Set([
   "alt",
   "case",

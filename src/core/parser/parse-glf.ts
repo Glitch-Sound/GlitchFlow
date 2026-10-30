@@ -75,8 +75,12 @@ function changeFor(marker: string | undefined): Change {
 }
 
 /** REQ-002..REQ-005、REQ-018..REQ-021: .glfを表示用IRと行番号付き診断に変換する。 */
-export function parseGlf(source: string): GlfDocument {
+export function parseGlf(
+  source: string,
+  options: { validate?: boolean } = {},
+): GlfDocument {
   const document: GlfDocument = {
+    imports: [],
     objects: [],
     schemas: [],
     events: [],
@@ -175,6 +179,14 @@ export function parseGlf(source: string): GlfDocument {
       }
       index++;
       const text = line.text;
+
+      if (text.startsWith("import")) {
+        const match = /^import\s+"([^"]+)"$/.exec(text);
+        if (!match || line.indent !== 0)
+          error("import-syntax", line.number, "importの構文または位置が不正");
+        else document.imports.push({ path: match[1], line: line.number });
+        continue;
+      }
 
       if (text.startsWith("title:")) {
         const match = /^title:\s*"([^"]*)"$/.exec(text);
@@ -394,6 +406,7 @@ export function parseGlf(source: string): GlfDocument {
   }
 
   document.events = parseEvents(0);
-  document.diagnostics.push(...validateGlf(document));
+  if (options.validate !== false)
+    document.diagnostics.push(...validateGlf(document));
   return document;
 }

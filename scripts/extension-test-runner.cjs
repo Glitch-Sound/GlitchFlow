@@ -17,6 +17,9 @@ function run() {
       resolve(__dirname, "../dist/extension-tests/completion.test.js"),
     );
     mocha.addFile(resolve(__dirname, "../dist/extension-tests/export.test.js"));
+    mocha.addFile(
+      resolve(__dirname, "../dist/extension-tests/imports.test.js"),
+    );
     mocha.run((failures) => {
       if (failures === 0) resolveRun();
       else rejectRun(new Error(`${failures} extension test(s) failed`));

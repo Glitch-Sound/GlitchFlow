@@ -5,12 +5,13 @@ import { type GlfDocument, isGlfFileName, parseGlf } from "../core";
 export function diagnoseDocument(
   document: vscode.TextDocument,
   collection: vscode.DiagnosticCollection,
+  parsed?: GlfDocument,
 ): GlfDocument | undefined {
   if (!isGlfFileName(document.fileName)) return undefined;
-  const parsed = parseGlf(document.getText());
+  const result = parsed ?? parseGlf(document.getText());
   collection.set(
     document.uri,
-    parsed.diagnostics.map((item) => {
+    result.diagnostics.map((item) => {
       const line = Math.max(0, Math.min(item.line - 1, document.lineCount - 1));
       const range = document.lineAt(line).range;
       const diagnostic = new vscode.Diagnostic(
@@ -23,5 +24,5 @@ export function diagnoseDocument(
       return diagnostic;
     }),
   );
-  return parsed;
+  return result;
 }
