@@ -53,13 +53,48 @@ FE-
 Objectの種別には`APP`、`API`、`DB`、`FILE`、`FEATURE`、`MODULE`を指定できる。\
 `state`と`sql`は表示用であり、DBやファイルの操作は実行しない。
 
-### 処理を複数行にする
+### 記法の表示例
 
-2行目以降を4個の空白で下げる。
+以下は各記法を使って取得した実際のプレビューである。
+
+#### `title`
+
+最初の非空行に書いたタイトルがプレビューの見出しになる。
+
+![titleで指定した"処理の例"がプレビューの見出しになった画面](docs/images/notation-title.png)
+
+#### `Object`
+
+宣言したObjectは表示名と種別を持つ枠になり、その下にライフラインが伸びる。
+
+![APP、API、DBのObjectとライフライン](docs/images/notation-object.png)
+
+#### 同期 / 非同期メッセージ
+
+`->>`は同期メッセージ、`->`は非同期メッセージを表す。
+
+![FEからBEへの同期メッセージと非同期メッセージ](docs/images/notation-message.png)
+
+#### 応答メッセージ
+
+`FE <-- BE`はBEからFEへ戻る破線の応答になる。
+
+![要求の後にBEからFEへ戻る応答メッセージ](docs/images/notation-response.png)
+
+#### 活性区間
+
+`BE+`から`BE-`まで、BEのライフラインに活性区間が表示される。
+
+![BEの処理を囲む活性区間](docs/images/notation-activation.png)
+
+#### 通常 / 強調された処理
+
+`FE: 処理`は通常のカード、`FE: *重要な処理*`は強調されたカードになる。\
+2行目以降は4個の空白で下げる。
 
 ```glf
-FE: 処理の1行目
-    処理の2行目
+FE: 通常の処理
+    内容を確認
 
 FE:
     本文の1行目
@@ -69,7 +104,114 @@ FE: *重要な処理
     入力を確認*
 ```
 
-![複数行の強調処理を1枚のカードに表示した実際のプレビュー](docs/images/multiline-process-preview.png)
+![2行の通常処理と2行の強調処理](docs/images/notation-process.png)
+
+#### DBのカラム / 期待状態
+
+`schema`はカラム名と型を定義し、`state`は指定した時点の行を表示する。\
+`+`で追加した行は赤字になり、カラム名にHoverすると型を確認できる。
+
+```glf
+schema DB.users:
+    id: int
+    name: text
+state DB.users:
+    [1, "太郎"]
+    + [2, "次郎"]
+```
+
+![usersテーブルに追加された赤字の行](docs/images/notation-db.png)
+
+![DBのidカラムにHoverして型intを表示した画面](docs/images/notation-schema-hover.png)
+
+#### FILEツリー / 表示用SQL
+
+`state FILE`はファイルツリーを表示する。\
+`+`は追加、`-`は削除を示す。
+
+```glf
+state FILE:
+    users/
+        + report.json
+        - old.json
+```
+
+![追加されたreport.jsonと削除されたold.jsonを含むFILEツリー](docs/images/notation-file.png)
+
+`sql DB`は図中にSQLを表示する。
+
+```glf
+sql DB:
+    SELECT id, name
+    FROM users
+```
+
+![DBのライフラインに表示された複数行のSQL](docs/images/notation-sql.png)
+
+#### `alt` / `opt` / `loop`
+
+`alt`は`case`と`else`を別の区画に表示する。
+
+```glf
+alt:
+    case 成功:
+        FE ->> BE: 保存
+    else:
+        FE: エラーを表示
+```
+
+![成功と失敗の2区画を持つalt分岐](docs/images/notation-alt.png)
+
+`opt 条件:`は条件が成立した場合の処理を囲む。
+
+![認可済みの場合だけ更新するopt区画](docs/images/notation-opt.png)
+
+`loop 条件:`は繰り返す処理を囲む。
+
+![再試行を表すloop区画](docs/images/notation-loop.png)
+
+#### `par` / `break`
+
+`par`は複数の`case`を並列の区画として表示する。
+
+```glf
+par:
+    case 画面更新:
+        FE: 表示を更新
+    case 記録:
+        BE: 履歴を記録
+```
+
+![画面更新と記録の2区画を持つparフラグメント](docs/images/notation-par.png)
+
+`break 条件:`は中断する場合の処理を囲む。
+
+![エラー時に中断する処理を囲むbreak区画](docs/images/notation-break.png)
+
+#### `import`
+
+別ファイルに定義したObjectと`schema`を取り込み、フローから参照できる。
+
+`flow.glf`:
+
+```glf
+import "./common.glf"
+Object FE as "画面" type APP
+FE ->> DB: 検索
+state DB.users:
+    [1, "太郎"]
+```
+
+`common.glf`:
+
+```glf
+Object DB as "共有DB" type DB
+schema DB.users:
+    id: int
+    name: text
+```
+
+![importで取り込んだ共有DBとusersテーブルを含むフロー](docs/images/notation-import.png)
 
 ## 状態と分岐を一緒に見る
 
