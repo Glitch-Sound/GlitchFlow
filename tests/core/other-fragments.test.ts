@@ -36,6 +36,20 @@ describe("other fragments", () => {
     expect(model.events[0].kind).toBe("par");
   });
 
+  it("REQ-019 / REQ-019-S01: parの枠が右端レーンの処理カードを収める", () => {
+    const model = parseGlf(
+      'Object FE as "画面" type APP\nObject BE as "API" type API\npar:\n    case 画面更新:\n        FE: 表示を更新\n    case 記録:\n        BE: 履歴を記録',
+    );
+    const layout = layoutSequence(model, measure);
+    expect(model.diagnostics).toEqual([]);
+    const fragment = layout.fragments[0];
+    const process = layout.processes.find((item) => item.text === "履歴を記録");
+    expect(process).toBeDefined();
+    expect(fragment.x + fragment.width).toBeGreaterThanOrEqual(
+      (process?.x ?? 0) + measure(process?.text ?? "") + 28,
+    );
+  });
+
   it("REQ-020 / REQ-020-S01: break後もイベントを保持する", () => {
     const model = parseGlf(`${header}break エラー:\n    FE: エラー\nFE: 後続`);
     expect(model.diagnostics).toEqual([]);

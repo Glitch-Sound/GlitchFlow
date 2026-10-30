@@ -629,6 +629,17 @@ export function layoutSequence(
       ),
     0,
   );
+  for (const fragment of fragments) {
+    const bottom = fragment.y + fragment.height;
+    const contentRight = processes.reduce((right, process) => {
+      if (process.y < fragment.y || process.y >= bottom) return right;
+      return Math.max(
+        right,
+        process.x + Math.max(...process.lines.map(measureText)) + 28,
+      );
+    }, fragment.x + fragment.width);
+    fragment.width = contentRight - fragment.x;
+  }
   const labelRight = lifelines.reduce(
     (right, lane) =>
       Math.max(
