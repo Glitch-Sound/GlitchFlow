@@ -36,7 +36,7 @@ WHEN FILEの`state`を描画する時、GlitchFlowは SHALL 各ノードの深�
 
 ### Requirement: REQ-011 - SQLの描画と状態配置
 
-WHEN `state`または`sql`を描画する時、GlitchFlowは SHALL 記述順の位置に表示し、同じDBのState直後のSQLを表の下のグレー系の矩形に表示し、SQL本文の各行が矩形の内側に収まる寸法とスクロール範囲を確保する。
+WHEN `state`または`sql`を描画する時、GlitchFlowは SHALL 記述順の位置に表示し、同じDBに対する連続したStateとSQLを共通幅で隙間なく接続し、SQLをグレー系の矩形に表示し、SQL本文の各行が矩形の内側に収まる寸法とスクロール範囲を確保する。
 
 #### Scenario: REQ-011-S01 - SQLをStateの下に表示する
 
@@ -57,3 +57,10 @@ WHEN `state`または`sql`を描画する時、GlitchFlowは SHALL 記述順の�
 - **WHEN** プレビューを等倍で描画する。
 - **THEN** SQL行の表示上の右端は灰色の矩形の右端から12px以上内側にあり、全文を選択できる。
 - **AND** DB表とSQL矩形は同じ幅で接し、図面のスクロール範囲内に収まる。
+
+#### Scenario: REQ-011-S04 - 複数のStateとSQLを接続する
+
+- **GIVEN** 同じDBに対する異なるテーブルの`state`が連続し、その直後に`sql`がある。
+- **WHEN** プレビューを描画する。
+- **THEN** 各テーブルとSQLは記述順のまま共通幅で隙間なく接する。
+- **AND** 間に処理やメッセージがある場合は、その位置で接続を区切る。

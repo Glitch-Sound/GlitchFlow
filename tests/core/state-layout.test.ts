@@ -61,4 +61,24 @@ describe("state layout", () => {
     );
     expect(layout.processes[1].y).toBeLessThan(layout.sqlBlocks[0].y);
   });
+
+  it("連続する複数テーブルのStateとSQLを共通幅で接続する", () => {
+    const doc = parseGlf(
+      'Object DB as "DB" type DB\nschema DB.sessions:\n    id: text\nschema DB.audit:\n    event: text\nstate DB.sessions:\n    ["S-42"]\nstate DB.audit:\n    ["isolated"]\nsql DB:\n    UPDATE sessions SET status = \'isolated\' RETURNING id;\nDB: after\nstate DB.sessions:\n    ["S-43"]',
+    );
+    const layout = layoutSequence(doc, measure);
+    const [first, second, later] = layout.dbStates;
+    const sql = layout.sqlBlocks[0];
+    expect(layout.dbStates).toHaveLength(3);
+    expect(second.y).toBe(first.y + first.height);
+    expect(sql.y).toBe(second.y + second.height);
+    expect([first.x, second.x, sql.x]).toEqual([first.x, first.x, first.x]);
+    expect([first.width, second.width, sql.width]).toEqual([
+      sql.width,
+      sql.width,
+      sql.width,
+    ]);
+    expect(sql.y + sql.height).toBeLessThan(layout.processes[0].y);
+    expect(later.y).toBeGreaterThan(layout.processes[0].y);
+  });
 });

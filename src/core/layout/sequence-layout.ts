@@ -116,6 +116,7 @@ export interface SequenceLayout {
   dbStates: (PanelBox & {
     reference: string;
     title: string;
+    connectedToPrevious: boolean;
     columns: string[];
     columnWidths: number[];
     numericColumns: boolean[];
@@ -298,6 +299,8 @@ export function layoutSequence(
   }[] = [];
   let lastY = 58;
   let lastPanel: { kind: string; objectId: string } | undefined;
+  let dbGroup: PanelBox[] = [];
+  let dbGroupHasState = false;
   for (let index = 0; index < basic.length; index++) {
     const event = basic[index];
     const panel = measured[index];
@@ -411,40 +414,45 @@ export function layoutSequence(
         event.kind === "db-state" ? event.reference.objectId : event.objectId;
       const laneX = xById.get(objectId);
       if (laneX === undefined) continue;
-      const consecutiveSql =
-        event.kind === "sql" &&
-        lastPanel?.kind === "db-state" &&
+      const continuousDb =
+        (event.kind === "db-state" || event.kind === "sql") &&
+        (lastPanel?.kind === "db-state" || lastPanel?.kind === "sql") &&
         lastPanel.objectId === objectId;
+      if (!continuousDb) {
+        dbGroup = [];
+        dbGroupHasState = false;
+      }
       const preceding = basic[index - 1];
       const afterActivation =
         preceding?.kind === "activation" &&
         preceding.action === "start" &&
         preceding.objectId === objectId;
-      const y = lastY + (consecutiveSql ? 0 : afterActivation ? 12 : 40);
-      const previousDb = consecutiveSql ? dbStates.at(-1) : undefined;
-      const width = previousDb
-        ? Math.max(previousDb.width, panel.width)
-        : panel.width;
-      if (previousDb) previousDb.width = width;
+      const y = lastY + (continuousDb ? 0 : afterActivation ? 12 : 40);
+      const width = Math.max(panel.width, ...dbGroup.map((box) => box.width));
+      for (const member of dbGroup) member.width = width;
       const box = {
         objectId,
-        x: previousDb?.x ?? laneX + 28,
+        x: dbGroup[0]?.x ?? laneX + 28,
         y,
         width,
         height: panel.height,
       };
-      if (event.kind === "db-state" && panel.kind === "db-state")
+      if (event.kind === "db-state" && panel.kind === "db-state") {
         dbStates.push({
           ...box,
           reference: event.reference.raw,
           title: event.reference.schema
             ? `${event.reference.schema}.${event.reference.table}`
             : event.reference.table,
+          connectedToPrevious: dbGroupHasState,
           columns: panel.columns,
           columnWidths: panel.columnWidths,
           numericColumns: panel.numericColumns,
           rows: panel.rows,
         });
+        dbGroup.push(dbStates[dbStates.length - 1]);
+        dbGroupHasState = true;
+      }
       if (event.kind === "file-state" && panel.kind === "file-state")
         fileStates.push({
           ...box,
@@ -453,8 +461,10 @@ export function layoutSequence(
               ?.label ?? "State",
           nodes: panel.nodes,
         });
-      if (event.kind === "sql" && panel.kind === "sql")
+      if (event.kind === "sql" && panel.kind === "sql") {
         sqlBlocks.push({ ...box, lines: panel.lines });
+        dbGroup.push(sqlBlocks[sqlBlocks.length - 1]);
+      }
       lastY = y + panel.height;
       lastPanel = { kind: event.kind, objectId };
       continue;

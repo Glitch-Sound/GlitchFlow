@@ -151,3 +151,50 @@ test("REQ-011 / REQ-011-S03: 等幅のSQL本文が枠内に収まる", async ({ 
   expect(Math.abs(bounds.panelWidth - bounds.tableWidth)).toBeLessThan(1);
   expect(bounds.panelRight).toBeLessThanOrEqual(bounds.diagramRight);
 });
+
+test("連続する複数のDB状態とSQLが一続きのカードになる", async ({ page }) => {
+  await page.goto("/");
+  const model = parseGlf(
+    'Object DB as "DB" type DB\nschema DB.sessions:\n    id: text\n    status: text\n    risk_score: int\nstate DB.sessions:\n    ["S-42", "active", 92]\nstate DB.sessions:\n    ["S-42", "active", 92]\nsql DB:\n    UPDATE sessions SET status = \'isolated\'\n    WHERE id = :session_id AND status = \'active\'\n    AND risk_score >= 80 RETURNING id;',
+  );
+  await page.evaluate(
+    (document) =>
+      window.postMessage(
+        { type: "glitchflow.document", document, fileName: "joined.glf" },
+        "*",
+      ),
+    model,
+  );
+  await expect(page.locator(".state-db")).toHaveCount(2);
+  await expect(page.locator(".state-sql")).toHaveCount(1);
+  await expect(page.locator(".state-db-link")).toHaveCount(1);
+  const geometry = await page
+    .locator(".state-db-background, .state-sql-background")
+    .evaluateAll((elements) =>
+      elements.map((element) => {
+        const { x, y, width, height } = element.getBoundingClientRect();
+        return { x, y, width, height };
+      }),
+    );
+  expect(geometry).toHaveLength(3);
+  for (let index = 1; index < geometry.length; index++) {
+    expect(
+      Math.abs(
+        geometry[index].y - geometry[index - 1].y - geometry[index - 1].height,
+      ),
+    ).toBeLessThanOrEqual(1);
+    expect(geometry[index].x).toBe(geometry[0].x);
+    expect(geometry[index].width).toBe(geometry[0].width);
+  }
+  const first = geometry[0];
+  const last = geometry[geometry.length - 1];
+  await page.screenshot({
+    path: "test-results/connected-db-states-and-sql.png",
+    clip: {
+      x: first.x - 42,
+      y: first.y - 16,
+      width: first.width + 62,
+      height: last.y + last.height - first.y + 32,
+    },
+  });
+});

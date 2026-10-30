@@ -19,6 +19,8 @@ API ->> DB: 高リスクの有効セッションだけを更新
 DB+
 state DB.sessions:
     ["S-42", "active", 92]
+state DB.sessions:
+    ["S-42", "active", 92]
 sql DB:
     UPDATE sessions SET status = 'isolated'
     WHERE id = :session_id AND status = 'active'

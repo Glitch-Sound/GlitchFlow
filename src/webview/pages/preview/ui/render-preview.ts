@@ -65,7 +65,7 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
     const laneX = layout.lifelines.find(
       (lane) => lane.id === state.objectId,
     )?.x;
-    if (laneX !== undefined)
+    if (laneX !== undefined && !state.connectedToPrevious)
       group.append(
         svgElement("line", {
           x1: String(laneX + 8),
