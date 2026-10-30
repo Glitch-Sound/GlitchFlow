@@ -66,6 +66,7 @@
 | render-state-and-sql | REQ-009 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#requirement-req-009---db状態の描画) | [提案](changes/archive/2026-10-29-render-state-and-sql/proposal.md)、[設計](changes/archive/2026-10-29-render-state-and-sql/design.md)、[タスク](changes/archive/2026-10-29-render-state-and-sql/tasks.md) |
 | render-state-and-sql | REQ-010 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#requirement-req-010---file状態の描画) | [提案](changes/archive/2026-10-29-render-state-and-sql/proposal.md)、[設計](changes/archive/2026-10-29-render-state-and-sql/design.md)、[タスク](changes/archive/2026-10-29-render-state-and-sql/tasks.md) |
 | render-state-and-sql | REQ-011 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#requirement-req-011---sqlの描画と状態配置) | [提案](changes/archive/2026-10-29-render-state-and-sql/proposal.md)、[設計](changes/archive/2026-10-29-render-state-and-sql/design.md)、[タスク](changes/archive/2026-10-29-render-state-and-sql/tasks.md) |
+| fix-sql-panel-overflow | REQ-011 | 変更 | アーカイブ済み | [正式仕様](specs/state-rendering/spec.md#requirement-req-011---sqlの描画と状態配置) | [提案](changes/archive/2026-10-30-fix-sql-panel-overflow/proposal.md)、[設計](changes/archive/2026-10-30-fix-sql-panel-overflow/design.md)、[タスク](changes/archive/2026-10-30-fix-sql-panel-overflow/tasks.md) |
 | support-alt-fragment | REQ-012 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#requirement-req-012---alt分岐の描画) | [提案](changes/archive/2026-10-29-support-alt-fragment/proposal.md)、[設計](changes/archive/2026-10-29-support-alt-fragment/design.md)、[タスク](changes/archive/2026-10-29-support-alt-fragment/tasks.md) |
 | support-alt-fragment | REQ-013 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#requirement-req-013---分岐の活性整合性) | [提案](changes/archive/2026-10-29-support-alt-fragment/proposal.md)、[設計](changes/archive/2026-10-29-support-alt-fragment/design.md)、[タスク](changes/archive/2026-10-29-support-alt-fragment/tasks.md) |
 | integrate-glf-editor | REQ-014 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-integrate-glf-editor/specs/editor-integration/spec.md#requirement-req-014---編集連動プレビュー) | [提案](changes/archive/2026-10-29-integrate-glf-editor/proposal.md)、[設計](changes/archive/2026-10-29-integrate-glf-editor/design.md)、[タスク](changes/archive/2026-10-29-integrate-glf-editor/tasks.md) |
@@ -113,6 +114,9 @@
 | render-state-and-sql | REQ-010 / REQ-010-S01 | [シナリオ](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#scenario-req-010-s01---階層と個別の変更属性を表示する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderState` | [Core](../tests/core/state-layout.test.ts)、[Chromium](../tests/visual/state.spec.ts) `REQ-010-S01` | [検証記録](#render-state-and-sql---2026-10-29-描画検証) |
 | render-state-and-sql | REQ-011 / REQ-011-S01 | [シナリオ](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#scenario-req-011-s01---sqlをstateの下に表示する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderState` | [Core](../tests/core/state-layout.test.ts)、[Chromium](../tests/visual/state.spec.ts) `REQ-011-S01` | [検証記録](#render-state-and-sql---2026-10-29-描画検証) |
 | render-state-and-sql | REQ-011 / REQ-011-S02 | [シナリオ](changes/archive/2026-10-29-render-state-and-sql/specs/state-rendering/spec.md#scenario-req-011-s02---指定位置だけに表示する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/state-layout.test.ts) `REQ-011-S02` | [検証記録](#render-state-and-sql---2026-10-29-描画検証) |
+| fix-sql-panel-overflow | REQ-011 / REQ-011-S01 | [シナリオ](specs/state-rendering/spec.md#scenario-req-011-s01---sqlをstateの下に表示する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Core](../tests/core/state-layout.test.ts) `REQ-011-S01`、[Chromium](../tests/visual/state.spec.ts) `REQ-011-S01` | [検証記録](#fix-sql-panel-overflow---2026-10-30-sql幅の回帰検証) |
+| fix-sql-panel-overflow | REQ-011 / REQ-011-S02 | [シナリオ](specs/state-rendering/spec.md#scenario-req-011-s02---指定位置だけに表示する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/state-layout.test.ts) `REQ-011-S02` | [検証記録](#fix-sql-panel-overflow---2026-10-30-sql幅の回帰検証) |
+| fix-sql-panel-overflow | REQ-011 / REQ-011-S03 | [シナリオ](specs/state-rendering/spec.md#scenario-req-011-s03---sql本文を枠内に収める) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Chromium](../tests/visual/state.spec.ts) `REQ-011-S03`、[README画像](../docs/images/session-isolation-preview.png) | [検証記録](#fix-sql-panel-overflow---2026-10-30-sql幅の回帰検証) |
 | support-alt-fragment | REQ-012 / REQ-012-S01 | [シナリオ](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#scenario-req-012-s01---ログインの成功と失敗を描画する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Core](../tests/core/alt-layout.test.ts)、[Chromium](../tests/visual/alt.spec.ts) | [検証記録](#support-alt-fragment---2026-10-29-描画検証) |
 | support-alt-fragment | REQ-012 / REQ-012-S02 | [シナリオ](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#scenario-req-012-s02---入れ子の分岐を描画する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/alt-layout.test.ts) | [検証記録](#support-alt-fragment---2026-10-29-描画検証) |
 | support-alt-fragment | REQ-013 / REQ-013-S01 | [シナリオ](changes/archive/2026-10-29-support-alt-fragment/specs/alt-fragment/spec.md#scenario-req-013-s01---分岐ごとに活性を終了する) | [レイアウト](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/alt-layout.test.ts)、[Chromium](../tests/visual/alt.spec.ts) | [検証記録](#support-alt-fragment---2026-10-29-描画検証) |
@@ -146,6 +150,37 @@
 | improve-preview-opening | REQ-028 / REQ-028-S02 | [シナリオ](specs/preview/spec.md#scenario-req-028-s02---対象外のエディタ) | [メニュー](../package.json) | [Extension](../tests/extension/preview.test.ts) `REQ-028` | [記録](#improve-preview-opening---2026-10-30-起動動作の検証) |
 
 ## 検証記録
+
+### fix-sql-panel-overflow - 2026-10-30 アーカイブ
+
+- 対象: REQ-011とREQ-011-S01からREQ-011-S03。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 差分仕様のREQ-011本文と3シナリオを[正式仕様](specs/state-rendering/spec.md)へ同期した。
+  `npx --no-install openspec validate --specs`で正式仕様8件を検証し、同期後のREQ-011本文と差分仕様の一致を確認した。
+  完了済みの変更を[アーカイブ](changes/archive/2026-10-30-fix-sql-panel-overflow/proposal.md)へ移し、台帳の参照を更新した。
+- 結果: 正式仕様8件の検証が成功し、REQ-011のS01とS02を維持したままS03を追加した。
+  アーカイブ前の成果物4/4とタスク5/5は完了していた。
+- 証跡: [正式仕様](specs/state-rendering/spec.md)、[アーカイブ済み差分](changes/archive/2026-10-30-fix-sql-panel-overflow/specs/state-rendering/spec.md)、[タスク](changes/archive/2026-10-30-fix-sql-panel-overflow/tasks.md)。
+- 未検証事項: なし。
+
+### fix-sql-panel-overflow - 2026-10-30 SQL幅の回帰検証
+
+- 対象: REQ-011-S01、REQ-011-S02、REQ-011-S03。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 等幅フォントで幅が広がるSQL行を用いたChromiumテストを追加し、修正前の失敗を確認した。
+  CoreのSQL幅計算を変更し、対象テストと既存のState描画テストを再実行した。
+  README例を描画してSQL本文の右余白を測り、画像を再生成した。
+- 結果: 修正前はSQL文字列の右端が枠の右端を約181px越えた。
+  修正後は境界テストとState描画テストの計4件が成功し、README例の右余白は20.26pxであった。
+  DB表とSQL枠は同じ幅で接し、SQL全文を選択できる。
+- 証跡: [変更仕様](changes/archive/2026-10-30-fix-sql-panel-overflow/specs/state-rendering/spec.md)、[描画テスト](../tests/visual/state.spec.ts)、[Core配置](../src/core/layout/sequence-layout.ts)、[README画像](../docs/images/session-isolation-preview.png)。
+- 全体検査: `npm run check`でBiome、Steiger、型検査、Core33件が成功した。
+  `npm run test:visual`でChromium30件が成功した。
+  `npx --no-install openspec validate fix-sql-panel-overflow --strict`と`git diff --check`も成功した。
+- 成果物照合: [Verify報告](changes/archive/2026-10-30-fix-sql-panel-overflow/verification.md)で要件、3シナリオ、設計、タスク5件、実装、テストを照合し、重大、警告、提案事項はない。
+- 未検証事項: VS Code開発ホストでの再撮影は実施していない。
 
 ### improve-preview-opening - 2026-10-30 アーカイブ
 

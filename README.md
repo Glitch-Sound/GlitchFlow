@@ -6,7 +6,12 @@ GlitchFlow は、処理の流れ(Flow)とデータの期待状態(State)を同�
 `.glf` ファイルにメッセージ、処理、分岐、DB レコードやファイルの状態を記述すると、図をプレビューできる。\
 設計レビュー、実装時の動作共有、結合テストの期待結果の整理に利用できる。
 
-![ログイン処理の流れと、DB やファイルの期待状態を並べたプレビュー](docs/images/align-preview-login.png)
+![不審セッションの隔離と、前後の DB 状態・監査証跡を並べたプレビュー](docs/images/session-isolation-preview.png)
+
+上の図は、未登録端末からの特権操作を検知し、リスクスコア `92` が閾値 `80` 以上の有効なセッションだけを隔離する流れを表す。\
+SQL の前後で `active` から `isolated` への変化を示し、更新したセルだけを赤字にする。\
+条件が一致した場合は監査証跡を保存し、一致しなければ更新せずに応答する。\
+処理の分岐と、その時点で期待するデータを一緒に確認できる。
 
 ## 使い方
 
@@ -21,40 +26,63 @@ GlitchFlow は、処理の流れ(Flow)とデータの期待状態(State)を同�
 
 ## DSL の書き方
 
-以下を `login.glf` として保存すると、メッセージと DB・ファイルの期待状態を一つの図に表示できる。\
-詳しい入力例は [examples/login.glf](examples/login.glf) にある。
+以下を `session-isolation.glf` として保存すると、上の図を表示できる。\
+ファイルは [examples/session-isolation.glf](examples/session-isolation.glf) にもある。
 
 ```glf
-title: "ログインフロー"
+title: "不審セッションの隔離と証跡保全"
 
-Object FE as "フロントエンド" type APP
-Object BE as "バックエンド" type API
-Object DB as "データベース" type DB
-Object FILE as "ストレージ" type FILE
+Object APP  as "監視コンソール" type APP
+Object API  as "セキュリティAPI" type API
+Object DB   as "セッションDB"   type DB
+Object FILE as "証跡ストア"     type FILE
 
-schema DB.users:
-    id: int
-    name: text
+schema DB.sessions:
+    id: text
+    status: text
+    risk_score: int
 
-FE ->> BE: login(name)
-BE+
-BE: *ユーザーを検索*
-BE ->> DB: users を検索
-state DB.users:
-    [1, "taro"]
+Global ->> APP: 未登録端末からの特権操作を検知
+APP+
+
+APP ->> API: セッション S-42 の隔離を要求
+API+
+API: *隔離条件を原子的に判定*
+
+API ->> DB: 高リスクの有効セッションだけを更新
+DB+
+
+state DB.sessions:
+    ["S-42", "active", 92]
 sql DB:
-    SELECT id, name FROM users WHERE name = :name;
+    UPDATE sessions SET status = 'isolated'
+    WHERE id = :session_id AND status = 'active'
+    AND risk_score >= 80 RETURNING id;
+API <-- DB: 更新行（0または1件）
+DB-
 
 alt:
-    case 見つかった:
-        FE <-- BE: 200 OK
-    else:
-        FE <-- BE: 401 Unauthorized
+    case 隔離できた:
+        state DB.sessions:
+            ["S-42", !"isolated", 92]
 
-BE-
-state FILE:
-    users/
-        + login.log
+        API ->> FILE: 監査証跡を保存
+        FILE+
+
+        state FILE:
+            incidents/
+                + S-42.json
+
+        FILE-
+
+        APP <-- API: 200 OK / 隔離完了
+        API-
+        APP-
+
+    else:
+        APP <-- API: 409 Conflict / 隔離条件未達
+        API-
+        APP-
 ```
 
 ### 基本構文
@@ -119,7 +147,8 @@ npm run build
 npm run check
 ```
 
-VS Code でリポジトリを開いて F5 を押すと、Extension Development Host で [examples/login.glf](examples/login.glf) を確認できる。\
+VS Code でリポジトリを開いて F5 を押し、Extension Development Host で [README の例](examples/session-isolation.glf)を開くとプレビューを確認できる。\
+回帰テスト用の基準 DSL は [examples/login.glf](examples/login.glf) にある。\
 視覚テストは `npx --no-install playwright install chromium` の後に `npm run test:visual` で実行する。\
 拡張機能の統合テストは `npm run test:extension` で実行する。
 

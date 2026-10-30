@@ -211,7 +211,7 @@ export function layoutSequence(
       const lines = event.text.split("\n");
       const width = Math.max(
         150,
-        ...lines.map((line) => measureText(line) + 32),
+        ...lines.map((line) => measureDbText(line) + 32),
       );
       const height = lines.length * 20 + 40;
       panelWidths.set(

@@ -103,3 +103,51 @@ test("REQ-010 / REQ-010-S01、REQ-011 / REQ-011-S01: FILEツリーとSQL枠", as
     fullPage: true,
   });
 });
+
+test("REQ-011 / REQ-011-S03: 等幅のSQL本文が枠内に収まる", async ({ page }) => {
+  await page.goto("/");
+  const line = `SELECT ${"i".repeat(48)}`;
+  const model = parseGlf(
+    `Object DB as "DB" type DB\nschema DB.items:\n    id: int\nstate DB.items:\n    [1]\nsql DB:\n    ${line}`,
+  );
+  await page.evaluate(
+    (document) =>
+      window.postMessage(
+        { type: "glitchflow.document", document, fileName: "sql.glf" },
+        "*",
+      ),
+    model,
+  );
+  await expect(page.locator(".state-sql-line")).toHaveText(line);
+  const selectedText = await page
+    .locator(".state-sql-line")
+    .evaluate((text) => {
+      const selection = window.getSelection();
+      selection?.selectAllChildren(text);
+      return selection?.toString();
+    });
+  expect(selectedText).toBe(line);
+  const bounds = await page.evaluate(() => {
+    const text = document.querySelector(".state-sql-line");
+    const background = document.querySelector(".state-sql-background");
+    const table = document.querySelector(".state-db-background");
+    const diagram = document.querySelector(".sequence-diagram");
+    if (!text || !background || !table || !diagram) return null;
+    const textBox = text.getBoundingClientRect();
+    const box = background.getBoundingClientRect();
+    const tableBox = table.getBoundingClientRect();
+    const diagramBox = diagram.getBoundingClientRect();
+    return {
+      textRight: textBox.right,
+      panelRight: box.right,
+      panelWidth: box.width,
+      tableWidth: tableBox.width,
+      diagramRight: diagramBox.right,
+    };
+  });
+  expect(bounds).not.toBeNull();
+  if (!bounds) return;
+  expect(bounds.textRight).toBeLessThanOrEqual(bounds.panelRight - 12);
+  expect(Math.abs(bounds.panelWidth - bounds.tableWidth)).toBeLessThan(1);
+  expect(bounds.panelRight).toBeLessThanOrEqual(bounds.diagramRight);
+});
