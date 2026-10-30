@@ -15,7 +15,7 @@
 | 要件ID | 要件名 | 状態 | 根拠となる文書の節 | 現在の仕様 |
 | --- | --- | --- | --- | --- |
 | REQ-001 | プレビューの起動 | 実装済み | [対象機能](product.md#対象機能) | [正式仕様](specs/preview/spec.md#requirement-req-001---プレビューの起動) |
-| REQ-002 | 文書メタデータと基本イベント | 実装済み | [DSL](product.md#dslと編集) | [変更仕様](specs/glf-parsing/spec.md) |
+| REQ-002 | 文書メタデータと基本イベント | 実装済み | [DSL](product.md#dslと編集) | [正式仕様](specs/glf-parsing/spec.md) |
 | REQ-003 | DB参照と表示用状態 | 実装済み | [State](product.md#対象機能) | [変更仕様](specs/glf-parsing/spec.md) |
 | REQ-004 | FILE状態とSQL | 実装済み | [State](product.md#対象機能) | [変更仕様](specs/glf-parsing/spec.md) |
 | REQ-005 | 分岐構造と解析診断 | 実装済み | [DSL](product.md#dslと編集) | [変更仕様](specs/glf-parsing/spec.md) |
@@ -70,6 +70,9 @@
 
 | 変更名 | 要件ID | 操作 | 変更の状態 | 対象仕様 | 提案、設計、タスク |
 | --- | --- | --- | --- | --- | --- |
+| multiline-process-labels | REQ-002 | 変更 | アーカイブ済み | [正式仕様](specs/glf-parsing/spec.md) | [提案](changes/archive/2026-10-31-multiline-process-labels/proposal.md)、[設計](changes/archive/2026-10-31-multiline-process-labels/design.md)、[タスク](changes/archive/2026-10-31-multiline-process-labels/tasks.md) |
+| multiline-process-labels | REQ-008 | 変更 | アーカイブ済み | [正式仕様](specs/sequence-rendering/spec.md) | [提案](changes/archive/2026-10-31-multiline-process-labels/proposal.md)、[設計](changes/archive/2026-10-31-multiline-process-labels/design.md)、[タスク](changes/archive/2026-10-31-multiline-process-labels/tasks.md) |
+| multiline-process-labels | REQ-023 | 変更 | アーカイブ済み | [正式仕様](specs/preview-appearance/spec.md) | [提案](changes/archive/2026-10-31-multiline-process-labels/proposal.md)、[設計](changes/archive/2026-10-31-multiline-process-labels/design.md)、[タスク](changes/archive/2026-10-31-multiline-process-labels/tasks.md) |
 | glitchflow-spec | REQ-001 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-29-glitchflow-spec/specs/preview/spec.md#requirement-req-001---プレビューの起動) | [提案](changes/archive/2026-10-29-glitchflow-spec/proposal.md)、[設計](changes/archive/2026-10-29-glitchflow-spec/design.md)、[タスク](changes/archive/2026-10-29-glitchflow-spec/tasks.md) |
 | parse-glf-basics | REQ-002 | 追加 | アーカイブ済み | [変更仕様](specs/glf-parsing/spec.md#requirement-req-002---文書メタデータと基本イベント) | [提案](changes/archive/2026-10-29-parse-glf-basics/proposal.md)、[設計](changes/archive/2026-10-29-parse-glf-basics/design.md)、[タスク](changes/archive/2026-10-29-parse-glf-basics/tasks.md) |
 | parse-glf-basics | REQ-003 | 追加 | アーカイブ済み | [変更仕様](specs/glf-parsing/spec.md#requirement-req-003---db参照と表示用状態) | [提案](changes/archive/2026-10-29-parse-glf-basics/proposal.md)、[設計](changes/archive/2026-10-29-parse-glf-basics/design.md)、[タスク](changes/archive/2026-10-29-parse-glf-basics/tasks.md) |
@@ -127,6 +130,10 @@
 
 | 変更名 | 要件IDとシナリオID | 受け入れ条件 | 実装箇所 | テストまたは手動確認 | 検証記録 |
 | --- | --- | --- | --- | --- | --- |
+| multiline-process-labels | REQ-002 / REQ-002-S03 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-002-s03---複数行の処理を保持する) | [解析](../src/core/parser/parse-glf.ts) `parseGlf` | [Core](../tests/core/parse-glf.test.ts) `REQ-002 / REQ-002-S03` | [記録](#multiline-process-labels---2026-10-31-複数行処理) |
+| multiline-process-labels | REQ-002 / REQ-002-S04 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-002-s04---空の処理を診断する) | [解析](../src/core/parser/parse-glf.ts) `parseGlf` | [Core](../tests/core/parse-glf.test.ts) `REQ-002 / REQ-002-S04` | [記録](#multiline-process-labels---2026-10-31-複数行処理) |
+| multiline-process-labels | REQ-008 / REQ-008-S03 | [シナリオ](specs/sequence-rendering/spec.md#scenario-req-008-s03---複数行処理の時間軸を確保する) | [配置](../src/core/layout/sequence-layout.ts) `layoutSequence` | [Core](../tests/core/sequence-layout.test.ts) `REQ-008 / REQ-008-S03`、[Chromium](../tests/visual/sequence.spec.ts) `REQ-008 / REQ-008-S03` | [記録](#multiline-process-labels---2026-10-31-複数行処理) |
+| multiline-process-labels | REQ-023 / REQ-023-S02 | [シナリオ](specs/preview-appearance/spec.md#scenario-req-023-s02---複数行の処理カードを表示する) | [描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Chromium](../tests/visual/sequence.spec.ts) `REQ-023 / REQ-023-S02`、[画像](../docs/images/multiline-process-preview.png) | [記録](#multiline-process-labels---2026-10-31-複数行処理) |
 | glitchflow-spec | REQ-001 / REQ-001-S01 | [シナリオ](changes/archive/2026-10-29-glitchflow-spec/specs/preview/spec.md#scenario-req-001-s01---glfファイルを開いてプレビューを起動する) | [コマンド登録](../src/extension/extension.ts) `activate`、[パネルとCSP](../src/extension/preview-panel.ts) `openPreview`、[初期画面](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Extension統合テスト](../tests/extension/preview.test.ts) `REQ-001 / REQ-001-S01`、[Chromium描画テスト](../tests/visual/preview.spec.ts) `REQ-001 / REQ-001-S01`、Development Host手動確認 | [プレビュー確認](#glitchflow-spec---2026-10-29-プレビュー確認) |
 | parse-glf-basics | REQ-002 / REQ-002-S01 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-002-s01---基本イベントを入力順に保持する) | [IR](../src/core/model/glf-model.ts)、[Parser](../src/core/parser/parse-glf.ts) `parseGlf` | [Coreテスト](../tests/core/parse-glf.test.ts) `REQ-002 / REQ-002-S01` | [Core解析](#parse-glf-basics---2026-10-29-core解析) |
 | parse-glf-basics | REQ-002 / REQ-002-S02 | [シナリオ](specs/glf-parsing/spec.md#scenario-req-002-s02---タイトルの誤用を診断する) | [Parser](../src/core/parser/parse-glf.ts) `parseGlf` | [Coreテスト](../tests/core/parse-glf.test.ts) `REQ-002 / REQ-002-S02` | [Core解析](#parse-glf-basics---2026-10-29-core解析) |
@@ -814,3 +821,26 @@ skip_specsの理由、設計節、タスク、検証記録へリンクし、要�
 | --- | --- | --- | --- | --- | --- |
 | glitchflow-spec | Core、ビルド、検査、将来のCI移植性、基準DSLの基盤 | [提案](changes/archive/2026-10-29-glitchflow-spec/proposal.md) | [D-01](changes/archive/2026-10-29-glitchflow-spec/design.md#d-01---実行環境を分けた最小ビルド)、[D-03](changes/archive/2026-10-29-glitchflow-spec/design.md#d-03---開発時とciの同一検査)、[D-04](changes/archive/2026-10-29-glitchflow-spec/design.md#d-04---初期画面と基準dslの検証) | [タスク](changes/archive/2026-10-29-glitchflow-spec/tasks.md) | [Core基盤](#glitchflow-spec---2026-10-29-core基盤)、[CI相当の検査](#glitchflow-spec---2026-10-29-ci相当の検査)、[開発手順と基準入力](#glitchflow-spec---2026-10-29-開発手順と基準入力)、[GitHub Actions撤去](#glitchflow-spec---2026-10-29-github-actions撤去)、[Lefthook対象調整](#glitchflow-spec---2026-10-29-lefthook対象調整) |
 | stabilize-layout | 既存表示の配置回帰と基本操作の検証 | [提案](changes/archive/2026-10-29-stabilize-layout/proposal.md) | [D-01](changes/archive/2026-10-29-stabilize-layout/design.md#d-01---配置の構造をcoreで検査する)、[D-02](changes/archive/2026-10-29-stabilize-layout/design.md#d-02---chromiumで描画境界と前面順を検査する)、[D-03](changes/archive/2026-10-29-stabilize-layout/design.md#d-03---基本操作を同一画面で確認する) | [タスク](changes/archive/2026-10-29-stabilize-layout/tasks.md) | [レイアウト回帰と基本操作](#stabilize-layout---2026-10-29-レイアウト回帰と基本操作) |
+### multiline-process-labels - 2026-10-31 複数行処理
+
+- 対象: REQ-002-S03、REQ-002-S04、REQ-008-S03、REQ-023-S02。
+- 実行日: 2026-10-31 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 解析、配置、Chromium描画の受け入れテストを先に追加し、失敗を確認した後に実装した。\
+`npm run check`、`npx --no-install playwright test tests/visual/sequence.spec.ts tests/visual/preview-appearance.spec.ts`、`npm run build`、`npx --no-install vsce ls`、`npx --no-install openspec validate multiline-process-labels --strict`を実行した。
+- 結果: Coreテスト43件とChromiumテスト20件が成功した。\
+OpenSpecのstrict検証も成功した。\
+4空白の継続行は1つの処理にまとまり、強調された複数行も1枚のカードに表示された。
+- 配布確認: `vsce ls`に[README画像](../docs/images/multiline-process-preview.png)が含まれた。
+- 証跡: [Core解析](../tests/core/parse-glf.test.ts)、[Core配置](../tests/core/sequence-layout.test.ts)、[Chromium](../tests/visual/sequence.spec.ts)、[実画面](../docs/images/multiline-process-preview.png)。
+- 未検証事項: なし。
+
+### multiline-process-labels - 2026-10-31 アーカイブ
+
+- 対象: REQ-002、REQ-008、REQ-023。
+- 実行日: 2026-10-31 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 差分仕様の3要件ブロックを正式仕様へ同期し、`npx --no-install openspec validate --specs`と要件ブロックの一致を確認した。
+- 結果: 正式仕様13件の検証が成功し、変更を[アーカイブ](changes/archive/2026-10-31-multiline-process-labels/proposal.md)へ移した。
+- 証跡: [解析仕様](specs/glf-parsing/spec.md)、[配置仕様](specs/sequence-rendering/spec.md)、[表示仕様](specs/preview-appearance/spec.md)、[完了タスク](changes/archive/2026-10-31-multiline-process-labels/tasks.md)。
+- 未検証事項: なし。

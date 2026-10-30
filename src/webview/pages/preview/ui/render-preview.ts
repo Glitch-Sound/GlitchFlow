@@ -415,11 +415,14 @@ export function renderPreview(
         layout.lifelines
           .find((lane) => lane.id === process.objectId)
           ?.type.toLowerCase() ?? "module";
-      const cardHeight = process.emphasis ? 34 : 26;
+      const cardHeight = process.cardHeight;
       const cardTop = process.y - (process.emphasis ? 18 : 14);
       const cardWidth =
-        (context?.measureText(process.text).width ?? process.text.length * 9) +
-        20;
+        Math.max(
+          ...process.lines.map(
+            (line) => context?.measureText(line).width ?? line.length * 9,
+          ),
+        ) + 20;
       const group = svgElement("g", {
         class: "sequence-process-group",
         "data-source-line": String(process.line),
@@ -446,7 +449,18 @@ export function renderPreview(
         y: String(process.y + 5),
         class: `sequence-process${process.emphasis ? " sequence-process--emphasis" : ""}`,
       });
-      label.textContent = process.text;
+      if (process.lines.length === 1) {
+        label.textContent = process.text;
+      } else {
+        process.lines.forEach((line, index) => {
+          const span = svgElement("tspan", {
+            x: String(process.x),
+            dy: index === 0 ? "0" : String(process.lineHeight),
+          });
+          span.textContent = line;
+          label.append(span);
+        });
+      }
       group.append(label);
       svg.append(group);
     }

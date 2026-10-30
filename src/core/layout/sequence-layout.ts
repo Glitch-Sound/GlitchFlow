@@ -128,6 +128,9 @@ export interface SequenceLayout {
     objectId: string;
     text: string;
     emphasis: boolean;
+    lines: string[];
+    lineHeight: number;
+    cardHeight: number;
     x: number;
     y: number;
   }[];
@@ -290,7 +293,7 @@ export function layoutSequence(
       const previousProcessWidth = basic.reduce(
         (width, event) =>
           event.kind === "process" && event.objectId === previous.id
-            ? Math.max(width, measureText(event.text))
+            ? Math.max(width, ...event.text.split("\n").map(measureText))
             : width,
         0,
       );
@@ -533,7 +536,7 @@ export function layoutSequence(
             ? 18
             : 4
           : event.kind === "process"
-            ? 38
+            ? 40
             : preceding?.kind === "branch-open"
               ? 44
               : 60);
@@ -563,14 +566,21 @@ export function layoutSequence(
     } else if (event.kind === "process") {
       const laneX = xById.get(event.objectId);
       if (laneX === undefined) continue;
+      const lines = event.text.split("\n");
+      const lineHeight = event.emphasis ? 20 : 18;
+      const extraHeight = (lines.length - 1) * lineHeight;
       processes.push({
         line: event.line,
         objectId: event.objectId,
         text: event.text,
         emphasis: event.emphasis,
+        lines,
+        lineHeight,
+        cardHeight: (event.emphasis ? 34 : 26) + extraHeight,
         x: laneX + 24,
         y,
       });
+      lastY += extraHeight;
     } else if (event.kind === "message") {
       const fromX = event.from === "Global" ? 52 : xById.get(event.from);
       const toX = xById.get(event.to);
@@ -608,7 +618,10 @@ export function layoutSequence(
   }
   const processRight = processes.reduce(
     (right, process) =>
-      Math.max(right, process.x + measureText(process.text) + 28),
+      Math.max(
+        right,
+        process.x + Math.max(...process.lines.map(measureText)) + 28,
+      ),
     0,
   );
   const labelRight = lifelines.reduce(

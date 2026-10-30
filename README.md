@@ -53,6 +53,24 @@ FE-
 Objectの種別には`APP`、`API`、`DB`、`FILE`、`FEATURE`、`MODULE`を指定できる。\
 `state`と`sql`は表示用であり、DBやファイルの操作は実行しない。
 
+### 処理を複数行にする
+
+2行目以降を4個の空白で下げる。
+
+```glf
+FE: 処理の1行目
+    処理の2行目
+
+FE:
+    本文の1行目
+    本文の2行目
+
+FE: *重要な処理
+    入力を確認*
+```
+
+![複数行の強調処理を1枚のカードに表示した実際のプレビュー](docs/images/multiline-process-preview.png)
+
 ## 状態と分岐を一緒に見る
 
 [セッション隔離のサンプル](examples/session-isolation.glf)では、更新前後のDB、SQL、監査ファイル、成功・失敗の分岐を表示する。

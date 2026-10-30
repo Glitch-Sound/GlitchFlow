@@ -7,7 +7,6 @@
 biome.json
 lefthook.yml
 tsconfig.json
-docs/**
 examples/**
 openspec/**
 scripts/**

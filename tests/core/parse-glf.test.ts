@@ -73,6 +73,35 @@ describe("parseGlf", () => {
     expect(result.diagnostics).toEqual([]);
   });
 
+  it("REQ-002 / REQ-002-S03: 処理の継続行と複数行の強調", () => {
+    const result = parseGlf(
+      'Object FE as "FE" type APP\nFE: 準備\n    設定を読む\nFE:\n    通知する\n    完了を待つ\nFE: *重要\n    確認*\nFE: 単一行',
+    );
+    expect(
+      result.events.filter((event) => event.kind === "process"),
+    ).toMatchObject([
+      { kind: "process", text: "準備\n設定を読む", emphasis: false, line: 2 },
+      {
+        kind: "process",
+        text: "通知する\n完了を待つ",
+        emphasis: false,
+        line: 4,
+      },
+      { kind: "process", text: "重要\n確認", emphasis: true, line: 7 },
+      { kind: "process", text: "単一行", emphasis: false, line: 9 },
+    ]);
+    expect(result.diagnostics).toEqual([]);
+  });
+
+  it("REQ-002 / REQ-002-S04: 本文が空の処理を診断", () => {
+    const result = parseGlf('Object FE as "FE" type APP\nFE:');
+    expect(result.diagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ code: "process-empty", line: 2 }),
+      ]),
+    );
+  });
+
   it("REQ-003 / REQ-003-S01: DB参照と行・セルの変更属性", () => {
     const result = parseGlf(
       'Object DB as "DB" type DB\nschema DB.users:\n    id: int\nstate DB.users:\n    [1]\nschema DB.public.users:\n    id: int\n    name: text\nstate DB.public.users:\n    - [1, "a,b"]\n    [2, "jiro"]\n    [3, !"saburo"]\n    + [4, "shiro"]',

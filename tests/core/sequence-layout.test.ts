@@ -36,6 +36,38 @@ describe("layoutSequence", () => {
     expect(layout.lifelines).toHaveLength(1);
   });
 
+  it("REQ-008 / REQ-008-S03: 複数行の処理は最長行の幅と全行の高さを確保する", () => {
+    const single = layoutSequence(
+      parseGlf(
+        'Object FE as "FE" type APP\nObject BE as "BE" type API\nFE: 長い行\nFE ->> BE: 次',
+      ),
+      measure,
+    );
+    const multiple = layoutSequence(
+      parseGlf(
+        'Object FE as "FE" type APP\nObject BE as "BE" type API\nFE+\nFE: 長い行\n    二行目\n    三行目\nFE ->> BE: 次\nFE-',
+      ),
+      measure,
+    );
+    expect(multiple.lifelines[1].x).toBe(single.lifelines[1].x);
+    const wide = layoutSequence(
+      parseGlf(
+        'Object FE as "FE" type APP\nObject BE as "BE" type API\nFE: 短い\n    続きの長い長い長い長い処理',
+      ),
+      measure,
+    );
+    expect(wide.lifelines[1].x - wide.processes[0].x).toBeGreaterThan(
+      measure("続きの長い長い長い長い処理"),
+    );
+    expect(multiple.messages[0].y - multiple.processes[0].y).toBeGreaterThan(
+      single.messages[0].y - single.processes[0].y,
+    );
+    expect(multiple.height).toBeGreaterThan(single.height);
+    expect(multiple.activations[0].endY).toBeGreaterThan(
+      multiple.messages[0].y,
+    );
+  });
+
   it("REQ-007 / REQ-007-S02: 要求直後に始まる活性の外縁へ接続する", () => {
     const document = parseGlf(
       'Object FE as "FE" type APP\nObject BE as "BE" type API\nFE ->> BE: 保存\nBE+\nBE-',

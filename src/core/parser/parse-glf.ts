@@ -28,7 +28,7 @@ const objectPattern = new RegExp(
 const messagePattern = new RegExp(
   `^(${identifier})\\s*(->>|-->|->|<--|<<-|<-)\\s*(${identifier}):\\s*(.+)$`,
 );
-const processPattern = new RegExp(`^(${identifier}):\\s*(.+)$`);
+const processPattern = new RegExp(`^(${identifier}):\\s*(.*)$`);
 const activationPattern = new RegExp(`^(${identifier})([+-])$`);
 
 function tableReference(raw: string): TableReference | undefined {
@@ -389,12 +389,26 @@ export function parseGlf(
         continue;
       }
       const process = processPattern.exec(text);
-      if (process) {
-        const emphasis = /^\*.+\*$/.test(process[2]);
+      if (
+        process &&
+        (process[2] ||
+          lines[index]?.indent > line.indent ||
+          document.objects.some((object) => object.id === process[1]))
+      ) {
+        const continuation =
+          lines[index]?.indent > line.indent ? children(line) : [];
+        const body = [process[2], ...continuation.map((part) => part.text)]
+          .filter((part) => part.length > 0)
+          .join("\n");
+        if (!body) {
+          error("process-empty", line.number, "処理の本文がない");
+          continue;
+        }
+        const emphasis = /^\*[\s\S]+\*$/.test(body);
         events.push({
           kind: "process",
           objectId: process[1],
-          text: emphasis ? process[2].slice(1, -1) : process[2],
+          text: emphasis ? body.slice(1, -1).replace(/^\n|\n$/g, "") : body,
           emphasis,
           line: line.number,
         });
