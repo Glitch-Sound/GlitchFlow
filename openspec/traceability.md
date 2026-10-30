@@ -51,6 +51,9 @@
 | REQ-035 | GLF定義のインポート | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/glf-imports/spec.md#requirement-req-035---glf定義のインポート) |
 | REQ-036 | インポートの診断 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/glf-imports/spec.md#requirement-req-036---インポートの診断) |
 | REQ-037 | 依存更新と補完 | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/glf-imports/spec.md#requirement-req-037---依存更新と補完) |
+| REQ-038 | 描画要素からDSLへの移動 | 実装済み | [図面の操作](product.md#図面の操作) | [正式仕様](specs/preview-navigation/spec.md) |
+| REQ-039 | エディタ表示と配置 | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/preview-navigation/spec.md) |
+| REQ-040 | 位置情報の鮮度と安全性 | 実装済み | [構文と安全性](tech.md#診断安全性品質) | [正式仕様](specs/preview-navigation/spec.md) |
 | NREQ-001 | 編集応答時間 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/editor-integration/spec.md#requirement-nreq-001---編集応答時間) |
 
 ## 要件ごとの変更履歴
@@ -103,6 +106,9 @@
 | add-glf-imports | REQ-035 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md#requirement-req-035---glf定義のインポート) | [提案](changes/archive/2026-10-30-add-glf-imports/proposal.md)、[設計](changes/archive/2026-10-30-add-glf-imports/design.md)、[タスク](changes/archive/2026-10-30-add-glf-imports/tasks.md) |
 | add-glf-imports | REQ-036 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md#requirement-req-036---インポートの診断) | [提案](changes/archive/2026-10-30-add-glf-imports/proposal.md)、[設計](changes/archive/2026-10-30-add-glf-imports/design.md)、[タスク](changes/archive/2026-10-30-add-glf-imports/tasks.md) |
 | add-glf-imports | REQ-037 | 追加 | アーカイブ済み | [変更仕様](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md#requirement-req-037---依存更新と補完) | [提案](changes/archive/2026-10-30-add-glf-imports/proposal.md)、[設計](changes/archive/2026-10-30-add-glf-imports/design.md)、[タスク](changes/archive/2026-10-30-add-glf-imports/tasks.md) |
+| preview-to-dsl-navigation | REQ-038 | 追加 | アーカイブ済み | [正式仕様](specs/preview-navigation/spec.md#requirement-req-038---描画要素からdslへの移動) | [提案](changes/archive/2026-10-30-preview-to-dsl-navigation/proposal.md)、[設計](changes/archive/2026-10-30-preview-to-dsl-navigation/design.md)、[タスク](changes/archive/2026-10-30-preview-to-dsl-navigation/tasks.md) |
+| preview-to-dsl-navigation | REQ-039 | 追加 | アーカイブ済み | [正式仕様](specs/preview-navigation/spec.md#requirement-req-039---エディタ表示と配置) | [提案](changes/archive/2026-10-30-preview-to-dsl-navigation/proposal.md)、[設計](changes/archive/2026-10-30-preview-to-dsl-navigation/design.md)、[タスク](changes/archive/2026-10-30-preview-to-dsl-navigation/tasks.md) |
+| preview-to-dsl-navigation | REQ-040 | 追加 | アーカイブ済み | [正式仕様](specs/preview-navigation/spec.md#requirement-req-040---位置情報の鮮度と安全性) | [提案](changes/archive/2026-10-30-preview-to-dsl-navigation/proposal.md)、[設計](changes/archive/2026-10-30-preview-to-dsl-navigation/design.md)、[タスク](changes/archive/2026-10-30-preview-to-dsl-navigation/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -185,8 +191,37 @@
 | add-glf-imports | REQ-036 / REQ-036-S03 | [読み込みと構文](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md) | [依存解決](../src/extension/imports.ts) `resolve` | [Extension](../tests/extension/imports.test.ts) `REQ-036-S03` | [記録](#add-glf-imports---2026-10-30-定義インポートの検証) |
 | add-glf-imports | REQ-037 / REQ-037-S01 | [依存更新](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md) | [更新接続](../src/extension/extension.ts) `scheduleDependents` | [Extension](../tests/extension/imports.test.ts) `REQ-037-S01` | [記録](#add-glf-imports---2026-10-30-定義インポートの検証) |
 | add-glf-imports | REQ-037 / REQ-037-S02 | [定義補完](changes/archive/2026-10-30-add-glf-imports/specs/glf-imports/spec.md) | [補完](../src/extension/completion.ts) `registerCompletion` | [Extension](../tests/extension/imports.test.ts) `REQ-037-S02` | [記録](#add-glf-imports---2026-10-30-定義インポートの検証) |
+| preview-to-dsl-navigation | REQ-038 / REQ-038-S01 | [シナリオ](changes/archive/2026-10-30-preview-to-dsl-navigation/specs/preview-navigation/spec.md#scenario-req-038-s01---描画要素の移動) | [Layout](../src/core/layout/sequence-layout.ts) `layoutSequence`、[描画](../src/webview/pages/preview/ui/render-preview.ts) `renderPreview` | [Core](../tests/core/preview-navigation.test.ts)、[Chromium](../tests/visual/navigation.spec.ts)、[Extension](../tests/extension/navigation.test.ts) | [記録](#preview-to-dsl-navigation---2026-10-30-検証) |
+| preview-to-dsl-navigation | REQ-038 / REQ-038-S02 | [シナリオ](changes/archive/2026-10-30-preview-to-dsl-navigation/specs/preview-navigation/spec.md#scenario-req-038-s02---分岐の移動) | [Layout](../src/core/layout/sequence-layout.ts)、[描画](../src/webview/pages/preview/ui/render-preview.ts) | [Core](../tests/core/preview-navigation.test.ts)、[Chromium](../tests/visual/navigation.spec.ts) | [記録](#preview-to-dsl-navigation---2026-10-30-検証) |
+| preview-to-dsl-navigation | REQ-039 / REQ-039-S01 | [シナリオ](changes/archive/2026-10-30-preview-to-dsl-navigation/specs/preview-navigation/spec.md#scenario-req-039-s01---配置と選択) | [通信と選択](../src/extension/preview-panel.ts) `navigateToSource` | [Extension](../tests/extension/navigation.test.ts) | [記録](#preview-to-dsl-navigation---2026-10-30-検証) |
+| preview-to-dsl-navigation | REQ-040 / REQ-040-S01 | [シナリオ](changes/archive/2026-10-30-preview-to-dsl-navigation/specs/preview-navigation/spec.md#scenario-req-040-s01---古い位置の拒否) | [版照合](../src/extension/preview-panel.ts) `navigateToSource` | [Extension](../tests/extension/navigation.test.ts) | [記録](#preview-to-dsl-navigation---2026-10-30-検証) |
+| preview-to-dsl-navigation | REQ-040 / REQ-040-S02 | [シナリオ](changes/archive/2026-10-30-preview-to-dsl-navigation/specs/preview-navigation/spec.md#scenario-req-040-s02---無効な要求の拒否) | [行照合](../src/extension/preview-panel.ts) `navigateToSource` | [Extension](../tests/extension/navigation.test.ts) | [記録](#preview-to-dsl-navigation---2026-10-30-検証) |
+| preview-to-dsl-navigation | REQ-040 / REQ-040-S03 | [シナリオ](changes/archive/2026-10-30-preview-to-dsl-navigation/specs/preview-navigation/spec.md#scenario-req-040-s03---図の操作を維持) | [クリック](../src/webview/pages/preview/ui/render-preview.ts)、[ズーム](../src/webview/pages/preview/model/zoom.ts) | [Chromium](../tests/visual/navigation.spec.ts) | [記録](#preview-to-dsl-navigation---2026-10-30-検証) |
 
 ## 検証記録
+
+### preview-to-dsl-navigation - 2026-10-30 アーカイブ
+
+- 対象: REQ-038からREQ-040。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: 差分仕様のPurpose、3要件、6シナリオを[正式仕様](specs/preview-navigation/spec.md)へ同期し、`npx --no-install openspec validate --specs`で検証した。
+変更成果物を`changes/archive/2026-10-30-preview-to-dsl-navigation/`へ移し、台帳の参照を更新した。
+- 結果: 正式仕様12件が成功し、同期後の本文とシナリオは差分仕様と一致した。
+成果物とタスクはすべて完了している。
+- 証跡: [正式仕様](specs/preview-navigation/spec.md)、[アーカイブ](changes/archive/2026-10-30-preview-to-dsl-navigation/proposal.md)、[検証記録](changes/archive/2026-10-30-preview-to-dsl-navigation/verification.md)。
+- 未検証事項: 人手によるVSCode画面でのクリック操作は[検証記録](#preview-to-dsl-navigation---2026-10-30-検証)のとおり未実施である。
+
+### preview-to-dsl-navigation - 2026-10-30 検証
+
+- 対象: REQ-038-S01、S02、REQ-039-S01、REQ-040-S01からS03。
+- 実行日: 2026-10-30 JST。
+- 対象の版: この作業ツリーの未コミット差分。
+- 方法: `npm run check`、`npm run test:visual`、`npm run test:extension`、`npx --no-install openspec validate preview-to-dsl-navigation --strict`、`git diff --check`を実行した。
+- 結果: Core 39件、Chromium 41件、VSCode Extension 19件、OpenSpec strict検証と差分チェックが成功した。
+- 照合: 3要件、6シナリオをLayout、Renderer、Webview通信、Extensionの位置検証とテストへ対応付けた。
+- 未検証事項: 人手による実際のVSCode画面のクリック操作は未実施である。
+- 証跡: [検証記録](changes/archive/2026-10-30-preview-to-dsl-navigation/verification.md)。
 
 ### add-glf-imports - 2026-10-30 定義インポートの検証
 

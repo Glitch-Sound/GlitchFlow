@@ -51,6 +51,8 @@ export function serializeDiagram(svg: SVGSVGElement | null): string {
   for (let index = 0; index < originals.length; index++) {
     const computed = getComputedStyle(originals[index]);
     const target = copies[index];
+    target.removeAttribute("data-source-line");
+    target.removeAttribute("data-source-uri");
     for (const property of STYLE_PROPERTIES) {
       const value = computed.getPropertyValue(property);
       if (value) target.style.setProperty(property, value);

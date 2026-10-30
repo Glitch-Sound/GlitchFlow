@@ -6,6 +6,7 @@ import { GlfImportResolver } from "./imports";
 import {
   currentPreviewUri,
   exportCurrentPreview,
+  navigateToSource,
   onDidClosePreview,
   onDidRenderPreview,
   openPreview,
@@ -17,6 +18,8 @@ import { registerSyntaxColors } from "./syntax-colors";
 export function activate(context: vscode.ExtensionContext): {
   onDidRenderPreview: typeof onDidRenderPreview;
   currentPreviewUri: typeof currentPreviewUri;
+  navigateToSource: typeof navigateToSource;
+  openPreviewForDocument: (document: vscode.TextDocument) => Promise<void>;
 } {
   const diagnostics = vscode.languages.createDiagnosticCollection("glitchflow");
   const imports = new GlfImportResolver();
@@ -67,6 +70,10 @@ export function activate(context: vscode.ExtensionContext): {
       if (document) schedule(document);
     }
   };
+  const openPreviewForDocument = async (document: vscode.TextDocument) => {
+    const parsed = await refresh(document);
+    if (parsed) await openPreview(context, document, false, parsed);
+  };
   context.subscriptions.push(diagnostics, imports);
   context.subscriptions.push(
     vscode.commands.registerCommand("glitchflow.openPreview", () => {
@@ -74,9 +81,7 @@ export function activate(context: vscode.ExtensionContext): {
         vscode.window.activeTextEditor?.document ?? lastGlfEditor?.document;
       if (!document || !isGlfFileName(document.fileName)) return;
       suppressedUri = undefined;
-      return refresh(document).then((parsed) => {
-        if (parsed) openPreview(context, document, false, parsed);
-      });
+      return openPreviewForDocument(document);
     }),
     vscode.commands.registerCommand("glitchflow.exportDiagram", () =>
       exportCurrentPreview(),
@@ -157,7 +162,12 @@ export function activate(context: vscode.ExtensionContext): {
       if (parsed) openPreview(context, initialEditor.document, true, parsed);
     });
   }
-  return { onDidRenderPreview, currentPreviewUri };
+  return {
+    onDidRenderPreview,
+    currentPreviewUri,
+    navigateToSource,
+    openPreviewForDocument,
+  };
 }
 
 export function deactivate(): void {}

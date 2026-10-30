@@ -68,6 +68,10 @@ body {
     rgba(255, 255, 255, 0.015) 39px 40px
   );
 }
+.sequence-diagram [data-source-line],
+.sequence-diagram [data-source-line] * {
+  cursor: pointer;
+}
 .sequence-object {
   fill: #243240;
   stroke: #74c9f8;

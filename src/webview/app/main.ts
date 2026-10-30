@@ -19,7 +19,14 @@ if (app) {
       type: "glitchflow.export.clicked",
       renderId: currentRenderId,
     });
-  renderPreview(app, undefined, undefined, exportClicked);
+  const navigate = (line: number, sourceUri?: string) =>
+    vscode?.postMessage({
+      type: "glitchflow.navigate",
+      renderId: currentRenderId,
+      line,
+      ...(sourceUri ? { sourceUri } : {}),
+    });
+  renderPreview(app, undefined, undefined, exportClicked, navigate);
   window.addEventListener("message", async (event: MessageEvent) => {
     if (event.data?.type === "glitchflow.export") {
       const { requestId, format } = event.data;
@@ -66,6 +73,7 @@ if (app) {
       event.data.document as GlfDocument,
       event.data.fileName,
       exportClicked,
+      navigate,
     );
     currentRenderId = event.data.renderId;
     vscode?.postMessage({

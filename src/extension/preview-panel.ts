@@ -1,6 +1,12 @@
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import * as vscode from "vscode";
-import { type GlfDocument, isGlfFileName, parseGlf } from "../core";
+import {
+  type GlfDocument,
+  type GlfEvent,
+  isGlfFileName,
+  parseGlf,
+} from "../core";
 
 type ViteManifest = Record<string, { file: string; css?: string[] }>;
 type PreviewData = {
@@ -9,6 +15,8 @@ type PreviewData = {
   fileName: string;
   sourceUri: string;
   renderId: number;
+  version: number;
+  sourceHash: string;
 };
 
 let panel: vscode.WebviewPanel | undefined;
@@ -28,7 +36,11 @@ let pendingExport:
       timer: ReturnType<typeof setTimeout>;
     }
   | undefined;
-const rendered = new vscode.EventEmitter<{ uri: string; title: string }>();
+const rendered = new vscode.EventEmitter<{
+  uri: string;
+  title: string;
+  renderId: number;
+}>();
 const closed = new vscode.EventEmitter<string>();
 export const onDidRenderPreview = rendered.event;
 export const onDidClosePreview = closed.event;
@@ -47,6 +59,8 @@ function toPreviewData(
       document.fileName,
     sourceUri: document.uri.toString(),
     renderId: ++nextRenderId,
+    version: document.version,
+    sourceHash: createHash("sha256").update(document.getText()).digest("hex"),
   };
 }
 
@@ -74,8 +88,110 @@ export function updatePreview(
       document.fileName,
     sourceUri: document.uri.toString(),
     renderId: ++nextRenderId,
+    version: document.version,
+    sourceHash: createHash("sha256").update(document.getText()).digest("hex"),
   };
   sendCurrent();
+}
+
+function navigableLines(document: GlfDocument): Set<number> {
+  const lines = new Set(
+    document.objects.filter((item) => !item.origin).map((item) => item.line),
+  );
+  const visit = (events: GlfEvent[]) => {
+    for (const event of events) {
+      lines.add(event.line);
+      if ("branches" in event) {
+        for (const branch of event.branches) {
+          lines.add(branch.line);
+          visit(branch.events);
+        }
+      } else if ("events" in event) visit(event.events);
+    }
+  };
+  visit(document.events);
+  return lines;
+}
+
+/** REQ-039 / REQ-040: 表示済み文書版と行を検査して既存のエディタグループへ移動する。 */
+export async function navigateToSource(
+  renderId: number,
+  line: number,
+  sourceUri?: string,
+): Promise<void> {
+  const snapshot = displayedData;
+  const imported = sourceUri
+    ? snapshot?.document.objects.find(
+        (object) =>
+          object.origin?.uri === sourceUri && object.origin.line === line,
+      )
+    : undefined;
+  if (
+    !panel ||
+    !snapshot ||
+    snapshot.renderId !== renderId ||
+    currentUri !== snapshot.sourceUri ||
+    !Number.isSafeInteger(line) ||
+    !(imported || (!sourceUri && navigableLines(snapshot.document).has(line)))
+  )
+    return;
+  const root = await vscode.workspace.openTextDocument(
+    vscode.Uri.parse(snapshot.sourceUri),
+  );
+  if (
+    root.version !== snapshot.version ||
+    createHash("sha256").update(root.getText()).digest("hex") !==
+      snapshot.sourceHash
+  )
+    return;
+  const uri = vscode.Uri.parse(sourceUri ?? snapshot.sourceUri);
+  const document = await vscode.workspace.openTextDocument(uri);
+  const targetVersion = document.version;
+  if (imported) {
+    const definition = parseGlf(document.getText(), {
+      validate: false,
+    }).objects.find(
+      (object) =>
+        object.line === line &&
+        object.id === imported.id &&
+        object.label === imported.label &&
+        object.type === imported.type,
+    );
+    if (!definition) return;
+  }
+  if (
+    !panel ||
+    displayedData !== snapshot ||
+    currentUri !== snapshot.sourceUri ||
+    root.version !== snapshot.version ||
+    createHash("sha256").update(root.getText()).digest("hex") !==
+      snapshot.sourceHash ||
+    (!imported && document.version !== snapshot.version) ||
+    line < 1 ||
+    line > document.lineCount
+  )
+    return;
+  const existing = vscode.window.visibleTextEditors.find(
+    (editor) => editor.document.uri.toString() === uri.toString(),
+  );
+  const editor = await vscode.window.showTextDocument(document, {
+    viewColumn: existing?.viewColumn ?? vscode.ViewColumn.One,
+    preserveFocus: false,
+    preview: false,
+  });
+  if (
+    root.version !== snapshot.version ||
+    createHash("sha256").update(root.getText()).digest("hex") !==
+      snapshot.sourceHash ||
+    document.version !== targetVersion
+  )
+    return;
+  const range = document.lineAt(line - 1).range;
+  editor.selection = new vscode.Selection(range.start, range.end);
+  editor.revealRange(
+    range,
+    vscode.TextEditorRevealType.InCenterIfOutsideViewport,
+  );
 }
 
 /** REQ-032 / REQ-034: 表示中の図をVSCode標準ダイアログで選び、保存する。 */
@@ -247,6 +363,23 @@ export async function openPreview(
           ? message.renderId
           : undefined,
       );
+    } else if (
+      message.type === "glitchflow.navigate" &&
+      "renderId" in message &&
+      typeof message.renderId === "number" &&
+      "line" in message &&
+      typeof message.line === "number" &&
+      (!("sourceUri" in message) || typeof message.sourceUri === "string")
+    ) {
+      void navigateToSource(
+        message.renderId,
+        message.line,
+        "sourceUri" in message && typeof message.sourceUri === "string"
+          ? message.sourceUri
+          : undefined,
+      ).catch(() => {
+        // The source can disappear between rendering and the click.
+      });
     } else if (message.type === "glitchflow.export.result") {
       if (
         !pendingExport ||
@@ -281,7 +414,11 @@ export async function openPreview(
       )
         return;
       displayedData = renderedData;
-      rendered.fire({ uri: renderedData.sourceUri, title: message.title });
+      rendered.fire({
+        uri: renderedData.sourceUri,
+        title: message.title,
+        renderId: renderedData.renderId,
+      });
     }
   });
   created.onDidDispose(() => {

@@ -19,6 +19,7 @@ await build({
     "tests/extension/completion.test.ts",
     "tests/extension/export.test.ts",
     "tests/extension/imports.test.ts",
+    "tests/extension/navigation.test.ts",
   ],
   bundle: true,
   platform: "node",

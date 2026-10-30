@@ -61,6 +61,7 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
     const group = svgElement("g", {
       class: "state-db",
       "data-reference": state.reference,
+      "data-source-line": String(state.line),
     });
     const laneX = layout.lifelines.find(
       (lane) => lane.id === state.objectId,
@@ -148,6 +149,7 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
     const group = svgElement("g", {
       class: "state-file",
       "data-object-id": state.objectId,
+      "data-source-line": String(state.line),
     });
     const laneX = layout.lifelines.find(
       (lane) => lane.id === state.objectId,
@@ -195,6 +197,7 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
     const group = svgElement("g", {
       class: "state-sql",
       "data-object-id": sql.objectId,
+      "data-source-line": String(sql.line),
     });
     group.append(
       svgElement("rect", {
@@ -215,12 +218,13 @@ function renderState(layout: SequenceLayout, svg: SVGSVGElement): void {
   }
 }
 
-/** REQ-001、REQ-006..REQ-008、REQ-012、REQ-018..REQ-025: 複合フラグメントを含むシーケンスを安全なSVGノードで描画する。 */
+/** REQ-001、REQ-006..REQ-008、REQ-012、REQ-018..REQ-025、REQ-038: ソース位置付きの安全なSVGノードを描画する。 */
 export function renderPreview(
   container: HTMLElement,
   documentData?: GlfDocument,
   fileName = "GlitchFlow Preview",
   onExport?: () => void,
+  onNavigate?: (line: number, sourceUri?: string) => void,
 ): void {
   const previousScroller =
     container.querySelector<HTMLElement>(".preview__scroller");
@@ -301,6 +305,8 @@ export function renderPreview(
       const group = svgElement("g", {
         class: "sequence-lifeline",
         "data-object-id": lane.id,
+        "data-source-line": String(lane.origin?.line ?? lane.line),
+        ...(lane.origin ? { "data-source-uri": lane.origin.uri } : {}),
       });
       const subtitle = lane.type;
       const labelWidth = Math.max(
@@ -354,6 +360,7 @@ export function renderPreview(
     for (const message of layout.messages) {
       const group = svgElement("g", {
         class: `sequence-arrow sequence-arrow--${message.mode}`,
+        "data-source-line": String(message.line),
       });
       group.append(
         svgElement("line", {
@@ -407,7 +414,11 @@ export function renderPreview(
       const cardWidth =
         (context?.measureText(process.text).width ?? process.text.length * 9) +
         20;
-      svg.append(
+      const group = svgElement("g", {
+        class: "sequence-process-group",
+        "data-source-line": String(process.line),
+      });
+      group.append(
         svgElement("rect", {
           x: String(process.x - 8),
           y: String(cardTop),
@@ -430,7 +441,8 @@ export function renderPreview(
         class: `sequence-process${process.emphasis ? " sequence-process--emphasis" : ""}`,
       });
       label.textContent = process.text;
-      svg.append(label);
+      group.append(label);
+      svg.append(group);
     }
     for (const fragment of layout.fragments) {
       const group = svgElement("g", { class: "sequence-fragment" });
@@ -441,6 +453,7 @@ export function renderPreview(
           width: String(fragment.width),
           height: String(fragment.height),
           class: "sequence-fragment-frame",
+          "data-source-line": String(fragment.line),
         }),
       );
       const title = fragment.label
@@ -456,6 +469,7 @@ export function renderPreview(
           height: "24",
           rx: "4",
           class: "sequence-fragment-tag",
+          "data-source-line": String(fragment.line),
         }),
         svgText(
           fragment.x + 15,
@@ -463,6 +477,10 @@ export function renderPreview(
           title,
           "sequence-fragment-label",
         ),
+      );
+      group.lastElementChild?.setAttribute(
+        "data-source-line",
+        String(fragment.line),
       );
       fragment.branches.forEach((branch, index) => {
         if (index > 0)
@@ -486,16 +504,30 @@ export function renderPreview(
               `sequence-fragment-branch-label${branch.label === "else" ? "" : " sequence-fragment-case-label"}`,
             ),
           );
+          group.lastElementChild?.setAttribute(
+            "data-source-line",
+            String(branch.line),
+          );
         }
       });
       svg.insertBefore(
         group,
         svg.querySelector(
-          ".sequence-activation, .state-db, .state-file, .state-sql, .sequence-arrow, .sequence-process-card",
+          ":scope > .sequence-activation, :scope > .state-db, :scope > .state-file, :scope > .state-sql, :scope > .sequence-arrow, :scope > .sequence-process-group",
         ),
       );
     }
     scroller.append(svg);
+    svg.addEventListener("click", (event) => {
+      if (window.getSelection()?.toString()) return;
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const source = target.closest<SVGElement>("[data-source-line]");
+      if (!source || !svg.contains(source)) return;
+      const line = Number(source.getAttribute("data-source-line"));
+      if (Number.isSafeInteger(line) && line > 0)
+        onNavigate?.(line, source.getAttribute("data-source-uri") ?? undefined);
+    });
     main.append(scroller);
   }
   container.replaceChildren(main);

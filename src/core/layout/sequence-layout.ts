@@ -15,8 +15,15 @@ type TimelineItem =
       depth: number;
       fragmentKind: "alt" | "opt" | "loop" | "par" | "break";
       label: string;
+      line: number;
     }
-  | { kind: "branch-open"; label: string; depth: number; first: boolean }
+  | {
+      kind: "branch-open";
+      label: string;
+      depth: number;
+      first: boolean;
+      line: number;
+    }
   | { kind: "branch-close" }
   | { kind: "alt-close" };
 
@@ -33,9 +40,16 @@ function timeline(events: GlfEvent[], depth = 0): TimelineItem[] {
         depth,
         fragmentKind: event.kind,
         label: "label" in event ? event.label : "",
+        line: event.line,
       },
       ...branches.flatMap((branch, index): TimelineItem[] => [
-        { kind: "branch-open", label: branch.label, depth, first: index === 0 },
+        {
+          kind: "branch-open",
+          label: branch.label,
+          depth,
+          first: index === 0,
+          line: branch.line,
+        },
         ...timeline(branch.events, depth + 1),
         { kind: "branch-close" },
       ]),
@@ -46,6 +60,7 @@ function timeline(events: GlfEvent[], depth = 0): TimelineItem[] {
 
 interface PanelBox {
   objectId: string;
+  line: number;
   x: number;
   y: number;
   width: number;
@@ -92,11 +107,14 @@ export interface SequenceLayout {
   height: number;
   lifelines: {
     id: string;
+    line: number;
+    origin?: GlfDocument["objects"][number]["origin"];
     label: string;
     type: GlfDocument["objects"][number]["type"];
     x: number;
   }[];
   messages: {
+    line: number;
     from: string;
     to: string;
     mode: "sync" | "async" | "response";
@@ -106,6 +124,7 @@ export interface SequenceLayout {
     y: number;
   }[];
   processes: {
+    line: number;
     objectId: string;
     text: string;
     emphasis: boolean;
@@ -125,6 +144,7 @@ export interface SequenceLayout {
   fileStates: (PanelBox & { title: string; nodes: FileLine[] })[];
   sqlBlocks: (PanelBox & { lines: string[] })[];
   fragments: {
+    line: number;
     kind: "alt" | "opt" | "loop" | "par" | "break";
     label: string;
     x: number;
@@ -132,7 +152,7 @@ export interface SequenceLayout {
     width: number;
     height: number;
     depth: number;
-    branches: { label: string; y: number; endY: number }[];
+    branches: { label: string; line: number; y: number; endY: number }[];
   }[];
 }
 
@@ -143,7 +163,7 @@ function flattenFile(nodes: FileNode[], depth = 0): FileLine[] {
   ]);
 }
 
-/** REQ-006、REQ-008..REQ-013、REQ-018..REQ-020、REQ-022..REQ-025: IRから分岐を含む表示座標を決定的に計算する。 */
+/** REQ-006、REQ-008..REQ-013、REQ-018..REQ-020、REQ-022..REQ-025、REQ-038: IRの行番号を保持し、表示座標を決定的に計算する。 */
 export function layoutSequence(
   document: GlfDocument,
   measureText: (text: string) => number,
@@ -282,7 +302,14 @@ export function layoutSequence(
       );
     }
     xById.set(object.id, x);
-    return { id: object.id, label: object.label, type: object.type, x };
+    return {
+      id: object.id,
+      line: object.line,
+      origin: object.origin,
+      label: object.label,
+      type: object.type,
+      x,
+    };
   });
   const messages: SequenceLayout["messages"] = [];
   const processes: SequenceLayout["processes"] = [];
@@ -320,13 +347,19 @@ export function layoutSequence(
         event.depth * 12;
       const fragment = {
         kind: event.fragmentKind,
+        line: event.line,
         label: event.label,
         x: left,
         y,
         width: right - left,
         height: 0,
         depth: event.depth,
-        branches: [] as { label: string; y: number; endY: number }[],
+        branches: [] as {
+          label: string;
+          line: number;
+          y: number;
+          endY: number;
+        }[],
       };
       fragments.push(fragment);
       fragmentStack.push({ fragment, inherited: new Map(active), exits: [] });
@@ -350,7 +383,12 @@ export function layoutSequence(
             ? 36
             : 36;
       const y = lastY;
-      current.fragment.branches.push({ label: event.label, y, endY: y });
+      current.fragment.branches.push({
+        label: event.label,
+        line: event.line,
+        y,
+        endY: y,
+      });
       active.clear();
       for (const id of current.inherited.keys())
         active.set(id, y - (event.first ? 15 : 24));
@@ -432,6 +470,7 @@ export function layoutSequence(
       for (const member of dbGroup) member.width = width;
       const box = {
         objectId,
+        line: event.line,
         x: dbGroup[0]?.x ?? laneX + 28,
         y,
         width,
@@ -521,6 +560,7 @@ export function layoutSequence(
       const laneX = xById.get(event.objectId);
       if (laneX === undefined) continue;
       processes.push({
+        line: event.line,
         objectId: event.objectId,
         text: event.text,
         emphasis: event.emphasis,
@@ -539,6 +579,7 @@ export function layoutSequence(
           following.action === "start" &&
           following.objectId === event.to);
       messages.push({
+        line: event.line,
         from: event.from,
         to: event.to,
         mode: event.mode,

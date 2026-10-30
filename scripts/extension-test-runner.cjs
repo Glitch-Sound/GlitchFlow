@@ -20,6 +20,9 @@ function run() {
     mocha.addFile(
       resolve(__dirname, "../dist/extension-tests/imports.test.js"),
     );
+    mocha.addFile(
+      resolve(__dirname, "../dist/extension-tests/navigation.test.js"),
+    );
     mocha.run((failures) => {
       if (failures === 0) resolveRun();
       else rejectRun(new Error(`${failures} extension test(s) failed`));

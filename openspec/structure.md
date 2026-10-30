@@ -99,6 +99,7 @@ OpenSpecによる変更仕様は `openspec/changes/<change-name>/specs/<capabili
 
 - `extension.ts` は拡張機能の起動と登録を行う。
 - `preview-panel.ts` はWebviewの生成と通信を行う。
+- プレビューからDSLへの移動要求は`preview-panel.ts`で表示済み文書と行を検査し、VSCodeのテキストエディタへ反映する。
 - `imports.ts` はローカルGLFの依存グラフ、ファイル監視、循環検出を扱い、Coreへ解析済み定義を渡す。
 - `diagnostics.ts` はVSCode上のエラーと警告を表示する。
 - `syntax-colors.ts` は専用配色設定を読み、`.glf` エディタのみに装飾を適用、解除する。
@@ -115,6 +116,7 @@ OpenSpecによる変更仕様は `openspec/changes/<change-name>/specs/<capabili
 - `pages/preview` はプレビュー画面を扱う。
 - プレビュー見出しはCoreの`title`を使い、未指定時はExtensionから渡された`.glf`ファイル名を使う。
 - `pages/preview/ui` は図面のDOM、SVG描画を扱う。
+- 描画要素へのソース行付与とクリック検出は`pages/preview/ui`で扱い、`app/main.ts`からExtensionへ通知する。
 - 変更属性の文字色、取り消し線はUIで表現し、DSLの操作記号は描画しない。
 - `pages/preview/model` はズームなどの画面状態を扱う。
 - `shared` は画面固有でない小さな共通機能だけを扱う。
