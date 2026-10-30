@@ -104,6 +104,7 @@ OpenSpecによる変更仕様は `openspec/changes/<change-name>/specs/<capabili
 - 通常のトークン分類は `syntaxes/glf.tmLanguage.json` に置き、VSCodeテーマに従う。
 - 専用配色を使っても、VSCode全体のテーマやほかの言語の設定を書き換えない。
 - VSCode APIへの依存をここへ集める。
+- `.glf`の入力補完は`extension/completion.ts`でVSCode標準APIとCoreの解析結果を組み合わせる。
 
 ### webview
 

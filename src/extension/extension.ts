@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { isGlfFileName } from "../core";
+import { registerCompletion } from "./completion";
 import { diagnoseDocument } from "./diagnostics";
 import {
   onDidClosePreview,
@@ -82,6 +83,7 @@ export function activate(context: vscode.ExtensionContext): {
   );
   for (const document of vscode.workspace.textDocuments) refresh(document);
   registerSyntaxColors(context);
+  registerCompletion(context);
   if (
     lastGlfEditor &&
     isGlfFileName(lastGlfEditor.document.fileName) &&

@@ -13,6 +13,7 @@ WebviewにはFSD v2.1を適用し、Pages Firstで必要な構造だけを作る
 | --- | --- |
 | 言語 | TypeScript(strict) |
 | エディタ連携 | VSCode Extension API |
+| `.glf`入力補完 | VSCode CompletionItemProvider、SnippetString |
 | `.glf` 構文ハイライト | VSCode TextMate Grammar(標準) |
 | 任意の専用配色 | VSCode TextEditorDecorationType(`.glf` に限定) |
 | プレビュー | VSCode Webview API |
@@ -69,7 +70,9 @@ VSCodeとWebviewのデータ交換にはメッセージ通信を使う。
 - タイトル未指定時はファイル名を表示し、図面のライフラインや時間軸は変えない。
 - `Object` の種別は `APP`、`API`、`DB`、`FILE`、`FEATURE`、`MODULE` を許可する。
 - 種別による色分けは `product.md` の規則に従う。
-- DBテーブルの参照には `ObjectID.table` と `ObjectID.schema.table` を許可し、識別子を自動補完、解決しない。
+- DBテーブルの参照には `ObjectID.table` と `ObjectID.schema.table` を許可し、実行時の識別子解決は行わない。
+- エディタ補完はParserが解析したObjectとschemaを候補に使い、文書版ごとに結果を再利用する。
+- 補完Providerは現在行とインデントの文脈だけを判定し、DSLの定義解析を重複実装しない。
 - DBレコードの行操作は `added`、`removed`、`unchanged`、セル操作は `updated`、`unchanged` としてIRに保持する。
 - FILEの各ノードの操作は `added`、`removed`、`unchanged` としてIRに保持し、子への伝播は行わない。
 - `+`、`-`、`!` は構文解析時に表示属性へ変換し、レンダラーでは記号を表示しない。

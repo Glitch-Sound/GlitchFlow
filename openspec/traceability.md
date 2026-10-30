@@ -42,6 +42,9 @@
 | REQ-026 | プレビュー自動起動 | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/preview/spec.md#requirement-req-026---プレビュー自動起動) |
 | REQ-027 | プレビューの再利用とクローズ | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/preview/spec.md#requirement-req-027---プレビューの再利用とクローズ) |
 | REQ-028 | エディタの起動アイコン | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/preview/spec.md#requirement-req-028---エディタの起動アイコン) |
+| REQ-029 | 定型構文補完 | 実装済み | [DSLと編集](product.md#dslと編集) | [正式仕様](specs/dsl-completion/spec.md#requirement-req-029---定型構文補完) |
+| REQ-030 | 定義参照補完 | 実装済み | [データ状態](product.md#データ状態) | [正式仕様](specs/dsl-completion/spec.md#requirement-req-030---定義参照補完) |
+| REQ-031 | 文脈別補完 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/dsl-completion/spec.md#requirement-req-031---文脈別補完) |
 | NREQ-001 | 編集応答時間 | 実装済み | [構文と安全性](tech.md#構文と安全性) | [正式仕様](specs/editor-integration/spec.md#requirement-nreq-001---編集応答時間) |
 
 ## 要件ごとの変更履歴
@@ -85,6 +88,9 @@
 | improve-preview-opening | REQ-026 | 追加 | アーカイブ済み | [正式仕様](specs/preview/spec.md#requirement-req-026---プレビュー自動起動) | [提案](changes/archive/2026-10-30-improve-preview-opening/proposal.md)、[設計](changes/archive/2026-10-30-improve-preview-opening/design.md)、[タスク](changes/archive/2026-10-30-improve-preview-opening/tasks.md) |
 | improve-preview-opening | REQ-027 | 追加 | アーカイブ済み | [正式仕様](specs/preview/spec.md#requirement-req-027---プレビューの再利用とクローズ) | [提案](changes/archive/2026-10-30-improve-preview-opening/proposal.md)、[設計](changes/archive/2026-10-30-improve-preview-opening/design.md)、[タスク](changes/archive/2026-10-30-improve-preview-opening/tasks.md) |
 | improve-preview-opening | REQ-028 | 追加 | アーカイブ済み | [正式仕様](specs/preview/spec.md#requirement-req-028---エディタの起動アイコン) | [提案](changes/archive/2026-10-30-improve-preview-opening/proposal.md)、[設計](changes/archive/2026-10-30-improve-preview-opening/design.md)、[タスク](changes/archive/2026-10-30-improve-preview-opening/tasks.md) |
+| add-glf-completion | REQ-029 | 追加 | アーカイブ済み | [正式仕様](specs/dsl-completion/spec.md#requirement-req-029---定型構文補完) | [提案](changes/archive/2026-10-30-add-glf-completion/proposal.md)、[設計](changes/archive/2026-10-30-add-glf-completion/design.md)、[タスク](changes/archive/2026-10-30-add-glf-completion/tasks.md) |
+| add-glf-completion | REQ-030 | 追加 | アーカイブ済み | [正式仕様](specs/dsl-completion/spec.md#requirement-req-030---定義参照補完) | [提案](changes/archive/2026-10-30-add-glf-completion/proposal.md)、[設計](changes/archive/2026-10-30-add-glf-completion/design.md)、[タスク](changes/archive/2026-10-30-add-glf-completion/tasks.md) |
+| add-glf-completion | REQ-031 | 追加 | アーカイブ済み | [正式仕様](specs/dsl-completion/spec.md#requirement-req-031---文脈別補完) | [提案](changes/archive/2026-10-30-add-glf-completion/proposal.md)、[設計](changes/archive/2026-10-30-add-glf-completion/design.md)、[タスク](changes/archive/2026-10-30-add-glf-completion/tasks.md) |
 
 ## シナリオと検証の対応
 
@@ -148,8 +154,18 @@
 | improve-preview-opening | REQ-027 / REQ-027-S03 | [シナリオ](specs/preview/spec.md#scenario-req-027-s03---連続起動で重複しない) | [単一パネル](../src/extension/preview-panel.ts) `openPreview` | [Extension](../tests/extension/preview.test.ts) `REQ-027` | [記録](#improve-preview-opening---2026-10-30-起動動作の検証) |
 | improve-preview-opening | REQ-028 / REQ-028-S01 | [シナリオ](specs/preview/spec.md#scenario-req-028-s01---アイコンからの手動起動) | [メニュー](../package.json) | [Extension](../tests/extension/preview.test.ts) `REQ-028` | [記録](#improve-preview-opening---2026-10-30-起動動作の検証) |
 | improve-preview-opening | REQ-028 / REQ-028-S02 | [シナリオ](specs/preview/spec.md#scenario-req-028-s02---対象外のエディタ) | [メニュー](../package.json) | [Extension](../tests/extension/preview.test.ts) `REQ-028` | [記録](#improve-preview-opening---2026-10-30-起動動作の検証) |
+| add-glf-completion | REQ-029 / REQ-029-S01 | [シナリオ](specs/dsl-completion/spec.md#scenario-req-029-s01---定型構文と記号) | [補完](../src/extension/completion.ts) | [Extension](../tests/extension/completion.test.ts) `REQ-029-S01` | [記録](#add-glf-completion---2026-10-30-入力補完の検証) |
+| add-glf-completion | REQ-030 / REQ-030-S01 | [シナリオ](specs/dsl-completion/spec.md#scenario-req-030-s01---定義済み参照) | [補完](../src/extension/completion.ts) | [Extension](../tests/extension/completion.test.ts) `REQ-030-S01` | [記録](#add-glf-completion---2026-10-30-入力補完の検証) |
+| add-glf-completion | REQ-031 / REQ-031-S01 | [シナリオ](specs/dsl-completion/spec.md#scenario-req-031-s01---ブロックごとの候補) | [補完](../src/extension/completion.ts) | [Extension](../tests/extension/completion.test.ts) `REQ-031-S01` | [記録](#add-glf-completion---2026-10-30-入力補完の検証) |
+| add-glf-completion | REQ-031 / REQ-031-S02 | [シナリオ](specs/dsl-completion/spec.md#scenario-req-031-s02---未完成の文書) | [補完](../src/extension/completion.ts) | [Extension](../tests/extension/completion.test.ts) `REQ-031-S02` | [記録](#add-glf-completion---2026-10-30-入力補完の検証) |
 
 ## 検証記録
+
+### add-glf-completion - 2026-10-30 入力補完の検証
+
+- 対象: REQ-029-S01、REQ-030-S01、REQ-031-S01、REQ-031-S02。
+- 実行日: 2026-10-30 JST。
+- 結果: [検証記録](changes/archive/2026-10-30-add-glf-completion/verification.md)に記載したCore34件、Extension11件、OpenSpec strict検証が成功した。
 
 ### fix-sql-panel-overflow - 2026-10-30 アーカイブ
 
