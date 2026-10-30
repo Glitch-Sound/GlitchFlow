@@ -2,7 +2,7 @@
   "name": "glitchflow",
   "displayName": "GlitchFlow",
   "description": "処理の流れとデータの期待状態を同じ時間軸で可視化する .glf エディタとプレビュー",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "MIT",
   "icon": "images/icon.png",
   "publisher": "Glitch-Sound",
