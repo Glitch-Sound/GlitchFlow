@@ -14,6 +14,9 @@ test("補完・診断・import・エクスポートの紹介フレームを生�
     "examples/session-isolation.glf",
     "utf8",
   );
+  const icon = (await readFile("docs/images/glitchflow-icon-128.png")).toString(
+    "base64",
+  );
   const original = parseGlf(originalSource);
   expect(original.diagnostics).toEqual([]);
   const bad = parseGlf('Object APP as "画面" type APP\nAPP ->> BAD: 要求');
@@ -41,7 +44,7 @@ test("補完・診断・import・エクスポートの紹介フレームを生�
       * { box-sizing:border-box; }
       body { margin:0; color:#e5eef7; background:#0e1520; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
       .top { height:66px; display:flex; align-items:center; gap:15px; padding:0 22px; background:#101a26; border-bottom:1px solid #304050; }
-      .mark { width:29px; height:29px; border-radius:7px; background:linear-gradient(135deg,#52d997,#42aaf7); display:grid; place-items:center; color:#08131b; font-size:20px; font-weight:900; }
+      .mark { width:44px; height:44px; display:block; object-fit:contain; }
       .brand { font-size:19px; font-weight:800; letter-spacing:-.4px; }
       .tag { margin-left:auto; border:1px solid #3e5869; border-radius:20px; padding:5px 11px; color:#a8d9e8; font-size:12px; }
       .stage { height:414px; display:grid; grid-template-columns:380px 580px; }
@@ -82,10 +85,11 @@ test("補完・診断・import・エクスポートの紹介フレームを生�
       .caption { font-size:18px; font-weight:700; }
       .count { margin-left:auto; color:#7f93a8; font:12px ui-monospace,monospace; }
     </style>
-    <div class="top"><div class="mark">G</div><div class="brand">GlitchFlow</div><div class="tag">WRITE × REUSE × EXPORT</div></div>
+    <div class="top"><img class="mark" src="data:image/png;base64,${icon}" alt=""><div class="brand">GlitchFlow</div><div class="tag">WRITE × REUSE × EXPORT</div></div>
     <div class="stage"><div class="editor"><div class="tab" id="tab"></div><div id="editor-content"></div></div><div class="preview"><iframe id="preview" src="http://127.0.0.1:5173/"></iframe><div class="overlay" id="overlay"></div></div></div>
     <div class="bottom"><span class="step" id="step"></span><span class="caption" id="caption"></span><span class="count" id="count"></span></div>
   `);
+  await expect(page.locator(".mark")).toHaveJSProperty("naturalWidth", 128);
   const frame = page.frameLocator("#preview");
   await expect(frame.locator("#app")).toBeVisible();
   const showDocument = async (data: typeof original) => {

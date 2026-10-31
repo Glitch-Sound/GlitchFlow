@@ -9,6 +9,9 @@ test.skip(
 
 test("紹介GIFのフレームを生成する", async ({ page }) => {
   const source = await readFile("examples/session-isolation.glf", "utf8");
+  const icon = (await readFile("docs/images/glitchflow-icon-128.png")).toString(
+    "base64",
+  );
   const lines = source.split("\n");
   const parsedDocument = parseGlf(source);
   expect(parsedDocument.diagnostics).toEqual([]);
@@ -19,7 +22,7 @@ test("紹介GIFのフレームを生成する", async ({ page }) => {
       * { box-sizing: border-box; }
       body { margin: 0; color: #e5eef7; background: #0e1520; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
       .top { height: 66px; display: flex; align-items: center; padding: 0 22px; gap: 15px; background: #101a26; border-bottom: 1px solid #304050; }
-      .mark { width: 29px; height: 29px; border-radius: 7px; background: linear-gradient(135deg,#52d997,#42aaf7); display:grid; place-items:center; color:#08131b; font-size:20px; font-weight:900; }
+      .mark { width: 44px; height: 44px; display:block; object-fit:contain; }
       .brand { font-size: 19px; font-weight: 800; letter-spacing: -.4px; }
       .tag { margin-left: auto; border: 1px solid #3e5869; border-radius: 20px; padding: 5px 11px; color:#a8d9e8; font-size:12px; }
       .stage { height: 414px; display: grid; grid-template-columns: 380px 580px; }
@@ -39,10 +42,11 @@ test("紹介GIFのフレームを生成する", async ({ page }) => {
       .caption { font-size:18px; font-weight:700; }
       .count { margin-left:auto; color:#7f93a8; font:12px ui-monospace,monospace; }
     </style>
-    <div class="top"><div class="mark">G</div><div class="brand">GlitchFlow</div><div class="tag">FLOW × DATA STATE</div></div>
+    <div class="top"><img class="mark" src="data:image/png;base64,${icon}" alt=""><div class="brand">GlitchFlow</div><div class="tag">FLOW × DATA STATE</div></div>
     <div class="stage"><div class="code"><div class="bar"><strong>session-isolation.glf</strong> &nbsp; GLF source</div><div class="body" id="code"></div></div><div class="preview"><iframe id="preview" src="http://127.0.0.1:5173/"></iframe></div></div>
     <div class="bottom"><span class="step" id="step"></span><span class="caption" id="caption"></span><span class="count" id="count"></span></div>
   `);
+  await expect(page.locator(".mark")).toHaveJSProperty("naturalWidth", 128);
   const frame = page.frameLocator("#preview");
   await expect(frame.locator("#app")).toBeVisible();
   await page.locator("#preview").evaluate((iframe, data) => {
