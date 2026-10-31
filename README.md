@@ -4,6 +4,12 @@
 
 `.glf`をVS Codeで開くと、メッセージ、処理、分岐、データの状態を同じ時間軸で確認できる。
 
+![GlitchFlowの紹介: 処理の流れ、DBの状態と更新セル、追加ファイルを順に示すアニメーション](docs/images/glitchflow-overview.gif)
+
+入力補助・構文チェック・`import`による定義の分割と、PNG/SVGエクスポートも使える。
+
+![GlitchFlowの操作紹介: DSLの補完候補、Problemsの診断、importした定義、画像エクスポートを順に示すアニメーション](docs/images/glitchflow-tools.gif)
+
 ## 3ステップで試す
 
 1. VS Codeの拡張機能で`GlitchFlow`をインストールする。
