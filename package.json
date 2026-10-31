@@ -2,7 +2,7 @@
   "name": "glitchflow",
   "displayName": "GlitchFlow",
   "description": "Visualize sequence diagrams and database/file states together in VS Code.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "icon": "images/icon.png",
   "publisher": "Glitch-Sound",
